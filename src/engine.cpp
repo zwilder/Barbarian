@@ -47,8 +47,9 @@ bool Engine::init()
 
     // Setup the game map width/height
     gameMap_ = new GameMap(consoleWidth_, consoleHeight_);
+
     // Temporary 
-    player_ = Entity(sf::Vector2i(0,0), wsl::Glyph('@'));
+    player_ = Entity(sf::Vector2i(gameMap_->width() / 2,gameMap_->height() / 2), wsl::Glyph('@'));
 
     return success;
 }
@@ -92,7 +93,7 @@ void Engine::handleEvents()
     {
         console_->flush();
         sf::Vector2i dPos = player_.pos() + action.dir();
-        if(!gameMap_->tiles[gameMap_->index(dPos.x, dPos.y)].blocksMovement())
+        if(!gameMap_->isBlocked(dPos.x,dPos.y))
         {
             player_.move(action.dir());
         }
@@ -131,6 +132,8 @@ void Engine::draw()
             int index = console_->index(x,y);
             sprites[index] = spriteChars_[console_->get(x,y).symbol()];
             sprites[index].setPosition(sf::Vector2f(spriteSize_ * x, spriteSize_ * y));
+            wsl::Color color = console_->get(x,y).color();
+            sprites[index].setColor(sf::Color(color.r(),color.g(),color.b()));
             window_->draw(sprites[index]);            
         }
     }

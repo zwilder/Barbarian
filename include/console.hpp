@@ -29,6 +29,7 @@ namespace wsl
 
             int symbol() { return symbol_; }
             Color color() { return color_; }
+            void setColor(Color color) { color_ = color; };
 
         private:
             int symbol_;
