@@ -1,3 +1,5 @@
+#include <iostream>
+#include "../include/random.hpp"
 #include "../include/game_map.hpp"
 
 GameMap::GameMap(int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax) : width_(w), height_(h), roomSizeMax_(roomSizeMax),
@@ -48,13 +50,7 @@ void GameMap::vTunnel_(int y1, int y2, int x)
 
 void GameMap::makeMap_()
 {
-    /*
-    wsl::Rect room1 = wsl::Rect(1,1,10,10);
-
-    createRoom_(room1);
-    rooms.push_back(room1);
-
-    */
+    // Basic Tutorial algorithm
     int numRooms = 0;
     while(numRooms < numRoomsMax_)
     {
@@ -94,23 +90,45 @@ void GameMap::makeMap_()
             numRooms += 1;
         }
     }
-    /*
-    for(int x = rooms[0].x1; x < rooms[0].x2; ++x)
+
+    
+    // BSP algorithm scratchpad
+    std::vector<Leaf *> leaves;
+    Leaf helperLeaf = Leaf(wsl::Rect());
+    Leaf * root = new Leaf(wsl::Rect(0,0,width_,height_));
+    leaves.push_back(root);
+    leaves[0]->split();
+
+    int maxLeafSize = 20; // Magic number?
+    bool didSplit = true;
+    while(didSplit)
     {
-        for(int y = rooms[0].y1; y < rooms[0].y2; ++y)
+        didSplit = false;
+        for(int i = 0; i < leaves.size(); ++i)
         {
-            int mask = tiles[index(x,y)].mask();
-            int glyph = tiles[index(x,y)].glyph().symbol();
-            tiles[index(x,y)] = Tile(mask, wsl::Glyph(glyph, wsl::Color(255,0,0)));
+            if((leaves[i]->leftChild == NULL) && (leaves[i]->rightChild == NULL))
+            {
+                int width = leaves[i]->leafRect.x2 - leaves[i]->leafRect.x1;
+                int height = leaves[i]->leafRect.y2 - leaves[i]->leafRect.y1;
+                std::cout << "width: " << width << ", height: " << height << std::endl;
+                if((width < maxLeafSize) || (height < maxLeafSize)) // || (wsl::randomBool(0.75)))
+                {
+                    if(leaves[i]->split())
+                    {
+                        leaves.push_back(leaves[i]->leftChild);
+                        leaves.push_back(leaves[i]->rightChild);
+                        didSplit = true;
+                    }
+                }
+            }
+
+            std::cout << "leaves size: " << leaves.size() << ", i=" << i << std::endl;
         }
     }
-    for(int i = 0; i < rooms.size(); ++i)
-    {
-        int x = rooms[i].center().x;
-        int y = rooms[i].center().y;
-        tiles[index(x,y)] = Tile(Tile::Flags::NONE, wsl::Glyph('.', wsl::Color(250,0,250)));
-    } 
-    */
+
+    leaves.clear();
+                        
+                
 }
 
 bool GameMap::isBlocked(int x, int y)

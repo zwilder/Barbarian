@@ -5,7 +5,7 @@
 #include <vector>
 #include "tile.hpp"
 #include "rect.hpp"
-#include "random.hpp"
+#include "BSP.hpp"
 
 class GameMap
 {

@@ -8,7 +8,7 @@ namespace wsl
     class Rect
     {
         public:
-            Rect(int x, int y, int w, int h) : x1(x), y1(y), x2(x+w), y2(y+h) { }
+            Rect(int x = 0, int y = 0, int w = 0, int h = 0) : x1(x), y1(y), x2(x+w), y2(y+h) { }
 
             int x1;
             int x2;

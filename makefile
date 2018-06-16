@@ -1,9 +1,9 @@
 CXX = g++
 # -g For debugging flags, -O2 for optimization
-OPTS = -std=c++11 -O2
+OPTS = -std=c++11 -O2 -g
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system
 
-FILES := random console input_handlers entity game_map engine main
+FILES := random console input_handlers entity BSP game_map engine main
 OBJS := $(FILES:=.o)
 SRC := $(OBJS:.o=.cpp)
 VPATH = ./src:./include
