@@ -1,7 +1,7 @@
 #pragma once
 #ifndef RECT_HPP
 #define RECT_HPP
-
+#include <SFML/Graphics.hpp>
 namespace wsl
 {
 
@@ -14,6 +14,9 @@ namespace wsl
             int x2;
             int y1;
             int y2;
+
+            sf::Vector2i center() { return sf::Vector2i((x1 + x2) / 2, (y1 + y2) / 2); }
+            bool intersect(Rect other) { return((x1 <= other.x2) && (x2 >= other.x1) && (y1 <= other.y2) && (y2 >= other.y1)); }
     };
 
 

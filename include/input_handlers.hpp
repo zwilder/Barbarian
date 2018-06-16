@@ -10,7 +10,8 @@ enum Cmd : int
     NONE = 0,
     MOVE = 0x02,
     QUIT = 0x04,
-    FULLSCREEN = 0x04
+    FULLSCREEN = 0x04,
+    NEXT_LEVEL = 0x08
 };
         
 
@@ -23,6 +24,7 @@ class Action
         bool move() { return((cmdMask_ & Cmd::MOVE) == Cmd::MOVE); }
         bool quit() { return((cmdMask_ & Cmd::QUIT) == Cmd::QUIT); }
         bool fullscreen() { return((cmdMask_ & Cmd::FULLSCREEN) == Cmd::FULLSCREEN); }
+        bool nextLevel() { return((cmdMask_ & Cmd::NEXT_LEVEL) == Cmd::NEXT_LEVEL); }
 
         sf::Vector2i dir() { return dir_; }
     private:

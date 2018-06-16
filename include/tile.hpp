@@ -15,7 +15,8 @@ class Tile
             BLOCKS_LIGHT = 0x01,
             BLOCKS_MOVEMENT = 0x02
         };
-
+        
+        int mask() { return mask_; }
         bool checkFlag(int flag) { return((mask_ & flag) == flag); }
 
         bool blocksMovement() { return(checkFlag(Flags::BLOCKS_MOVEMENT)); }

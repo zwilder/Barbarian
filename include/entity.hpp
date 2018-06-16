@@ -12,6 +12,7 @@ class Entity
         
         void move(sf::Vector2i delta) { pos_ += delta; }
         sf::Vector2i pos() { return pos_; }
+        void setPos(sf::Vector2i pos) { pos_ = pos; }
         wsl::Glyph glyph() { return glyph_; }
 
     private:

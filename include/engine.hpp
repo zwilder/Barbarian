@@ -30,18 +30,21 @@ class Engine
         int consoleHeight_;
         int windowWidth_;
         int windowHeight_;
+
         wsl::Console * console_;
         sf::RenderWindow * window_;
         sf::Texture * spritesheet_;
         sf::Sprite spriteChars_[256];
+
         GameMap * gameMap_;
+        int maxRoomSize_; // Do these three variables need to be stored?
+        int minRoomSize_;
+        int maxRooms_;
 
         void handleKeys_(int key);
         
         // Temporary variables
         Entity player_;
-        int pX_;
-        int pY_;
 
 };
 

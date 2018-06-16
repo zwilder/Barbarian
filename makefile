@@ -3,7 +3,7 @@ CXX = g++
 OPTS = -std=c++11 -O2
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system
 
-FILES := console input_handlers entity game_map engine main
+FILES := random console input_handlers entity game_map engine main
 OBJS := $(FILES:=.o)
 SRC := $(OBJS:.o=.cpp)
 VPATH = ./src:./include

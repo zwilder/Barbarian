@@ -39,6 +39,10 @@ Action handleKeys(int key)
         {
             return Action(Cmd::QUIT);
         }
+        case sf::Keyboard::Enter:
+        {
+            return Action(Cmd::NEXT_LEVEL);
+        }
         default: { break; }
     }
 

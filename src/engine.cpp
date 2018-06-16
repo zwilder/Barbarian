@@ -46,11 +46,15 @@ bool Engine::init()
     }
 
     // Setup the game map width/height
-    gameMap_ = new GameMap(consoleWidth_, consoleHeight_);
+    maxRoomSize_ = 10;
+    minRoomSize_ = 6;
+    maxRooms_ = 30; 
+    gameMap_ = new GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
     // Temporary 
     player_ = Entity(sf::Vector2i(gameMap_->width() / 2,gameMap_->height() / 2), wsl::Glyph('@'));
 
+    player_.setPos(gameMap_->rooms[0].center());
     return success;
 }
 
@@ -98,6 +102,12 @@ void Engine::handleEvents()
             player_.move(action.dir());
         }
     }
+    if(action.nextLevel())
+    {
+        *gameMap_ = GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
+        std::cout << gameMap_->rooms[0].center().x << "," << gameMap_->rooms[0].center().y << std::endl;
+        player_.setPos(gameMap_->rooms[0].center());
+    }
 }
 
 void Engine::update()
@@ -123,6 +133,7 @@ void Engine::draw()
     // Since all the sprites are precreated in spriteChars_, the draw function creates new sprites from the template to represent the current glyph on
     // the console.
     window_->clear();
+    
     sf::Sprite sprites[console_->width() * console_->height()];
     
     for(int x = 0; x < console_->width(); ++x)

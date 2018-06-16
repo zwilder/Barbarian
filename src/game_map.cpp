@@ -1,6 +1,7 @@
 #include "../include/game_map.hpp"
 
-GameMap::GameMap(int w, int h) : width_(w), height_(h)
+GameMap::GameMap(int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax) : width_(w), height_(h), roomSizeMax_(roomSizeMax),
+    roomSizeMin_(roomSizeMin), numRoomsMax_(numRoomsMax)
 {
     initTiles_();
     makeMap_();
@@ -20,7 +21,7 @@ void GameMap::createRoom_(wsl::Rect room)
     {
         for(int y = room.y1 + 1; y < room.y2; ++y)
         {
-            tiles[index(x,y)] = Tile(Tile::Flags::NONE);
+            tiles[index(x,y)] = Tile(Tile::Flags::NONE, wsl::Glyph(' ', wsl::Color(0,0,50)));
         }
     }
 }
@@ -31,7 +32,7 @@ void GameMap::hTunnel_(int x1, int x2, int y)
     int max = (x1 > x2 ? x1 : x2);
     for(int i = min; i <= max; ++i)
     {
-        tiles[index(i,y)] = Tile(Tile::Flags::NONE);
+        tiles[index(i,y)] = Tile(Tile::Flags::NONE, wsl::Glyph(' ', wsl::Color(0,0,50)));
     }
 }
 
@@ -41,19 +42,75 @@ void GameMap::vTunnel_(int y1, int y2, int x)
     int max = (y1 > y2 ? y1 : y2);
     for(int i = min; i <= max; ++i)
     {
-        tiles[index(x,i)] = Tile(Tile::Flags::NONE);
+        tiles[index(x,i)] = Tile(Tile::Flags::NONE, wsl::Glyph(' ', wsl::Color(0,0,50)));
     }
 }
 
 void GameMap::makeMap_()
 {
-    wsl::Rect room1 = wsl::Rect(20,15,10,15);
-    wsl::Rect room2 = wsl::Rect(35,15,10,15);
+    /*
+    wsl::Rect room1 = wsl::Rect(1,1,10,10);
 
     createRoom_(room1);
-    createRoom_(room2);
+    rooms.push_back(room1);
 
-    hTunnel_(25,40,23);
+    */
+    int numRooms = 0;
+    while(numRooms < numRoomsMax_)
+    {
+        int w = wsl::randomInt(roomSizeMin_, roomSizeMax_);
+        int h = wsl::randomInt(roomSizeMin_, roomSizeMax_);
+        int x = wsl::randomInt(0, width_ - w - 1);
+        int y = wsl::randomInt(0, height_ - h - 1);
+
+        wsl::Rect newRoom = wsl::Rect(x,y,w,h);
+        bool intersect = false;
+        for(int j = 0; j < rooms.size(); ++j)
+        {
+            if(rooms[j].intersect(newRoom))
+            {
+                intersect = true;
+            }
+        }
+        if(!intersect)
+        {
+            createRoom_(newRoom);
+            if(rooms.size() > 0)
+            {
+                sf::Vector2i previous = rooms[rooms.size() - 1].center();
+                sf::Vector2i current = newRoom.center();
+                if(wsl::randomBool())
+                {
+                    hTunnel_(previous.x, current.x, previous.y);
+                    vTunnel_(previous.y, current.y, current.x);
+                }
+                else // wsl::randomBool() == false
+                {
+                    vTunnel_(previous.y, current.y, previous.x);
+                    hTunnel_(previous.x, current.x, current.y);
+                }
+            }
+            rooms.push_back(newRoom);
+            numRooms += 1;
+        }
+    }
+    /*
+    for(int x = rooms[0].x1; x < rooms[0].x2; ++x)
+    {
+        for(int y = rooms[0].y1; y < rooms[0].y2; ++y)
+        {
+            int mask = tiles[index(x,y)].mask();
+            int glyph = tiles[index(x,y)].glyph().symbol();
+            tiles[index(x,y)] = Tile(mask, wsl::Glyph(glyph, wsl::Color(255,0,0)));
+        }
+    }
+    for(int i = 0; i < rooms.size(); ++i)
+    {
+        int x = rooms[i].center().x;
+        int y = rooms[i].center().y;
+        tiles[index(x,y)] = Tile(Tile::Flags::NONE, wsl::Glyph('.', wsl::Color(250,0,250)));
+    } 
+    */
 }
 
 bool GameMap::isBlocked(int x, int y)
