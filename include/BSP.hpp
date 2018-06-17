@@ -6,23 +6,45 @@
 #include "rect.hpp"
 #include "random.hpp"
 
-class Leaf
+class Node
 {
     public:
-        Leaf(wsl::Rect rect);
-        ~Leaf();
-
-        wsl::Rect leafRect; // position/size of leaf
-        wsl::Rect roomRect; // position/size of room inside leaf
-    
-        Leaf * leftChild;
-        Leaf * rightChild;
-
+        Node(wsl::Rect rect = wsl::Rect(0,0,0,0), Node * parent = NULL);
+        ~Node();
+               
+        bool hasSplit() { return split_; }
         bool split();
+        bool horizontal() { return horizontal_; }
+        Node * parent() { return parent_; }
+        Node * leftChild() { return leftChild_; }
+        Node * rightChild() { return rightChild_; }
+        Node * sibling() { return sibling_; } // Binary tree - there's only one sibling
+
+        wsl::Rect nodeRect;
+        
+    private:
+        Node * parent_;
+        Node * leftChild_;
+        Node * rightChild_;
+        Node * sibling_;
+        bool split_;
+        bool horizontal_;
+};
+
+class Tree
+{
+    public:
+        Tree();
+
+        std::vector<wsl::Rect> rooms() { return rooms_; }
+        std::vector<wsl::Rect> corridors() { return corridors_; }
+        void populate(wsl::Rect nodeRect);
 
     private:
-        const int MIN_LEAF_SIZE = 6;
-
+        std::vector<wsl::Rect> rooms_;
+        std::vector<wsl::Rect> corridors_;
+        Node root_;
+        std::vector<Node *> leaves_;
 };
 
 #endif //BSP_HPP

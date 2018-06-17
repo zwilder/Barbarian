@@ -105,7 +105,6 @@ void Engine::handleEvents()
     if(action.nextLevel())
     {
         *gameMap_ = GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
-        std::cout << gameMap_->rooms[0].center().x << "," << gameMap_->rooms[0].center().y << std::endl;
         player_.setPos(gameMap_->rooms[0].center());
     }
 }

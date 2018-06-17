@@ -50,6 +50,7 @@ void GameMap::vTunnel_(int y1, int y2, int x)
 
 void GameMap::makeMap_()
 {
+/*
     // Basic Tutorial algorithm
     int numRooms = 0;
     while(numRooms < numRoomsMax_)
@@ -90,45 +91,18 @@ void GameMap::makeMap_()
             numRooms += 1;
         }
     }
-
+*/
     
-    // BSP algorithm scratchpad
-    std::vector<Leaf *> leaves;
-    Leaf helperLeaf = Leaf(wsl::Rect());
-    Leaf * root = new Leaf(wsl::Rect(0,0,width_,height_));
-    leaves.push_back(root);
-    leaves[0]->split();
-
-    int maxLeafSize = 20; // Magic number?
-    bool didSplit = true;
-    while(didSplit)
+    // BSP dungeon generator
+    Tree * bspTree = new Tree;
+    bspTree->populate(wsl::Rect(0,0,width_ - 1,height_ - 1));
+    for(int i = 0; i < bspTree->rooms().size(); ++i)
     {
-        didSplit = false;
-        for(int i = 0; i < leaves.size(); ++i)
-        {
-            if((leaves[i]->leftChild == NULL) && (leaves[i]->rightChild == NULL))
-            {
-                int width = leaves[i]->leafRect.x2 - leaves[i]->leafRect.x1;
-                int height = leaves[i]->leafRect.y2 - leaves[i]->leafRect.y1;
-                std::cout << "width: " << width << ", height: " << height << std::endl;
-                if((width < maxLeafSize) || (height < maxLeafSize)) // || (wsl::randomBool(0.75)))
-                {
-                    if(leaves[i]->split())
-                    {
-                        leaves.push_back(leaves[i]->leftChild);
-                        leaves.push_back(leaves[i]->rightChild);
-                        didSplit = true;
-                    }
-                }
-            }
-
-            std::cout << "leaves size: " << leaves.size() << ", i=" << i << std::endl;
-        }
+        wsl::Rect newRoom = bspTree->rooms()[i];
+        createRoom_(newRoom);
+        rooms.push_back(newRoom);
     }
-
-    leaves.clear();
-                        
-                
+    delete bspTree;
 }
 
 bool GameMap::isBlocked(int x, int y)
