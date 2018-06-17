@@ -52,7 +52,7 @@ bool Engine::init()
     gameMap_ = new GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
     // Temporary 
-    player_ = Entity(sf::Vector2i(gameMap_->width() / 2,gameMap_->height() / 2), wsl::Glyph('@'));
+    player_ = Entity(wsl::Vector2i(gameMap_->width() / 2,gameMap_->height() / 2), wsl::Glyph('@'));
 
     player_.setPos(gameMap_->rooms[0].center());
     return success;
@@ -96,7 +96,7 @@ void Engine::handleEvents()
     if(action.move())
     {
         console_->flush();
-        sf::Vector2i dPos = player_.pos() + action.dir();
+        wsl::Vector2i dPos = player_.pos() + action.dir();
         if(!gameMap_->isBlocked(dPos.x,dPos.y))
         {
             player_.move(action.dir());

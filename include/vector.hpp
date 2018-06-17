@@ -23,6 +23,11 @@ namespace wsl
 		Vector2<T> operator +(Vector2<T> a) { return Vector2<T>(x + a.x, y + a.y); }
 		Vector2<T> operator -(Vector2<T> a) { return Vector2<T>(x - a.x, y - a.y); }
 		Vector2<T> operator /(Vector2<T> a) { return Vector2<T>(x / a.x, y / a.y); }
+
+        Vector2<T> operator *=(Vector2<T> a) { return Vector2<T>(x *= a.x, y *= a.y); }
+        Vector2<T> operator +=(Vector2<T> a) { return Vector2<T>(x += a.x, y += a.y); }
+        Vector2<T> operator -=(Vector2<T> a) { return Vector2<T>(x -= a.x, y -= a.y); }
+        Vector2<T> operator /=(Vector2<T> a) { return Vector2<T>(x /= a.x, y /= a.y); }
 	};
 
 	template <typename T>
