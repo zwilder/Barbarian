@@ -35,6 +35,7 @@ class Tree
 {
     public:
         Tree();
+        // ~Tree();
 
         std::vector<wsl::Rect> rooms() { return rooms_; }
         std::vector<wsl::Rect> corridors() { return corridors_; }

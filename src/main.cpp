@@ -11,6 +11,7 @@ int main(int argc, char * argv [])
         engine->draw();
     }
     engine->cleanup();
+    delete engine;
 
     return 0;
 }

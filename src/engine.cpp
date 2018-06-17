@@ -140,6 +140,7 @@ void Engine::draw()
         for(int y = 0; y < console_->height(); ++y)
         {
             int index = console_->index(x,y);
+            // std::cout << index << std::endl;
             sprites[index] = spriteChars_[console_->get(x,y).symbol()];
             sprites[index].setPosition(sf::Vector2f(spriteSize_ * x, spriteSize_ * y));
             wsl::Color color = console_->get(x,y).color();

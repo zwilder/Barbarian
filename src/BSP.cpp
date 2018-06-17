@@ -73,6 +73,17 @@ Tree::Tree()
 {
     //
 }
+/*
+Tree::~Tree()
+{
+    for(int i = 0; i < leaves_.size(); ++i)
+    {
+        if(leaves_[i] != NULL)
+        {
+            delete leaves_[i];
+        }
+    }
+}*/
 
 void Tree::populate(wsl::Rect rootRect)
 {
@@ -114,5 +125,6 @@ void Tree::populate(wsl::Rect rootRect)
         int x = wsl::randomInt(leaves_[i]->nodeRect.x1, leaves_[i]->nodeRect.x2 - width);
         int y = wsl::randomInt(leaves_[i]->nodeRect.y1, leaves_[i]->nodeRect.y2 - height);
         rooms_.push_back(wsl::Rect(x,y,width,height));
+        // rooms_.push_back(leaves_[i]->nodeRect);
     }
 }
