@@ -44,13 +44,13 @@ namespace wsl
 	}
 
 	template <typename T>
-	bool operator ==(const Vector2<T> & a, const Vector2<T> & b)
+	inline bool operator ==(const Vector2<T> & a, const Vector2<T> & b)
 	{
 		return ((a.x == b.x) && (a.y == b.y));
 	}
 
 	template <typename T>
-	bool operator !=(const Vector2<T> & a, const Vector2<T> & b)
+	inline bool operator !=(const Vector2<T> & a, const Vector2<T> & b)
 	{
 		return (!(a == b));
 	}

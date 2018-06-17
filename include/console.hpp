@@ -3,26 +3,11 @@
 #define CONSOLE_HPP
 
 #include <vector>
+#include "color.hpp"
 
 namespace wsl
 {
-    class Color
-    {
-        public:
-            Color(int r = 255, int g = 255, int b = 255) : r_(r), g_(g), b_(b) { }
-
-            int r() { return r_; }
-            int g() { return g_; }
-            int b() { return b_; }
-            void set(int r = 255, int g = 255, int b = 255) { r_ = r; g_ = g; b_ = b; }
-
-        private:
-            int r_;
-            int g_;
-            int b_;
-    };
-
-    class Glyph
+   class Glyph
     {
         // The background is always 219 on the CP437 font (the blank square)
         public:
