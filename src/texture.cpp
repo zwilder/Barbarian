@@ -96,19 +96,17 @@ void Texture::free()
 	}
 }
 
-void Texture::render(int x, int y, SDL_Renderer * renderer, SDL_Rect * clip)
+void Texture::render(int x, int y, SDL_Renderer * renderer, SDL_Rect clip)
 {
-	SDL_Rect renderQuad = {x, y, width_, height_};
-
-	if (clip != NULL)
-	{
-		renderQuad.w = clip->w;
-		renderQuad.h = clip->h;
-	}
+	SDL_Rect renderQuad;
+    renderQuad.x = x;
+    renderQuad.y = y;
+	renderQuad.w = clip.w;
+	renderQuad.h = clip.h;
 
 	if (renderer != NULL)
 	{
-		SDL_RenderCopy(renderer, texture_, clip, &renderQuad);	
+		SDL_RenderCopy(renderer, texture_, &clip, &renderQuad);	
 	}
 }
 
@@ -180,6 +178,4 @@ void Texture::setColor(const Color & color)
 	SDL_SetTextureColorMod(texture_, color.r, color.g, color.b);
 	SDL_SetTextureAlphaMod(texture_, color.a);
 }
-
-
-}
+} // Namespace wsl

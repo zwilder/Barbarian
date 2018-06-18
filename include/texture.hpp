@@ -19,7 +19,7 @@ namespace wsl
 		bool loadFromFile(std::string path, SDL_Renderer * renderer = NULL);
 		void free();
 
-		void render(int x, int y, SDL_Renderer * renderer = NULL, SDL_Rect * clip = NULL);
+		void render(int x, int y, SDL_Renderer * renderer, SDL_Rect clip);
 
 		bool lockTexture();
 		bool unlockTexture();

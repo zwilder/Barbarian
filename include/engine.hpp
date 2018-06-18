@@ -2,11 +2,18 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
 
-#include <SFML/Graphics.hpp>
+#include <memory>
+#include <string>
+#include <array>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
 #include "console.hpp"
 #include "input_handlers.hpp"
 #include "entity.hpp"
 #include "game_map.hpp"
+#include "texture.hpp"
+#include "sprite.hpp"
 
 class Engine
 {
@@ -30,11 +37,17 @@ class Engine
         int consoleHeight_;
         int windowWidth_;
         int windowHeight_;
+        std::string windowTitle_;
 
         wsl::Console * console_;
-        sf::RenderWindow * window_;
-        sf::Texture * spritesheet_;
-        sf::Sprite spriteChars_[256];
+        
+        SDL_Window * window_;
+        SDL_Renderer * renderer_;
+        wsl::Texture * spriteSheet_;
+
+        std::array<wsl::Rect, 256> spriteRects_;
+        std::vector< std::unique_ptr<wsl::Sprite> > consoleSprites_;
+        int spriteIndex_(int x, int y) { return (x + (y*consoleWidth_)); }
 
         GameMap * gameMap_;
         int maxRoomSize_; // Do these three variables need to be stored?

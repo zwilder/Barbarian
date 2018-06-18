@@ -3,6 +3,17 @@
 
 Engine::Engine()
 {
+    consoleWidth_ = 80; // consoleWidth_ and consoleHeight_ refer to the 'root' console
+    consoleHeight_ = 50;
+    spriteSize_ = 12;
+    windowWidth_ = consoleWidth_ * spriteSize_;
+    windowHeight_ = consoleHeight_ * spriteSize_;
+    windowTitle_ = "Barbarian!";
+    window_ = NULL;
+    maxRoomSize_ = 10;
+    minRoomSize_ = 6;
+    maxRooms_ = 30; 
+
     running_ = init();
 }
 
@@ -11,85 +22,121 @@ bool Engine::init()
     bool success = true;
 
     // Set up the virtual console
-    consoleWidth_ = 80; // consoleWidth_ and consoleHeight_ refer to the 'root' console
-    consoleHeight_ = 50;
-    spriteSize_ = 12;
     console_ = new wsl::Console(consoleWidth_, consoleHeight_); // if we add further consoles we can reduce the area this takes up on 'root'
 
-    // Set up the physical window (SFML)
-    windowWidth_ = consoleWidth_ * spriteSize_;
-    windowHeight_ = consoleHeight_ * spriteSize_;
-    window_ = new sf::RenderWindow(sf::VideoMode(windowWidth_,windowHeight_), "Barbarian!", sf::Style::None);
+    // Set up the physical window and renderer (SDL)
+	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	{
+		std::cout << "SDL failed to initialize: " << SDL_GetError() << std::endl;
+		success = false;
+	}
+	else
+	{
 
-    // Load the cp437 texture image (SFML)
-    spritesheet_ = new sf::Texture;
-    if(!spritesheet_->loadFromFile("assets/cp437_12x12.png"))
+		window_ = SDL_CreateWindow(windowTitle_.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth_, windowHeight_, SDL_WINDOW_SHOWN);
+		if (window_ == NULL)
+		{
+			std::cout << "Failed to create window: " << SDL_GetError() << std::endl;
+			success = false;
+		}
+	}
+    
+    renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer_ == NULL)
     {
+        std::cout << "Failed to create renderer: " << SDL_GetError() << std::endl;
         success = false;
     }
-    
-    // Create sprite 'templates' for all sprites on the spritesheet (SFML)
-    int x = 0;
-    int y = 0;
-    for(int i = 0; i < 256; ++i)
+    else
     {
-        spriteChars_[i].setTexture(*spritesheet_);
-        spriteChars_[i].setTextureRect(sf::IntRect(x,y, spriteSize_,spriteSize_));
-        x += spriteSize_;
-        if(i == 0)
+        SDL_SetRenderDrawColor(renderer_, 0xFF, 0xFF, 0xFF, 0xFF);
+        int imgFlags = IMG_INIT_PNG;
+        if(!(IMG_Init(imgFlags) & imgFlags))
         {
-            continue;
-        }
-        if(x == 16 * spriteSize_)
-        {
-            y += spriteSize_;
-            x = 0;
+            std::cout << "Failed to initialize SDL_image: " << SDL_GetError() << std::endl;
+            success = false;
         }
     }
 
-    // Setup the game map width/height - should be a different function, with the next three arguments passed in.
-    maxRoomSize_ = 10;
-    minRoomSize_ = 6;
-    maxRooms_ = 30; 
-    gameMap_ = new GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
+    if(success)
+    {
+        // Load the cp437 texture image
+        spriteSheet_ = new wsl::Texture;
+        success = spriteSheet_->loadFromFile("assets/cp437_12x12.png", renderer_);
 
-    // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
-    // which would facilitate a character creation option in the future. 
-    player_ = Entity(wsl::Vector2i(gameMap_->width() / 2,gameMap_->height() / 2), wsl::Glyph('@'));
-    player_.setPos(gameMap_->rooms[0].center());
+        // Create sprite 'templates' for all sprites on the spritesheet 
+        // This should literally be an array of Rects, the only thing that consoleSprites needs is a position on the texture.
+        // possibly even a vector, since spriteSize_ is const.
+        int x = 0;
+        int y = 0;
+        // for(int i = 0; i < spriteChars_.size(); ++i)
+        for(int i = 0; i < spriteRects_.size(); ++i)
+        {
+            // spriteChars_[i] = wsl::Sprite(wsl::Rect(x,y,spriteSize_,spriteSize_), spriteSheet_);
+            spriteRects_[i] = wsl::Rect(x,y,spriteSize_, spriteSize_);
 
+            x += spriteSize_;
+            if(i == 0)
+            {
+                continue;
+            }
+            if(x == 16 * spriteSize_)
+            {
+                y += spriteSize_;
+                x = 0;
+            }
+        }
+        
+        // Setup consoleSprites_ buffer
+        for(int i = 0; i < consoleWidth_ * consoleHeight_; ++i)
+        {
+            std::unique_ptr<wsl::Sprite> sprite(new wsl::Sprite(wsl::Rect(0,0,spriteSize_,spriteSize_),spriteSheet_));
+            consoleSprites_.push_back(std::move(sprite));
+        }
+        for(int x = 0; x < consoleWidth_; ++x)
+        {
+            for(int y = 0; y < consoleHeight_; ++y)
+            {
+                int index = spriteIndex_(x,y);
+                consoleSprites_[index]->setPos(x * spriteSize_, y * spriteSize_);
+            }
+        }
+
+        // Setup the game map width/height - should be a different function, with the next three arguments passed in.
+        gameMap_ = new GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
+
+        // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
+        // which would facilitate a character creation option in the future. 
+        player_ = Entity(wsl::Vector2i(gameMap_->width() / 2,gameMap_->height() / 2), wsl::Glyph('@'));
+        player_.setPos(gameMap_->rooms[0].center());
+    }
     return success;
 }
 
 void Engine::cleanup()
 {
-    delete spritesheet_;
+    delete spriteSheet_;
     delete gameMap_;
-    window_->close();
-    delete window_;
     delete console_;
+    SDL_DestroyRenderer(renderer_);
+    SDL_DestroyWindow(window_);
+	SDL_Quit();
 }
 
 void Engine::handleEvents()
 {
     // Poll the window for user input events (SFML)
-    sf::Event event;
+    SDL_Event event;
     Action action;
-    while(window_->pollEvent(event))
+    while(SDL_PollEvent(&event) != 0)
     {
-        switch(event.type)
+        if(event.type == SDL_QUIT)
         {
-            case sf::Event::Closed:
-            {
-                running_ = false;
-                break;
-            }
-            case sf::Event::KeyPressed:
-            {
-                action = handleKeys(event.key.code); // Pass the keycode of a keyboard press to a separate function for handling.
-                break;
-            }
-            default: { break; }
+            running_ = false;
+        }
+        else if(event.type == SDL_KEYDOWN)
+        {
+            action = handleKeys(event.key.keysym.sym);
         }
     }
 
@@ -135,25 +182,24 @@ void Engine::draw()
     //Place entity positions on console_
     console_->put(player_.pos().x, player_.pos().y, player_.glyph());
 
-    // Clear the SFML window
-    window_->clear();
-    
-    // Create SFML sprites from the template sprites in spriteChars_ to represent the characters on the virtual console, and draw them to the screen
-    sf::Sprite sprites[console_->width() * console_->height()];
+    // Clear the SDL window
+    SDL_SetRenderDrawColor(renderer_, 0x00, 0x00, 0x00, 0x00);
+    SDL_RenderClear(renderer_);
+
+    // Create sprites from the template sprites in spriteChars_ to represent the characters on the virtual console, and draw them to the screen
     
     for(int x = 0; x < console_->width(); ++x)
     {
         for(int y = 0; y < console_->height(); ++y)
         {
             int index = console_->index(x,y);
-            sprites[index] = spriteChars_[console_->get(x,y).symbol()];
-            sprites[index].setPosition(sf::Vector2f(spriteSize_ * x, spriteSize_ * y));
+            wsl::Rect & textureRect = spriteRects_[console_->get(x,y).symbol()];
+            consoleSprites_[index]->setTexPos(wsl::Rect(textureRect.x1, textureRect.y1, textureRect.w, textureRect.h));
             wsl::Color color = console_->get(x,y).color();
-            sprites[index].setColor(sf::Color(color.r,color.g,color.b));
-            window_->draw(sprites[index]);            
+            consoleSprites_[index]->render(renderer_, color);
         }
     }
     
-    // Display the SFML window
-    window_->display();
+    // Display the SDL window
+    SDL_RenderPresent(renderer_);
 }

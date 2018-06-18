@@ -1,4 +1,5 @@
-#include <SFML/Window.hpp>
+// #include <SFML/Window.hpp>
+#include <SDL2/SDL.h>
 #include "../include/input_handlers.hpp"
 
 Action::Action(int cmd) : cmdMask_(cmd)
@@ -15,32 +16,33 @@ Action handleKeys(int key)
 {
     switch(key)
     {
-        case sf::Keyboard::Down:
-        case sf::Keyboard::Numpad2:
+        case SDLK_DOWN:
+        case SDLK_KP_2:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(0,1)); 
         }
-        case sf::Keyboard::Left:
-        case sf::Keyboard::Numpad4:
+        case SDLK_LEFT:
+        case SDLK_KP_4:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(-1,0));
         }
-        case sf::Keyboard::Up:
-        case sf::Keyboard::Numpad8:
+        case SDLK_UP:
+        case SDLK_KP_8:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(0,-1));
         }
-        case sf::Keyboard::Right:
-        case sf::Keyboard::Numpad6:
+        case SDLK_RIGHT:
+        case SDLK_KP_6:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(1,0));
         }
-        case sf::Keyboard::Q:
-        case sf::Keyboard::Escape:
+        case SDLK_q:
+        case SDLK_ESCAPE:
         {
             return Action(Cmd::QUIT);
         }
-        case sf::Keyboard::Enter:
+        case SDLK_RETURN:
+        case SDLK_KP_ENTER:
         {
             return Action(Cmd::NEXT_LEVEL);
         }

@@ -16,16 +16,16 @@ namespace wsl
 	{
 	public:
 		Sprite();
-		Sprite(SDL_Rect & rect, Texture * texture = NULL);
-		Sprite(Rect & rect, Texture * texture = NULL);
+		Sprite(SDL_Rect rect, Texture * texture = NULL);
+		Sprite(Rect rect, Texture * texture = NULL);
 		~Sprite();
 	
 		void setPos(int x, int y) {pos_.x = x; pos_.y = y;}
 		void setPos(Vector2i pos) {pos_ = pos;}
 		Vector2i getPos() {return pos_; }
 
-		void setTexPos(SDL_Rect & rect) { *texturePos_ = rect; }
-		void setTexPos(Rect & rect);
+		void setTexPos(SDL_Rect rect) { texturePos_ = rect; }
+		void setTexPos(Rect rect);
 		Rect getTexPos();
 	
 		void render(SDL_Renderer * renderer = NULL, int spriteRed = 255, int spriteGreen = 255, int spriteBlue = 255, int spriteAlpha = 255);
@@ -34,7 +34,7 @@ namespace wsl
 	private:
 		Vector2i pos_;
 		Texture * texture_;
-		SDL_Rect * texturePos_;
+		SDL_Rect texturePos_;
 	};
 
 } // namespace wsl
