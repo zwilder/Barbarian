@@ -5,6 +5,7 @@
 #include<vector>
 #include "rect.hpp"
 #include "random.hpp"
+#include "vector.hpp"
 
 class Node
 {
@@ -15,12 +16,14 @@ class Node
         bool hasSplit() { return split_; }
         bool split();
         bool horizontal() { return horizontal_; }
+        bool connected() { return connected_; }
         Node * parent() { return parent_; }
         Node * leftChild() { return leftChild_; }
         Node * rightChild() { return rightChild_; }
         Node * sibling() { return sibling_; } // Binary tree - there's only one sibling
 
         wsl::Rect nodeRect;
+        std::vector<wsl::Rect> rooms;
         
     private:
         Node * parent_;
@@ -28,7 +31,9 @@ class Node
         Node * rightChild_;
         Node * sibling_;
         bool split_;
+        wsl::Vector2i splitPos_;
         bool horizontal_;
+        bool connected_;
 };
 
 class Tree

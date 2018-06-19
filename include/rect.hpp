@@ -9,6 +9,7 @@ namespace wsl
 
     // This should be a fancy template class like vector, with all sorts of cool functionality. Will probably update that when I get stuck somewhere
     // and need to take my mind off a problem. If I change this, I'll need to typedef Rect<int> as Rect, Rect<float> as fRect, and Rect<unsigned int> as uRect
+    // (None of which is useful yet for Barbarian)
     class Rect
     {
         public:
