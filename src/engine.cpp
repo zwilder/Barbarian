@@ -88,6 +88,7 @@ bool Engine::init()
         }
         
         // Setup consoleSprites_ buffer
+        /*
         for(int i = 0; i < consoleWidth_ * consoleHeight_; ++i)
         {
             std::unique_ptr<wsl::Sprite> sprite(new wsl::Sprite(wsl::Rect(0,0,spriteSize_,spriteSize_),spriteSheet_));
@@ -101,7 +102,7 @@ bool Engine::init()
                 consoleSprites_[index]->setPos(x * spriteSize_, y * spriteSize_);
             }
         }
-
+        */
         // Setup the game map width/height - should be a different function, with the next three arguments passed in.
         gameMap_ = new GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
@@ -187,16 +188,22 @@ void Engine::draw()
     SDL_RenderClear(renderer_);
 
     // Create sprites from the template sprites in spriteChars_ to represent the characters on the virtual console, and draw them to the screen
-    
+    // So I had an epiphany at work - rendering 4000 sprites is just wasting processing time. SDL doesn't clear the renderer unless I explicitly call
+    // it - so, why not have ONE sprite, and just change it's position and rectangle when we loop through the console? It works, its faster. That's
+    // what I call a win!
+    wsl::Sprite cursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_,spriteSize_),spriteSheet_); 
     for(int x = 0; x < console_->width(); ++x)
     {
         for(int y = 0; y < console_->height(); ++y)
         {
             int index = console_->index(x,y);
             wsl::Rect & textureRect = spriteRects_[console_->get(x,y).symbol()];
-            consoleSprites_[index]->setTexPos(wsl::Rect(textureRect.x1, textureRect.y1, textureRect.w, textureRect.h));
+            cursorSprite.setPos(x * spriteSize_, y * spriteSize_);
+            cursorSprite.setTexPos(wsl::Rect(textureRect.x1, textureRect.y1, textureRect.w, textureRect.h));
+            // consoleSprites_[index]->setTexPos(wsl::Rect(textureRect.x1, textureRect.y1, textureRect.w, textureRect.h));
             wsl::Color color = console_->get(x,y).color();
-            consoleSprites_[index]->render(renderer_, color);
+            // consoleSprites_[index]->render(renderer_, color);
+            cursorSprite.render(renderer_, color);
         }
     }
     
