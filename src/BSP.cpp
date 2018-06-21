@@ -133,8 +133,8 @@ void Tree::populate(wsl::Rect rootRect)
     }
 
     //Carve the cooridors
-    for(int i = 0; i < leaves_.size(); ++i)
-    {
+//    for(int i = 0; i < leaves_.size(); ++i)
+//    {
        // For each leaf, start by connect to sibling
        // Determine if the leaf is separated from its sibling by a horizontal or vertical split 
        // Find the closest room in that leaf to the closest room in the sibling leaf -- This might be a problem, there needs to be a routine 
@@ -145,9 +145,9 @@ void Tree::populate(wsl::Rect rootRect)
        // Move to parent node
        // Check if parent is null, if so then move to next node. 
        // If not, repeat.
-    }
+//    }
 }
-
+/*
 void Tree::carveCorridor(Node * node)
 {
     if(node->connected())
@@ -189,4 +189,6 @@ void Tree::carveCorridor(Node * node)
         corridors_.push_back(wsl::Rect(btmPos.x, split.y, 1, split.y - btmPos.y));
 
         // Connect the two with another rect
-        
+    }
+}    
+*/
