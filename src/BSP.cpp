@@ -77,17 +77,6 @@ Tree::Tree()
 {
     //
 }
-/*
-Tree::~Tree()
-{
-    for(int i = 0; i < leaves_.size(); ++i)
-    {
-        if(leaves_[i] != NULL)
-        {
-            delete leaves_[i];
-        }
-    }
-}*/
 
 void Tree::populate(wsl::Rect rootRect)
 {
@@ -147,7 +136,7 @@ void Tree::populate(wsl::Rect rootRect)
        // If not, repeat.
 //    }
 }
-/*
+
 void Tree::carveCorridor(Node * node)
 {
     if(node->connected())
@@ -185,10 +174,15 @@ void Tree::carveCorridor(Node * node)
         wsl::Vector2i btmPos(wsl::randomInt(btmRoom.x1,btmRoom.x2), btmRoom.y1);
 
         // Make a rectangle of width 1 from topPos to split, and from btmPos to split
-        corridors_.push_back(wsl::Rect(topPos.x, topPos.y, 1, topPos.y - split.y));
-        corridors_.push_back(wsl::Rect(btmPos.x, split.y, 1, split.y - btmPos.y));
+        wsl::Rect topRect = wsl::Rect(topPos.x, topPos.y, 1, topPos.y - split.y);
+        corridors_.push_back(topRect);
+        wsl::Rect btmRect = wsl::Rect(btmPos.x, split.y, 1, split.y - btmPos.y);
+        corridors_.push_back(btmRect);
 
         // Connect the two with another rect
+        wsl::Rect & leftRect = (topRect.x1 < btmRect.x1 ? topRect : btmRect);
+        wsl::Rect & rightRect = (topRect.x1 >= btmRect.x1 ? topRect : btmRect);
+        corridors_.push_back(wsl::Rect(leftRect.x1, split.y, rightRect.x1 - leftRect.x1, 1);
     }
 }    
-*/
+
