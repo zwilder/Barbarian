@@ -1,6 +1,6 @@
 /*
 * Barbarian!
-* Copyright (C) 2018
+* Copyright (C) Zach Wilder 2018
 * 
 * This file is a part of Barbarian!
 *
