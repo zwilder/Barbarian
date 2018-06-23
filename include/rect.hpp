@@ -23,6 +23,9 @@
 #ifndef RECT_HPP
 #define RECT_HPP
 
+#include <vector>
+#include <algorithm>
+#include <cmath>
 #include "vector.hpp"
 
 namespace wsl
@@ -43,7 +46,9 @@ namespace wsl
             T h;
 
             inline wsl::Vector2<T> center() { return wsl::Vector2<T>((x1 + x2) / 2, (y1 + y2) / 2); }
-            inline bool intersect(Rectangle<T> other) { return((x1 <= other.x2) && (x2 >= other.x1) && (y1 <= other.y2) && (y2 >= other.y1)); }
+            inline bool intersect(Rectangle<T> a) { return((x1 <= a.x2) && (x2 >= a.x1) && (y1 <= a.y2) && (y2 >= a.y1)); }
+
+            T distanceTo(Rectangle<T> a);
     };
 
     template <typename T>
@@ -61,6 +66,37 @@ namespace wsl
     Rectangle<T>::Rectangle(T x, T y, T width, T height) : x1(x), y1(y), x2(x+width), y2(y+height), w(width), h(height)
     {
         //
+    }
+
+    template <typename T>
+    T Rectangle<T>::distanceTo(Rectangle<T> a)
+    {
+        // Need to find the smallest distance of each corner to each other corner.
+        // 4 corners with 4 possible distances = 16 distances
+        std::vector<T> distances;
+        
+        distances.push_back(Vector2<T>(x1,y1).distanceTo(Vector2<T>(a.x1,a.y1)));
+        distances.push_back(Vector2<T>(x1,y1).distanceTo(Vector2<T>(a.x1 + a.w, a.y1)));
+        distances.push_back(Vector2<T>(x1,y1).distanceTo(Vector2<T>(a.x1, a.y1 + a.h)));
+        distances.push_back(Vector2<T>(x1,y1).distanceTo(Vector2<T>(a.x2, a.y2)));
+
+        distances.push_back(Vector2<T>(x1 + w,y1).distanceTo(Vector2<T>(a.x1,a.y1)));
+        distances.push_back(Vector2<T>(x1 + w,y1).distanceTo(Vector2<T>(a.x1 + a.w, a.y1)));
+        distances.push_back(Vector2<T>(x1 + w,y1).distanceTo(Vector2<T>(a.x1, a.y1 + a.h)));
+        distances.push_back(Vector2<T>(x1 + w,y1).distanceTo(Vector2<T>(a.x2, a.y2)));
+
+        distances.push_back(Vector2<T>(x1,y1 + h).distanceTo(Vector2<T>(a.x1,a.y1)));
+        distances.push_back(Vector2<T>(x1,y1 + h).distanceTo(Vector2<T>(a.x1 + a.w, a.y1)));
+        distances.push_back(Vector2<T>(x1,y1 + h).distanceTo(Vector2<T>(a.x1, a.y1 + a.h)));
+        distances.push_back(Vector2<T>(x1,y1 + h).distanceTo(Vector2<T>(a.x2, a.y2)));
+
+        distances.push_back(Vector2<T>(x2,y2).distanceTo(Vector2<T>(a.x1,a.y1)));
+        distances.push_back(Vector2<T>(x2,y2).distanceTo(Vector2<T>(a.x1 + a.w, a.y1)));
+        distances.push_back(Vector2<T>(x2,y2).distanceTo(Vector2<T>(a.x1, a.y1 + a.h)));
+        distances.push_back(Vector2<T>(x2,y2).distanceTo(Vector2<T>(a.x2, a.y2)));
+
+        typename std::vector<T>::iterator result = std::min_element(std::begin(distances), std::end(distances));
+        return distances[std::distance(std::begin(distances),result)];
     }
 
     template <typename T>
