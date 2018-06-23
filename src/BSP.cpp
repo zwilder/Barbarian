@@ -136,7 +136,7 @@ void Tree::populate(wsl::Rect rootRect)
        // If not, repeat.
 //    }
 }
-
+/*
 void Tree::carveCorridor(Node * node)
 {
     if(node->connected())
@@ -185,4 +185,4 @@ void Tree::carveCorridor(Node * node)
         corridors_.push_back(wsl::Rect(leftRect.x1, split.y, rightRect.x1 - leftRect.x1, 1);
     }
 }    
-
+*/
