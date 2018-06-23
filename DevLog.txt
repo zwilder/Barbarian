@@ -1,2 +1,0 @@
-6/12: Began work on interpretation of tutorial. Created console and engine bases. Got the '@' moving!
-6/13: 432 lines of code. Created input_handlers, entity bases. Began work on tile base for gameMap.
