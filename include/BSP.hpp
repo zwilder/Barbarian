@@ -23,7 +23,7 @@
 #ifndef BSP_HPP
 #define BSP_HPP
 
-#include<vector>
+#include <vector>
 #include "rect.hpp"
 #include "random.hpp"
 #include "vector.hpp"
@@ -32,12 +32,14 @@ class Node
 {
     public:
         Node(wsl::Rect rect = wsl::Rect(0,0,0,0), Node * parent = NULL);
+        static const int MIN_NODE_SIZE = 10;
         ~Node();
                
         bool hasSplit() { return split_; }
         bool split();
         bool horizontal() { return horizontal_; }
-        bool connected() { return connected_; }
+        // bool connected() { return connected_; }
+        // wsl::Vector2i splitPos() { return splitPos_; }
         Node * parent() { return parent_; }
         Node * leftChild() { return leftChild_; }
         Node * rightChild() { return rightChild_; }
@@ -45,6 +47,8 @@ class Node
 
         wsl::Rect nodeRect;
         std::vector<wsl::Rect> rooms;
+        bool connected;
+        wsl::Vector2i splitPos;
         
     private:
         Node * parent_;
@@ -52,22 +56,26 @@ class Node
         Node * rightChild_;
         Node * sibling_;
         bool split_;
-        wsl::Vector2i splitPos_;
         bool horizontal_;
-        bool connected_;
 };
 
 class Tree
 {
     public:
         Tree();
+        static const int MAX_LEAF_SIZE = 20;
         // ~Tree();
 
         std::vector<wsl::Rect> rooms() { return rooms_; }
         std::vector<wsl::Rect> corridors() { return corridors_; }
+        std::vector<Node *> leaves() { return leaves_; }
         void populate(wsl::Rect nodeRect);
 
+        void carveRooms(int minRoomSize = 2);
+        void carveCorridors(Node * node);
+
     private:
+        void addRoomsToNode_(Node * node);
         std::vector<wsl::Rect> rooms_;
         std::vector<wsl::Rect> corridors_;
         Node root_;
