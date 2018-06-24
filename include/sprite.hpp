@@ -49,7 +49,7 @@ namespace wsl
 		void setTexPos(Rect rect);
 		Rect getTexPos();
 	
-		void render(SDL_Renderer * renderer = NULL, int spriteRed = 255, int spriteGreen = 255, int spriteBlue = 255, int spriteAlpha = 255);
+		void render(SDL_Renderer * renderer = NULL, uint8_t spriteRed = 255, uint8_t spriteGreen = 255, uint8_t spriteBlue = 255, uint8_t spriteAlpha = 255);
 		void render(SDL_Renderer * renderer, Color color) { render(renderer, color.r, color.g, color.b, color.a); }
 
 	private:

@@ -68,7 +68,7 @@ Rect Sprite::getTexPos()
     return Rect(texturePos_.x, texturePos_.y, texturePos_.w, texturePos_.h);
 }
 
-void Sprite::render(SDL_Renderer * renderer, int spriteRed, int spriteGreen, int spriteBlue, int spriteAlpha)
+void Sprite::render(SDL_Renderer * renderer, uint8_t spriteRed, uint8_t spriteGreen, uint8_t spriteBlue, uint8_t spriteAlpha)
 {
 	texture_->setColor(spriteRed, spriteGreen, spriteBlue);
 	texture_->setAlpha(spriteAlpha);

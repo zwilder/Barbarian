@@ -3,7 +3,7 @@ CXX = g++
 OPTS = -std=c++11 -O2
 LIBS = -lSDL2 -lSDL2_image
 
-FILES := texture sprite random console input_handlers entity BSP game_map engine main
+FILES := color texture sprite random console input_handlers entity BSP game_map engine main
 OBJS := $(FILES:=.o)
 SRC := $(OBJS:.o=.cpp)
 VPATH = ./src:./include

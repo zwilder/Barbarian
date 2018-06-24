@@ -129,7 +129,8 @@ bool Engine::init()
 
         // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
         // which would facilitate a character creation option in the future. 
-        player_ = Entity(wsl::Vector2i(gameMap_->width() / 2,gameMap_->height() / 2), wsl::Glyph('@'));
+        // player_ = Entity(wsl::Vector2i(gameMap_->width() / 2,gameMap_->height() / 2), wsl::Glyph('@'));
+        player_ = Entity(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green));
         player_.setPos(gameMap_->rooms[0].center());
     }
     return success;
@@ -213,6 +214,7 @@ void Engine::draw()
     // it - so, why not have ONE sprite, and just change it's position and rectangle when we loop through the console? It works, its faster. That's
     // what I call a win!
     wsl::Sprite cursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_,spriteSize_),spriteSheet_); 
+    wsl::Sprite bgCursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_,spriteSize_),spriteSheet_);
     for(int x = 0; x < console_->width(); ++x)
     {
         for(int y = 0; y < console_->height(); ++y)
@@ -220,10 +222,14 @@ void Engine::draw()
             int index = console_->index(x,y);
             wsl::Rect & textureRect = spriteRects_[console_->get(x,y).symbol()];
             cursorSprite.setPos(x * spriteSize_, y * spriteSize_);
+            bgCursorSprite.setPos(x * spriteSize_, y * spriteSize_);
             cursorSprite.setTexPos(wsl::Rect(textureRect.x1, textureRect.y1, textureRect.w, textureRect.h));
+            bgCursorSprite.setTexPos(spriteRects_[219]);
             // consoleSprites_[index]->setTexPos(wsl::Rect(textureRect.x1, textureRect.y1, textureRect.w, textureRect.h));
             wsl::Color color = console_->get(x,y).color();
+            wsl::Color bgColor = console_->get(x,y).bgColor();
             // consoleSprites_[index]->render(renderer_, color);
+            bgCursorSprite.render(renderer_, bgColor);
             cursorSprite.render(renderer_, color);
         }
     }

@@ -18,22 +18,66 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/*
+ * A lot of this was inspired from SFML's color file and from other sources where noted
+ */
 
 #pragma once
 #ifndef COLOR_HPP
 #define COLOR_HPP
+
+#include <cstdint>
 
 namespace wsl
 {
     class Color
     {
         public:
-            Color(int red = 255, int green = 255, int blue = 255, int alpha = 255) : r(red), g(green), b(blue), a(alpha) { }
+            Color();
+            Color(uint8_t red, uint8_t green, uint8_t blue);
+            Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
+            Color(uint32_t color);
 
-            int r;
-            int g;
-            int b;
-            int a;
+            /*
+             * I'm not sure where I found these colors originally, but I used them in a previous project and they were pretty ok.
+             */ 
+            static const Color Black;
+            static const Color White;
+            static const Color Red;
+            static const Color Green;
+            static const Color Blue;
+            static const Color DkGrey;
+            static const Color LtGrey;
+            static const Color Orange;
+            static const Color Yellow;
+            static const Color Cyan;
+            static const Color Brown;
+            static const Color Purple;
+
+            /*
+             * These colors and their definitions are from: http://nethack4.org/blog/portable-terminal-codes.html
+             */
+            // static const Color Black;
+            // static const Color DarkRed;
+            // static const Color DarkGreen;
+            // static const Color Brown;
+            // static const Color DarkBlue;
+            // static const Color DarkMagenta;
+            // static const Color DarkCyan;
+            // static const Color Grey;
+            // static const Color DarkGrey;
+            // static const Color Orange;
+            // static const Color BrightGreen;
+            // static const Color Yellow;
+            // static const Color BrightBlue;
+            // static const Color BrightMagenta;
+            // static const Color BrightCyan;
+            // static const Color White;
+
+            uint8_t r;
+            uint8_t g;
+            uint8_t b;
+            uint8_t a;
     };
 } // namespace wsl
 
