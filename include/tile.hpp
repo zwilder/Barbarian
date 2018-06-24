@@ -28,14 +28,19 @@
 class Tile
 {
     public:
-        Tile(int mask, wsl::Glyph glyph = wsl::Glyph(' ')): mask_(mask), glyph_(glyph) { }
+        Tile(int mask = 0, wsl::Glyph glyph = wsl::Glyph(' ')): mask_(mask), glyph_(glyph) { }
         
-        enum Flags : int
+        // uint16_t goes to 0x8000
+        // uint8_t goes to 0x100
+        enum Flags : uint8_t
         {
             NONE = 0,
             BLOCKS_LIGHT = 0x01,
             BLOCKS_MOVEMENT = 0x02
         };
+        
+        static const Tile Floor;
+        static const Tile Wall;
         
         int mask() { return mask_; }
         bool checkFlag(int flag) { return((mask_ & flag) == flag); }

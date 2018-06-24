@@ -74,6 +74,9 @@ namespace wsl
             // static const Color BrightCyan;
             // static const Color White;
 
+            inline bool operator ==(const Color & other) { return((r == other.r) && (g == other.g) && (b == other.b) && (a == other.a)); }
+            
+            inline bool operator !=(const Color & other) { return(!(*this == other)); }
             uint8_t r;
             uint8_t g;
             uint8_t b;

@@ -219,17 +219,20 @@ void Engine::draw()
     {
         for(int y = 0; y < console_->height(); ++y)
         {
-            int index = console_->index(x,y);
+            // int index = console_->index(x,y);
+            wsl::Color bgColor = console_->get(x,y).bgColor();
+            if(bgColor != wsl::Color::Black)
+            {
+                bgCursorSprite.setTexPos(spriteRects_[219]);
+                bgCursorSprite.setPos(x * spriteSize_, y * spriteSize_);
+            
+                bgCursorSprite.render(renderer_, bgColor);
+            }
             wsl::Rect & textureRect = spriteRects_[console_->get(x,y).symbol()];
             cursorSprite.setPos(x * spriteSize_, y * spriteSize_);
-            bgCursorSprite.setPos(x * spriteSize_, y * spriteSize_);
             cursorSprite.setTexPos(wsl::Rect(textureRect.x1, textureRect.y1, textureRect.w, textureRect.h));
-            bgCursorSprite.setTexPos(spriteRects_[219]);
-            // consoleSprites_[index]->setTexPos(wsl::Rect(textureRect.x1, textureRect.y1, textureRect.w, textureRect.h));
             wsl::Color color = console_->get(x,y).color();
-            wsl::Color bgColor = console_->get(x,y).bgColor();
-            // consoleSprites_[index]->render(renderer_, color);
-            bgCursorSprite.render(renderer_, bgColor);
+
             cursorSprite.render(renderer_, color);
         }
     }

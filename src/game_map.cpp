@@ -32,9 +32,7 @@ GameMap::GameMap(int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax
 
 void GameMap::initTiles_()
 {
-    int wallFlags = (Tile::Flags::BLOCKS_MOVEMENT | Tile::Flags::BLOCKS_LIGHT);
-    wsl::Glyph wallGlyph = wsl::Glyph('#', wsl::Color::DkGrey);
-    Tile wallTile = Tile(wallFlags, wallGlyph);
+    Tile wallTile = Tile::Wall;
     tiles.assign(width_ * height_, wallTile);
 }
 
@@ -44,7 +42,7 @@ void GameMap::createRoom_(wsl::Rect room)
     {
         for(int y = room.y1 + 1; y < room.y2; ++y)
         {
-            tiles[index(x,y)] = Tile(Tile::Flags::NONE, wsl::Glyph(' ', wsl::Color::DkGrey));
+            tiles[index(x,y)] = Tile::Floor;
         }
     }
 }
@@ -55,7 +53,7 @@ void GameMap::hTunnel_(int x1, int x2, int y)
     int max = (x1 > x2 ? x1 : x2);
     for(int i = min; i <= max; ++i)
     {
-        tiles[index(i,y)] = Tile(Tile::Flags::NONE, wsl::Glyph(' ', wsl::Color::DkGrey));
+        tiles[index(i,y)] = Tile::Floor;
     }
 }
 
@@ -65,7 +63,7 @@ void GameMap::vTunnel_(int y1, int y2, int x)
     int max = (y1 > y2 ? y1 : y2);
     for(int i = min; i <= max; ++i)
     {
-        tiles[index(x,i)] = Tile(Tile::Flags::NONE, wsl::Glyph(' ', wsl::Color::DkGrey));
+        tiles[index(x,i)] = Tile::Floor;
     }
 }
 
