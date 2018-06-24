@@ -123,6 +123,44 @@ void GameMap::makeMap_()
         createRoom_(newRoom);
         rooms.push_back(newRoom);
     }
+    /*
+    for(int i = 0; i < bspTree->corridors().size(); ++i)
+    {
+        wsl::Rect corridor = bspTree->corridors()[i];
+        for(int x = corridor.x1; x < corridor.x2; ++x)
+        {
+            for(int y = corridor.y1; y < corridor.y2; ++y)
+            {
+                tiles[index(x,y)] = Tile(Tile::Flags::NONE, wsl::Glyph('.', wsl::Color(150,0,0)));
+            }
+        }
+    }
+    */
+/*
+    for(int i = 0; i < bspTree->leaves().size(); ++i)
+    {
+        Node * currentNode = bspTree->leaves()[i]; 
+        Node * siblingNode = currentNode->sibling();
+        if(currentNode->connected)
+        {
+            continue;
+        }
+        wsl::Vector2i previous = currentNode->nodeRect.center();
+        wsl::Vector2i current = siblingNode->nodeRect.center();
+        if(wsl::randomBool())
+        {
+            hTunnel_(previous.x, current.x, previous.y);
+            vTunnel_(previous.y, current.y, current.x);
+        }
+        else // wsl::randomBool() == false
+        {
+            vTunnel_(previous.y, current.y, previous.x);
+            hTunnel_(previous.x, current.x, current.y);
+        }
+        currentNode->connected = true;
+        siblingNode->connected = true;
+    }
+*/
     delete bspTree;
 }
 

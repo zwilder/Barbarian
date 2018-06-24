@@ -67,7 +67,7 @@ class Engine
         wsl::Texture * spriteSheet_;
 
         std::array<wsl::Rect, 256> spriteRects_;
-        std::vector< std::unique_ptr<wsl::Sprite> > consoleSprites_;
+        // std::vector< std::unique_ptr<wsl::Sprite> > consoleSprites_;
         int spriteIndex_(int x, int y) { return (x + (y*consoleWidth_)); }
 
         GameMap * gameMap_;

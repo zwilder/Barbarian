@@ -1,6 +1,6 @@
 CXX = g++
 # -g For debugging flags, -O2 for optimization
-OPTS = -std=c++11 -O2 -g
+OPTS = -std=c++11 -O2
 LIBS = -lSDL2 -lSDL2_image
 
 FILES := texture sprite random console input_handlers entity BSP game_map engine main
