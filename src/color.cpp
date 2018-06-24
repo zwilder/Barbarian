@@ -43,19 +43,57 @@ namespace wsl
 // const Color Color::BrightCyan(uint32_t(0x00D7FFFF));
 // const Color Color::White(uint32_t(0xFFFFFFFFF));
 
+/* 
+ * These are some of the DawnBringer colors
+ */
+// const Color Color::Black(0,0,0);
+// const Color Color::White(255,255,255);
+// const Color Color::Red(217,0,0);
+// const Color Color::Green(0,217,0);
+// const Color Color::Blue(0,0,217);
+// const Color Color::DkGrey(51,51,51);
+// const Color Color::LtGrey(128,128,128);
+// const Color Color::Orange(217,108,0);
+// const Color Color::Yellow(217,217,0);
+// const Color Color::Cyan(0,217,217);
+// const Color Color::Brown(128,102,64);
+// const Color Color::Purple(217,0,217);
+
+/*
+* These are some cherry picked colors from libtcod
+*/
+const Color Color::LtRed(255,115,115);
+const Color Color::Red(255,0,0);
+const Color Color::DkRed(128,0,0);
+const Color Color::LtOrange(255,185,115);
+const Color Color::Orange(255,127,0);
+const Color Color::DkOrange(128,64,0);
+const Color Color::LtYellow(255,255,115);
+const Color Color::Yellow(255,255,0);
+const Color Color::DkYellow(128,128,0);
+const Color Color::LtGreen(115,255,115);
+const Color Color::Green(0,255,0);
+const Color Color::DkGreen(0,128,0);
+const Color Color::LtBlue(115,115,255);
+const Color Color::Blue(127,0,255);
+const Color Color::DkBlue(0,0,128);
+const Color Color::LtViolet(85,115,255);
+const Color Color::Violet(127,0,255);
+const Color Color::DkViolet(64,0,128);
+const Color Color::LtBrown(158,134,100);
+const Color Color::Brown(127,101,63);
+const Color Color::DkBrown(63,50,31);
+const Color Color::LtGrey(159,159,159);
+const Color Color::Grey(127,127,127);
+const Color Color::DkGrey(63,63,63);
+const Color Color::LtMagenta(255,115,220);
+const Color Color::Magenta(255,0,191);
+const Color Color::DkMagenta(128,0,95);
+const Color Color::LtCyan(115,255,255);
+const Color Color::Cyan(0,255,255);
+const Color Color::DkCyan(0,128,128);
 const Color Color::Black(0,0,0);
 const Color Color::White(255,255,255);
-const Color Color::Red(217,0,0);
-const Color Color::Green(0,217,0);
-const Color Color::Blue(0,0,217);
-const Color Color::DkGrey(51,51,51);
-const Color Color::LtGrey(128,128,128);
-const Color Color::Orange(217,108,0);
-const Color Color::Yellow(217,217,0);
-const Color Color::Cyan(0,217,217);
-const Color Color::Brown(128,102,64);
-const Color Color::Purple(217,0,217);
-
 
 Color::Color() : r(255),g(255),b(255),a(255)
 {

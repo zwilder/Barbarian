@@ -38,21 +38,21 @@ namespace wsl
             Color(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
             Color(uint32_t color);
 
-            /*
-             * I'm not sure where I found these colors originally, but I used them in a previous project and they were pretty ok.
-             */ 
-            static const Color Black;
-            static const Color White;
-            static const Color Red;
-            static const Color Green;
-            static const Color Blue;
-            static const Color DkGrey;
-            static const Color LtGrey;
-            static const Color Orange;
-            static const Color Yellow;
-            static const Color Cyan;
-            static const Color Brown;
-            static const Color Purple;
+            /* 
+             * These are some of the DawnBringer colors
+             */
+            // static const Color Black;
+            // static const Color White;
+            // static const Color Red;
+            // static const Color Green;
+            // static const Color Blue;
+            // static const Color DkGrey;
+            // static const Color LtGrey;
+            // static const Color Orange;
+            // static const Color Yellow;
+            // static const Color Cyan;
+            // static const Color Brown;
+            // static const Color Purple;
 
             /*
              * These colors and their definitions are from: http://nethack4.org/blog/portable-terminal-codes.html
@@ -74,6 +74,41 @@ namespace wsl
             // static const Color BrightCyan;
             // static const Color White;
 
+            /*
+             * These are some cherry picked colors from libtcod
+             */
+            static const Color LtRed;
+            static const Color Red;
+            static const Color DkRed;
+            static const Color LtOrange;
+            static const Color Orange;
+            static const Color DkOrange;
+            static const Color LtYellow;
+            static const Color Yellow;
+            static const Color DkYellow;
+            static const Color LtGreen;
+            static const Color Green;
+            static const Color DkGreen;
+            static const Color LtBlue;
+            static const Color Blue;
+            static const Color DkBlue;
+            static const Color LtViolet;
+            static const Color Violet;
+            static const Color DkViolet;
+            static const Color LtBrown;
+            static const Color Brown;
+            static const Color DkBrown;
+            static const Color LtGrey;
+            static const Color Grey;
+            static const Color DkGrey;
+            static const Color LtMagenta;
+            static const Color Magenta;
+            static const Color DkMagenta;
+            static const Color LtCyan;
+            static const Color Cyan;
+            static const Color DkCyan;
+            static const Color Black;
+            static const Color White;
             inline bool operator ==(const Color & other) { return((r == other.r) && (g == other.g) && (b == other.b) && (a == other.a)); }
             
             inline bool operator !=(const Color & other) { return(!(*this == other)); }
