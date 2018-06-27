@@ -32,16 +32,16 @@ namespace wsl
     {
         // The background is always 219 on the CP437 font (the blank square)
         public:
-            Glyph(int symbol, Color color = Color(), Color bg = Color(0,0,0)) : symbol_(symbol), color_(color), bgColor_(bg) { }
+            Glyph(uint8_t symbol, Color color = Color(), Color bg = Color(0,0,0)) : symbol_(symbol), color_(color), bgColor_(bg) { }
 
-            int symbol() { return symbol_; }
+            uint8_t symbol() { return symbol_; }
             Color color() { return color_; }
             Color bgColor() { return bgColor_; }
             void setColor(Color color) { color_ = color; }
             void setBgColor(Color color) { bgColor_ = color; }
 
         private:
-            int symbol_;
+            uint8_t symbol_;
             Color color_;
             Color bgColor_;
     };

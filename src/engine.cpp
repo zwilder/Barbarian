@@ -43,7 +43,8 @@ bool Engine::init()
     bool success = true;
 
     // Set up the virtual console
-    console_ = new wsl::Console(consoleWidth_, consoleHeight_); // if we add further consoles we can reduce the area this takes up on 'root'
+    // console_ = new wsl::Console(consoleWidth_, consoleHeight_); // if we add further consoles we can reduce the area this takes up on 'root'
+    console_ = std::make_unique<wsl::Console>(consoleWidth_, consoleHeight_);
 
     // Set up the physical window and renderer (SDL)
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -125,7 +126,7 @@ bool Engine::init()
         }
         */
         // Setup the game map width/height - should be a different function, with the next three arguments passed in.
-        gameMap_ = new GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
+        gameMap_ = std::make_unique<GameMap>(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
         // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
         // which would facilitate a character creation option in the future. 
@@ -139,8 +140,8 @@ bool Engine::init()
 void Engine::cleanup()
 {
     delete spriteSheet_;
-    delete gameMap_;
-    delete console_;
+    // delete gameMap_;
+    // delete console_;
     SDL_DestroyRenderer(renderer_);
     SDL_DestroyWindow(window_);
 	SDL_Quit();

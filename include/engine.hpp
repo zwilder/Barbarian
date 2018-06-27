@@ -60,17 +60,16 @@ class Engine
         int windowHeight_;
         std::string windowTitle_;
 
-        wsl::Console * console_;
+        std::unique_ptr<wsl::Console> console_;
         
         SDL_Window * window_;
         SDL_Renderer * renderer_;
         wsl::Texture * spriteSheet_;
 
         std::array<wsl::Rect, 256> spriteRects_;
-        // std::vector< std::unique_ptr<wsl::Sprite> > consoleSprites_;
         int spriteIndex_(int x, int y) { return (x + (y*consoleWidth_)); }
 
-        GameMap * gameMap_;
+        std::unique_ptr<GameMap> gameMap_;
         int maxRoomSize_; // Do these three variables need to be stored?
         int minRoomSize_;
         int maxRooms_;
