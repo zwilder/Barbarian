@@ -24,37 +24,44 @@
 #define BSP_HPP
 
 #include <vector>
+#include <memory>
+
 #include "rect.hpp"
 #include "random.hpp"
 #include "vector.hpp"
+#include "tile.hpp"
 
+namespace bsp
+{
 class Node
 {
     public:
         Node(wsl::Rect rect = wsl::Rect(0,0,0,0), Node * parent = NULL);
+
         static const int MIN_NODE_SIZE = 10;
-        ~Node();
                
         bool hasSplit() { return split_; }
         bool split();
         bool horizontal() { return horizontal_; }
-        // bool connected() { return connected_; }
-        // wsl::Vector2i splitPos() { return splitPos_; }
         Node * parent() { return parent_; }
-        Node * leftChild() { return leftChild_; }
-        Node * rightChild() { return rightChild_; }
+        Node * leftChild() { return leftChild_.get(); }
+        Node * rightChild() { return rightChild_.get(); }
         Node * sibling() { return sibling_; } // Binary tree - there's only one sibling
 
         wsl::Rect nodeRect;
-        std::vector<wsl::Rect> rooms;
         bool connected;
         wsl::Vector2i splitPos;
+
+        int width() { return nodeRect.w; }
+        int height() { return nodeRect.h; }
+
+        std::vector<wsl::Rect> rooms;
         
     private:
         Node * parent_;
-        Node * leftChild_;
-        Node * rightChild_;
         Node * sibling_;
+        std::unique_ptr<Node> leftChild_;
+        std::unique_ptr<Node> rightChild_;
         bool split_;
         bool horizontal_;
 };
@@ -62,24 +69,47 @@ class Node
 class Tree
 {
     public:
-        Tree();
-        static const int MAX_LEAF_SIZE = 20;
-        // ~Tree();
+        Tree(wsl::Rect rect);
 
-        std::vector<wsl::Rect> rooms() { return rooms_; }
-        std::vector<wsl::Rect> corridors() { return corridors_; }
         std::vector<Node *> leaves() { return leaves_; }
+        std::vector<Node *> nodes() { return nodes_; }
+        
         void populate(wsl::Rect nodeRect);
-
-        void carveRooms(int minRoomSize = 2);
-        void carveCorridors(Node * node);
-
+        bool isLeaf(Node * node);
+        int width() { return root_.width(); }
+        int height() { return root_.height(); }
     private:
-        void addRoomsToNode_(Node * node);
-        std::vector<wsl::Rect> rooms_;
-        std::vector<wsl::Rect> corridors_;
-        Node root_;
-        std::vector<Node *> leaves_;
+        Node root_; // The root node
+        std::vector<Node *> leaves_; // The leaves of the tree
+        std::vector<Node *> nodes_; // ALL nodes of a tree
 };
 
+class Dungeon
+{
+    public:
+        Dungeon(Tree * tree, int minRoomSize = 5, bool fullRooms = false);
+
+        int width() { return tree_->width(); }
+        int height() { return tree_->height(); }
+
+        int index(int x, int y) { return (x + (y * width())); }           
+        std::vector<Tile> dungeonMap;
+        std::vector<wsl::Rect> rooms;
+
+    private:
+        void build_();
+        void traverseNode_(Node * node);
+        void vline_(int x, int y1, int y2); // Vertical line from (x,y1) to (x,y2)
+        void vlineUp_(int x, int y); // Vertical line from (x,y) to (x,0)
+        void vlineDown_(int x, int y); //Vertical line from (x,y) to (x, height - 1)
+        void hline_(int x1, int y, int x2); // Horizontal line from (x1, y) to (x2, y)
+        void hlineLeft_(int x, int y); // Horizontal line from (x,y) to (0,y)
+        void hlineRight_(int x, int y); // Horizontal line from (x,y) to (width - 1)
+
+        Tree * tree_;
+        bool fullRooms_;
+        int minRoomSize_;
+};
+
+} //namespace bsp
 #endif //BSP_HPP
