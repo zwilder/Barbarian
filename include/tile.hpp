@@ -35,18 +35,23 @@ class Tile
         enum Flags : uint8_t
         {
             NONE = 0,
-            BLOCKS_LIGHT = 0x01,
-            BLOCKS_MOVEMENT = 0x02
+            BLOCKS_LIGHT = 0x001,
+            BLOCKS_MOVEMENT = 0x002,
+            VISIBLE = 0x004,
+            EXPLORED = 0x008
         };
         
         static const Tile Floor;
         static const Tile Wall;
         
         int mask() { return mask_; }
-        bool checkFlag(int flag) { return((mask_ & flag) == flag); }
+        bool check(int flag) { return((mask_ & flag) == flag); }
+        void toggle(int flag) { (mask_ & flag) == flag ? mask_ &= ~flag : mask_ &= flag; } // Turns a flag on or off
 
-        bool blocksMovement() { return(checkFlag(Flags::BLOCKS_MOVEMENT)); }
-        bool blocksLight() { return(checkFlag(Flags::BLOCKS_LIGHT)); }
+        bool blocksMovement() { return(check(Flags::BLOCKS_MOVEMENT)); }
+        bool blocksLight() { return(check(Flags::BLOCKS_LIGHT)); }
+        bool visible() { return(check(Flags::VISIBLE)); }
+        bool explored() { return(check(Flags::EXPLORED)); }
 
         wsl::Glyph & glyph() { return glyph_; }
 
