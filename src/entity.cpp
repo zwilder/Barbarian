@@ -21,4 +21,27 @@
 
 #include "../include/entity.hpp"
 
+Entity::Entity(wsl::Vector2i pos, wsl::Glyph glyph) : pos_(pos), glyph_(glyph)
+{
+    //
+} 
 
+void Entity::move(wsl::Vector2i delta)
+{
+    pos_ += delta;
+}
+
+const wsl::Vector2i & Entity::pos()
+{
+    return pos_;
+}
+
+void Entity::setPos(wsl::Vector2i pos)
+{
+    pos_ = pos;
+}
+
+wsl::Glyph & Entity::glyph()
+{
+    return glyph_;
+}

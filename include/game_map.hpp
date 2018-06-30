@@ -35,7 +35,7 @@ class GameMap
         int width() { return width_; }
         int height() { return height_; }
 
-        int index(int x, int y) { return (x + (y * width_)); }           
+        inline int index(int x, int y) { return (x + (y * width_)); }           
         bool isBlocked(int x, int y);
 
         std::vector<Tile> tiles;

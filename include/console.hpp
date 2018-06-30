@@ -32,13 +32,13 @@ namespace wsl
     {
         // The background is always 219 on the CP437 font (the blank square)
         public:
-            Glyph(uint8_t symbol, Color color = Color(), Color bg = Color(0,0,0)) : symbol_(symbol), color_(color), bgColor_(bg) { }
+            Glyph(uint8_t symbol, Color color = Color(), Color bg = Color(0,0,0));
 
             uint8_t symbol() { return symbol_; }
-            Color color() { return color_; }
-            Color bgColor() { return bgColor_; }
-            void setColor(Color color) { color_ = color; }
-            void setBgColor(Color color) { bgColor_ = color; }
+            const Color & color();
+            const Color & bgColor();
+            void setColor(Color color);
+            void setBgColor(Color color);
 
         private:
             uint8_t symbol_;
@@ -56,7 +56,7 @@ namespace wsl
             Glyph get(int x, int y);
             void put(int x, int y, Glyph glyph);
             void clear(int x, int y);
-            int index(int x, int y) { return (x + (y * width_)); }           
+            inline int index(int x, int y) { return (x + (y * width_)); }           
             void flush();
         private:
             int width_;

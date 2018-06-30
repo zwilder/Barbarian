@@ -24,6 +24,31 @@
 namespace wsl
 {
 
+Glyph::Glyph(uint8_t symbol, Color color, Color bg) : symbol_(symbol), color_(color), bgColor_(bg)
+{
+    //
+}
+
+const Color & Glyph::color()
+{
+    return color_;
+}
+
+const Color & Glyph::bgColor()
+{
+    return bgColor_;
+}
+
+void Glyph::setColor(Color color)
+{
+    color_ = color;
+}
+
+void Glyph::setBgColor(Color color)
+{
+    bgColor_ = color;
+}
+
 Console::Console(int width, int height) : width_(width), height_(height)
 {
     screen_.assign(width_ * height_, Glyph(' '));

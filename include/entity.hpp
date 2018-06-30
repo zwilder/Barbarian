@@ -29,12 +29,12 @@
 class Entity
 {
     public:
-        Entity(wsl::Vector2i pos = wsl::Vector2i(0,0), wsl::Glyph glyph = wsl::Glyph(' ')) : pos_(pos), glyph_(glyph) { } 
+        Entity(wsl::Vector2i pos = wsl::Vector2i(0,0), wsl::Glyph glyph = wsl::Glyph(' '));
         
-        void move(wsl::Vector2i delta) { pos_ += delta; }
-        wsl::Vector2i pos() { return pos_; }
-        void setPos(wsl::Vector2i pos) { pos_ = pos; }
-        wsl::Glyph glyph() { return glyph_; }
+        void move(wsl::Vector2i delta);
+        wsl::Vector2i & pos();
+        void setPos(wsl::Vector2i pos);
+        wsl::Glyph & glyph();
 
     private:
         wsl::Vector2i pos_; // x, y
