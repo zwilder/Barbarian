@@ -38,7 +38,7 @@ class Node
     public:
         Node(wsl::Rect rect = wsl::Rect(0,0,0,0), Node * parent = NULL);
 
-        static const int MIN_NODE_SIZE = 10;
+        static const int MIN_NODE_SIZE = 11;
                
         bool hasSplit() { return split_; }
         bool split();
@@ -78,6 +78,7 @@ class Tree
         bool isLeaf(Node * node);
         int width() { return root_.width(); }
         int height() { return root_.height(); }
+        Node * root() { return &root_; }
     private:
         Node root_; // The root node
         std::vector<Node *> leaves_; // The leaves of the tree
@@ -87,7 +88,7 @@ class Tree
 class Dungeon
 {
     public:
-        Dungeon(Tree * tree, int minRoomSize = 5, bool fullRooms = false);
+        Dungeon(Tree * tree, int minRoomSize = 5, bool fullRooms = true);
 
         int width() { return tree_->width(); }
         int height() { return tree_->height(); }

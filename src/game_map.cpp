@@ -69,7 +69,6 @@ void GameMap::vTunnel_(int y1, int y2, int x)
 
 void GameMap::makeMap_()
 {
-    /*
     // Basic Tutorial algorithm
     int numRooms = 0;
     while(numRooms < numRoomsMax_)
@@ -110,62 +109,15 @@ void GameMap::makeMap_()
             numRooms += 1;
         }
     }
-    */
+    /*
     std::unique_ptr<bsp::Tree> bspTree = std::make_unique<bsp::Tree>(wsl::Rect(0,0,width_,height_));
-    bsp::Dungeon dungeon(bspTree.get()); // Access to tiles_
+    bsp::Dungeon dungeon(bspTree.get(), 8, false); // Access to tiles_
 
     rooms.clear();
     rooms = dungeon.rooms;
     tiles = dungeon.dungeonMap;
-   
-
-    // BSP dungeon generator
-    // Tree * bspTree = new Tree;
-    // bspTree->populate(wsl::Rect(0,0,width_ - 1,height_ - 1));
-    // for(int i = 0; i < bspTree->rooms().size(); ++i)
-    // {
-    //     wsl::Rect newRoom = bspTree->rooms()[i];
-    //     createRoom_(newRoom);
-    //     rooms.push_back(newRoom);
-    // }
-    /*
-    for(int i = 0; i < bspTree->corridors().size(); ++i)
-    {
-        wsl::Rect corridor = bspTree->corridors()[i];
-        for(int x = corridor.x1; x < corridor.x2; ++x)
-        {
-            for(int y = corridor.y1; y < corridor.y2; ++y)
-            {
-                tiles[index(x,y)] = Tile(Tile::Flags::NONE, wsl::Glyph('.', wsl::Color(150,0,0)));
-            }
-        }
-    }
     */
-/*
-    for(int i = 0; i < bspTree->leaves().size(); ++i)
-    {
-        Node * currentNode = bspTree->leaves()[i]; 
-        Node * siblingNode = currentNode->sibling();
-        if(currentNode->connected)
-        {
-            continue;
-        }
-        wsl::Vector2i previous = currentNode->nodeRect.center();
-        wsl::Vector2i current = siblingNode->nodeRect.center();
-        if(wsl::randomBool())
-        {
-            hTunnel_(previous.x, current.x, previous.y);
-            vTunnel_(previous.y, current.y, current.x);
-        }
-        else // wsl::randomBool() == false
-        {
-            vTunnel_(previous.y, current.y, previous.x);
-            hTunnel_(previous.x, current.x, current.y);
-        }
-        currentNode->connected = true;
-        siblingNode->connected = true;
-    }
-*/
+   
 }
 
 bool GameMap::isBlocked(int x, int y)

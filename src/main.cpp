@@ -19,7 +19,6 @@
 */
 
 
-#include <iostream>
 #include <chrono>
 #include <thread>
 #include <memory>
@@ -28,7 +27,7 @@
 int main(int argc, char * argv [])
 {
     using namespace std::chrono;
-    const milliseconds MS_PER_FRAME = std::chrono::milliseconds(16);
+    const milliseconds MS_PER_FRAME = std::chrono::milliseconds(16); // 16ms = ~60fps, 33ms = ~30fps
 
     std::unique_ptr<Engine> engine = std::make_unique<Engine>();
     while(engine->running())

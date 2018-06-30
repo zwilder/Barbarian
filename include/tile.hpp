@@ -48,7 +48,7 @@ class Tile
         bool blocksMovement() { return(checkFlag(Flags::BLOCKS_MOVEMENT)); }
         bool blocksLight() { return(checkFlag(Flags::BLOCKS_LIGHT)); }
 
-        wsl::Glyph glyph() { return glyph_; }
+        wsl::Glyph & glyph() { return glyph_; }
 
     private:
         int mask_;

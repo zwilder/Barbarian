@@ -121,9 +121,9 @@ void Tree::populate(wsl::Rect rootRect)
         }
     }
 
-    std::cout << "nodes.size() = " << nodes_.size() << ", leaves.size() = " << leaves_.size() << std::endl;
-    std::cout << "isLeaf(leaves[leaves_.size() - 1]) = " << isLeaf(leaves_[leaves_.size() - 1]) << ", should be 1\n";
-    std::cout << "isLeaf(root_) = " << isLeaf(&root_) << ", should be 0\n";
+    // std::cout << "nodes.size() = " << nodes_.size() << ", leaves.size() = " << leaves_.size() << std::endl;
+    // std::cout << "isLeaf(leaves[leaves_.size() - 1]) = " << isLeaf(leaves_[leaves_.size() - 1]) << ", should be 1\n";
+    // std::cout << "isLeaf(root_) = " << isLeaf(&root_) << ", should be 0\n";
 }
 
 bool Tree::isLeaf(Node * node)
@@ -146,80 +146,225 @@ Dungeon::Dungeon(Tree * tree, int minRoomSize, bool fullRooms) : tree_(tree), mi
 
 void Dungeon::build_()
 {
+    // for(int i = 0; i < tree_->leaves().size(); ++i)
+    // {
+    //     traverseNode_(tree_->leaves()[i]);
+    // }
+
     for(int i = 0; i < tree_->nodes().size(); ++i)
     {
+        // if(tree_->isLeaf(tree_->nodes()[i]))
+        //     continue;
         traverseNode_(tree_->nodes()[i]);
     }
-    std::cout << "Rooms.size() = " << rooms.size() << ", should be " << tree_->leaves().size() << std::endl;
+
+   // std::cout << "Rooms.size() = " << rooms.size() << ", should be " << tree_->leaves().size() << std::endl;
 
     // Other dungeon stuff?
 }
 
 void Dungeon::traverseNode_(Node * node)
 {
+    if(node->parent() == NULL)
+    {
+        return;
+    }
     if(tree_->isLeaf(node))
     {
         // std::cout << "Building room: ";
         // Build room
-        int minX = node->nodeRect.x1 + 1;
-        int maxX = node->nodeRect.x1 + node->nodeRect.w - 1;
-        int minY = node->nodeRect.y1 + 1;
-        int maxY = node->nodeRect.y1 + node->nodeRect.h - 1;
+        int xR = node->nodeRect.x1 + 1;
+        int yR = node->nodeRect.y1 + 1;
+        int wR = node->nodeRect.w - 1;
+        int hR = node->nodeRect.h - 1;
 
-        maxX == width() ? maxX = 1 : maxX = node->nodeRect.x2 - 1;
-        maxY == height() ? maxY = 1 : maxY = node->nodeRect.y2 -1;
-
-        // if(false == fullRooms_)
-        // {
-        //     //Room size is random, otherwise roomsize fills the node
-        //     minX = wsl::randomInt(minX, maxX - minRoomSize_ + 1);
-        //     minY = wsl::randomInt(minY, maxY - minRoomSize_ + 1);
-        //     maxX = wsl::randomInt(minX + minRoomSize_ - 2, maxX);
-        //     maxY = wsl::randomInt(maxY + minRoomSize_ - 2, maxY);
-        // }
-
-        wsl::Rect room(minX, minY, maxX - minX + 1, maxY - minY + 1);
-        // std::cout << minX << "," << minY << "," << maxX - minX + 1 << "," << maxY - minY + 1 << std::endl;
-        wsl::Color randomColor(wsl::randomInt(150,255), wsl::randomInt(150,255), wsl::randomInt(150,255));
-        for(int x = minX; x < maxX; ++x)
+        wR == width() ? wR = 1 : wR = node->nodeRect.w - 1;
+        hR == height() ? hR = 1 : hR = node->nodeRect.h -1;
+        
+        wsl::Color randomColor(wsl::randomInt(50,255), wsl::randomInt(50,255), wsl::randomInt(50,255));
+        if(!fullRooms_)
         {
-            for(int y = minY; y < maxY; ++y)
+            //Room size is random, otherwise roomsize fills the node
+            wR = wsl::randomInt(minRoomSize_, node->nodeRect.w - 1);
+            hR = wsl::randomInt(minRoomSize_, node->nodeRect.h - 1);
+            xR = wsl::randomInt(node->nodeRect.x1 + 1, node->nodeRect.x2 - wR);
+            yR = wsl::randomInt(node->nodeRect.y1 + 1, node->nodeRect.y2 - hR);
+
+            //This is just for visualizing the nodes
+            // for(int x = node->nodeRect.x1; x < node->nodeRect.x2; ++x)
+            // {
+            //     for(int y = node->nodeRect.y1; y < node->nodeRect.y2; ++y)
+            //     {
+            //         dungeonMap[index(x,y)].glyph().setColor(randomColor);
+            //     }
+            // }
+        }
+
+        wsl::Rect room(xR,yR,wR,hR);
+        // std::cout << minX << "," << minY << "," << maxX - minX + 1 << "," << maxY - minY + 1 << std::endl;
+        for(int x = room.x1; x < room.x2 - 1; ++x)
+        {
+            for(int y = room.y1; y < room.y2 - 1; ++y)
             {
-                // dungeonMap[index(x,y)] = Tile::Floor;
-                dungeonMap[index(x,y)] = Tile(0, wsl::Glyph(' ', wsl::Color::Black, randomColor));
+                dungeonMap[index(x,y)] = Tile::Floor;
+                // dungeonMap[index(x,y)] = Tile(0, wsl::Glyph(' ', wsl::Color::Black, randomColor));
             }
         }
         rooms.push_back(room);
     }
-    else //!tree_->isNode(node)
+    else //!tree_->isLeaf(node)
     {
         // Build corridor
+        wsl::Rect left = node->leftChild()->nodeRect;
+        wsl::Rect right = node->rightChild()->nodeRect;
+
+        if(node->horizontal())
+        {
+            // if((left.x1 + left.w - 1 <= right.x1) || (right.x1 + right.w - 1 <= left.x1))
+            if(wsl::randomBool())
+            {
+                int x1 = wsl::randomInt(left.x1 + 1, left.x2 - 1);
+                int x2 = wsl::randomInt(right.x1 + 1, right.x2 - 1);
+                int y1 = wsl::randomInt(left.y2, right.y1);
+
+                vlineUp_(x1, y1 - 1);
+                hline_(x1, y1, x2);
+                vlineDown_(x2, y1 + 1);
+                // std::cout << "horizontal first conditional\n";
+            }
+            else
+            {
+                int minX = (left.x1 > right.x1 ? left.x1 : right.x1);
+                int maxX = (left.x2 -1 < right.x2 -1 ? left.x2 : right.x2);
+                int x1 = wsl::randomInt(minX + 2, maxX - 2);
+                while(x1 > width() - 1)
+                {
+                    x1--;
+                }
+                vlineDown_(x1, right.y1);
+                vlineUp_(x1, right.y1 - 1);
+            }
+        }
+        else // !node->horizontal
+        {
+            // if((left.y2 - 1 < right.y1) || (right.y2 -1 < left.y1))
+            if(wsl::randomBool())
+            {
+                int y1 = wsl::randomInt(left.y1, left.y2 - 1);
+                int y2 = wsl::randomInt(right.y1, right.y2 - 1);
+                int x1 = wsl::randomInt(left.x2, right.x1);
+                hlineLeft_(x1 - 1, y1);
+                vline_(x1, y1, y2);
+                hlineRight_(x1 + 1, y2);
+                // std::cout << "vertical first conditional\n";
+            }
+            else
+            {
+                int minY = (left.y1 > right.y1 ? left.y1 : right.y1);
+                int maxY = (left.y1 < right.y1 ? left.y1 : right.y1);
+                int y1 = wsl::randomInt(minY, maxY);
+                while(y1 > height() - 1)
+                {
+                    y1--;
+                }
+
+                hlineLeft_(right.x1 - 1, y1);
+                hlineRight_(right.x1, y1);
+
+            }
+        }
     }
 }
 
 void Dungeon::vline_(int x, int y1, int y2)
 {
-// Vertical line from (x,y1) to (x,y2)
+    // Vertical line from (x,y1) to (x,y2)
+    int minY = y1;
+    int maxY = y2;
+    if(y1 > y2)
+    {
+        minY = y2;
+        maxY = y1;
+    }
+    for(int y = minY; y <= maxY; ++y)
+    {
+        dungeonMap[index(x,y)] = Tile::Floor;
+    }
 }
 void Dungeon::vlineUp_(int x, int y)
 {
-// Vertical line from (x,y) to (x,0)
+    // Vertical line from (x,y) to (x,0)
+    while(y > 0)
+    {
+        if(!dungeonMap[index(x,y)].blocksMovement())
+        {
+            break;
+        }
+        dungeonMap[index(x,y)] = Tile::Floor;
+        // dungeonMap[index(x,y)].glyph().setBgColor(wsl::Color::Green);
+        y--;
+    }
 }
 void Dungeon::vlineDown_(int x, int y)
 {
-//Vertical line from (x,y) to (x, height - 1)
+    //Vertical line from (x,y) to (x, height - 1)
+    while(y < height())
+    {
+        if(!dungeonMap[index(x,y)].blocksMovement())
+        {
+            break;
+        }
+        dungeonMap[index(x,y)] = Tile::Floor;
+        // dungeonMap[index(x,y)].glyph().setBgColor(wsl::Color::Red);
+        y++;
+    }
 }
 void Dungeon::hline_(int x1, int y, int x2)
 {
-// Horizontal line from (x1, y) to (x2, y)
+    // Horizontal line from (x1, y) to (x2, y)
+    int minX = x1;
+    int maxX = x2;
+    if(x1 > x2)
+    {
+        minX = x2;
+        maxX = x1;
+    }
+    for(int x = minX; x <= maxX; ++x)
+    {
+        dungeonMap[index(x,y)] = Tile::Floor;
+    }
 }
 void Dungeon::hlineLeft_(int x, int y)
 {
-// Horizontal line from (x,y) to (0,y)
+    // Horizontal line from (x,y) to (0,y)
+    if(y == 0)
+        return;
+    while(x > 0)
+    {
+        if(!dungeonMap[index(x,y)].blocksMovement())
+        {
+            break;
+        }
+        dungeonMap[index(x,y)] = Tile::Floor;
+        // dungeonMap[index(x,y)].glyph().setBgColor(wsl::Color::Blue);
+        x--;
+    }
 }
 void Dungeon::hlineRight_(int x, int y)
 {
-// Horizontal line from (x,y) to (width - 1)
+    // Horizontal line from (x,y) to (width - 1)
+    if(y == 0)
+        return;
+    while(x < width() - 1)
+    {
+        if(!dungeonMap[index(x,y)].blocksMovement())
+        {
+            break;
+        }
+        dungeonMap[index(x,y)] = Tile::Floor;
+        // dungeonMap[index(x,y)].glyph().setBgColor(wsl::Color::Yellow);
+        x++;
+    }
 }
 
 } //namespace bsp
