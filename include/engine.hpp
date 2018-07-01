@@ -33,6 +33,7 @@
 #include "input_handlers.hpp"
 #include "entity.hpp"
 #include "game_map.hpp"
+#include "fov.hpp"
 #include "texture.hpp"
 #include "sprite.hpp"
 
@@ -73,6 +74,8 @@ class Engine
         int maxRoomSize_; // Do these three variables need to be stored?
         int minRoomSize_;
         int maxRooms_;
+        
+        std::unique_ptr< std::vector<wsl::Vector2i> > visible_; 
 
         void handleKeys_(int key);
         

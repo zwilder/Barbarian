@@ -38,6 +38,7 @@ class GameMap
         inline int index(int x, int y) { return (x + (y * width_)); }           
         bool isBlocked(int x, int y);
 
+        Tile & tileAt(int x, int y);
         std::vector<Tile> tiles;
         std::vector<wsl::Rect> rooms;
         

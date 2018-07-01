@@ -33,8 +33,8 @@ Engine::Engine()
     window_ = NULL;
     maxRoomSize_ = 10;
     minRoomSize_ = 6;
-    maxRooms_ = 30; 
-
+    maxRooms_ = 15; 
+    visible_ = std::make_unique< std::vector<wsl::Vector2i> >();
     running_ = init();
 }
 
@@ -43,7 +43,6 @@ bool Engine::init()
     bool success = true;
 
     // Set up the virtual console
-    // console_ = new wsl::Console(consoleWidth_, consoleHeight_); // if we add further consoles we can reduce the area this takes up on 'root'
     console_ = std::make_unique<wsl::Console>(consoleWidth_, consoleHeight_);
 
     // Set up the physical window and renderer (SDL)
@@ -86,15 +85,11 @@ bool Engine::init()
         spriteSheet_ = new wsl::Texture;
         success = spriteSheet_->loadFromFile("assets/cp437_12x12.png", renderer_);
 
-        // Create sprite 'templates' for all sprites on the spritesheet 
-        // This should literally be an array of Rects, the only thing that consoleSprites needs is a position on the texture.
-        // possibly even a vector, since spriteSize_ is const.
+        // Create sprite rectangles for all sprites on the spritesheet 
         int x = 0;
         int y = 0;
-        // for(int i = 0; i < spriteChars_.size(); ++i)
         for(int i = 0; i < spriteRects_.size(); ++i)
         {
-            // spriteChars_[i] = wsl::Sprite(wsl::Rect(x,y,spriteSize_,spriteSize_), spriteSheet_);
             spriteRects_[i] = wsl::Rect(x,y,spriteSize_, spriteSize_);
 
             x += spriteSize_;
@@ -109,30 +104,14 @@ bool Engine::init()
             }
         }
         
-        // Setup consoleSprites_ buffer
-        /*
-        for(int i = 0; i < consoleWidth_ * consoleHeight_; ++i)
-        {
-            std::unique_ptr<wsl::Sprite> sprite(new wsl::Sprite(wsl::Rect(0,0,spriteSize_,spriteSize_),spriteSheet_));
-            consoleSprites_.push_back(std::move(sprite));
-        }
-        for(int x = 0; x < consoleWidth_; ++x)
-        {
-            for(int y = 0; y < consoleHeight_; ++y)
-            {
-                int index = spriteIndex_(x,y);
-                consoleSprites_[index]->setPos(x * spriteSize_, y * spriteSize_);
-            }
-        }
-        */
         // Setup the game map width/height - should be a different function, with the next three arguments passed in.
         gameMap_ = std::make_unique<GameMap>(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
         // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
         // which would facilitate a character creation option in the future. 
-        // player_ = Entity(wsl::Vector2i(gameMap_->width() / 2,gameMap_->height() / 2), wsl::Glyph('@'));
-        player_ = Entity(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green));
+        player_ = Entity(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), 5); // 8 is the FOV, this should be changed
         player_.setPos(gameMap_->rooms[0].center());
+        fov::visible(visible_.get(), gameMap_.get(), &player_);
     }
     return success;
 }
@@ -140,8 +119,6 @@ bool Engine::init()
 void Engine::cleanup()
 {
     delete spriteSheet_;
-    // delete gameMap_;
-    // delete console_;
     SDL_DestroyRenderer(renderer_);
     SDL_DestroyWindow(window_);
 	SDL_Quit();
@@ -171,35 +148,65 @@ void Engine::handleEvents()
     }
     if(action.move())
     {
-        // console_->flush();
         wsl::Vector2i dPos = player_.pos() + action.dir();
         if(!gameMap_->isBlocked(dPos.x,dPos.y))
         {
             player_.move(action.dir());
+            // visible_.clear();
+            // visible_ = fov::visible(gameMap_.get(), &player_);
+            fov::visible(visible_.get(), gameMap_.get(), &player_);
         }
     }
     if(action.nextLevel())
     {
         *gameMap_ = GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
         player_.setPos(gameMap_->rooms[0].center());
+        // visible_.clear();
+        // visible_ = fov::visible(gameMap_.get(), &player_);
+        fov::visible(visible_.get(), gameMap_.get(), &player_);
     }
 }
 
 void Engine::update()
 {
+    /*
     // Entity update routines will go here, eventually.
+    for(int i = 0; i < gameMap_->tiles.size(); ++i)
+    {
+        // set all tiles to not visible
+        gameMap_->tiles[i].toggle(Tile::Flags::VISIBLE);
+    }
+    for(int i = 0; i < visible_->size(); ++i)
+    {
+        std::vector<wsl::Vector2i> * testo = visible_.get();
+        Tile & tile = gameMap_->tileAt(testo->at(i).x, testo->at(i).y);
+        //set tiles visible
+        tile.toggle(Tile::Flags::VISIBLE);
+        //mark visible tiles explored
+        if(!tile.explored())
+        {
+            tile.toggle(Tile::Flags::EXPLORED);
+        }
+    }    
+    */
 }
 
 void Engine::draw()
 {
     // Render order, GameMap (Tiles) >> Items >> Stairs >> Entities.
-    //Translate GameMap to virtual console (right now this is the 'root' console)
+    // Translate GameMap to virtual console (right now this is the 'root' console)
+    console_->flush();
     for(int x = 0; x < console_->width(); ++x)
     {
         for(int y = 0; y < console_->height(); ++y)
         {
             int index = console_->index(x,y);
-            console_->put(x,y, gameMap_->tiles[index].glyph());
+            wsl::Glyph glyph = gameMap_->tiles[index].glyph();
+            if(fov::contains(visible_.get(), wsl::Vector2i(x,y)))
+            { 
+                glyph.setBgColor(wsl::Color::LtYellow);
+            }
+            console_->put(x,y,glyph);
         }
     }
 
@@ -220,7 +227,6 @@ void Engine::draw()
     {
         for(int y = 0; y < console_->height(); ++y)
         {
-            // int index = console_->index(x,y);
             wsl::Color bgColor = console_->get(x,y).bgColor();
             if(bgColor != wsl::Color::Black)
             {

@@ -21,9 +21,14 @@
 
 #include "../include/entity.hpp"
 
-Entity::Entity(wsl::Vector2i pos, wsl::Glyph glyph) : pos_(pos), glyph_(glyph)
+Entity::Entity()
 {
-    //
+    mask_ = Flags::NONE;
+} 
+
+Entity::Entity(wsl::Vector2i pos, wsl::Glyph glyph, int fovRange) : pos_(pos), glyph_(glyph), fovRange_(fovRange)
+{
+    mask_ = Flags::POS | Flags::GLYPH | Flags::VISION; 
 } 
 
 void Entity::move(wsl::Vector2i delta)
@@ -31,7 +36,7 @@ void Entity::move(wsl::Vector2i delta)
     pos_ += delta;
 }
 
-const wsl::Vector2i & Entity::pos()
+wsl::Vector2i & Entity::pos()
 {
     return pos_;
 }

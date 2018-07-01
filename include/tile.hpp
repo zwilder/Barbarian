@@ -30,8 +30,8 @@ class Tile
     public:
         Tile(int mask = 0, wsl::Glyph glyph = wsl::Glyph(' ')): mask_(mask), glyph_(glyph) { }
         
-        // uint16_t goes to 0x8000
-        // uint8_t goes to 0x100
+        // uint16_t goes to 0x8000 - 0001,0002,0004,0008,0010,0020,0040,0080,0100,0200,0400,0800,1000,2000,4000,8000
+        // uint8_t goes to 0x100 - 001,002,004,008,010,020,040,080,100
         enum Flags : uint8_t
         {
             NONE = 0,
@@ -46,7 +46,10 @@ class Tile
         
         int mask() { return mask_; }
         bool check(int flag) { return((mask_ & flag) == flag); }
-        void toggle(int flag) { (mask_ & flag) == flag ? mask_ &= ~flag : mask_ &= flag; } // Turns a flag on or off
+        // void toggle(int flag) { (mask_ & flag) == flag ? mask_ &= ~flag : mask_ &= flag; } // Turns a flag on or off
+        void toggle(int flag) { mask_ ^= flag; } // Turns a flag on or off
+        void remove(int flag) { mask_ *= ~flag; }
+        void engage(int flag) { mask_ |= flag; }
 
         bool blocksMovement() { return(check(Flags::BLOCKS_MOVEMENT)); }
         bool blocksLight() { return(check(Flags::BLOCKS_LIGHT)); }
@@ -54,6 +57,8 @@ class Tile
         bool explored() { return(check(Flags::EXPLORED)); }
 
         wsl::Glyph & glyph() { return glyph_; }
+
+        bool operator ==(const Tile & other) { return(mask_ == other.mask_); }
 
     private:
         int mask_;

@@ -29,16 +29,40 @@
 class Entity
 {
     public:
-        Entity(wsl::Vector2i pos = wsl::Vector2i(0,0), wsl::Glyph glyph = wsl::Glyph(' '));
+        Entity();
+        Entity(wsl::Vector2i pos, wsl::Glyph glyph, int fovRange);
+
+        // Component flags
+        enum Flags : uint8_t
+        {
+            NONE = 0,
+            POS = 0x002,
+            GLYPH = 0x004,
+            VISION = 0X008
+        };
+        
+        int mask() { return mask_; }
+        bool check(int flag) { return((mask_ & flag) == flag); }
+        void toggle(int flag) { (mask_ & flag) == flag ? mask_ &= ~flag : mask_ &= flag; } // Turns a flag on or off
+
+        bool hasPos() { return check(Flags::POS); }
+        bool hasGlyph() { return check(Flags::GLYPH); }
+        bool hasVision() { return check(Flags::VISION); }
         
         void move(wsl::Vector2i delta);
         wsl::Vector2i & pos();
         void setPos(wsl::Vector2i pos);
+
         wsl::Glyph & glyph();
 
+        int vision() { return fovRange_; }
     private:
+        int mask_;
+
+        // Components
         wsl::Vector2i pos_; // x, y
         wsl::Glyph glyph_; // Color, symbol
+        int fovRange_;
 
 };
 

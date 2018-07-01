@@ -24,6 +24,14 @@
 namespace wsl
 {
 
+Glyph::Glyph()
+{
+    symbol_ = 0;
+    color_ = wsl::Color::White;
+    bgColor_ = wsl::Color::Black;
+}
+
+
 Glyph::Glyph(uint8_t symbol, Color color, Color bg) : symbol_(symbol), color_(color), bgColor_(bg)
 {
     //

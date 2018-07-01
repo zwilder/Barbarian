@@ -32,6 +32,7 @@ namespace wsl
     {
         // The background is always 219 on the CP437 font (the blank square)
         public:
+            Glyph();
             Glyph(uint8_t symbol, Color color = Color(), Color bg = Color(0,0,0));
 
             uint8_t symbol() { return symbol_; }

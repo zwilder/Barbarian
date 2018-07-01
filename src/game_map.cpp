@@ -18,7 +18,6 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <iostream>
 #include "../include/random.hpp"
 #include "../include/game_map.hpp"
@@ -28,6 +27,11 @@ GameMap::GameMap(int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax
 {
     initTiles_();
     makeMap_();
+}
+
+Tile & GameMap::tileAt(int x, int y)
+{
+    return (tiles[index(x,y)]);
 }
 
 void GameMap::initTiles_()
@@ -54,6 +58,10 @@ void GameMap::hTunnel_(int x1, int x2, int y)
     for(int i = min; i <= max; ++i)
     {
         tiles[index(i,y)] = Tile::Floor;
+        if(tileAt(i + 1,y) == Tile::Floor)
+        {
+            // break;
+        }
     }
 }
 
@@ -64,6 +72,10 @@ void GameMap::vTunnel_(int y1, int y2, int x)
     for(int i = min; i <= max; ++i)
     {
         tiles[index(x,i)] = Tile::Floor;
+        if(tileAt(x,i+1) == Tile::Floor)
+        {
+            // break;
+        }
     }
 }
 
@@ -92,8 +104,8 @@ void GameMap::makeMap_()
             createRoom_(newRoom);
             if(rooms.size() > 0)
             {
-                wsl::Vector2i previous = rooms[rooms.size() - 1].center();
-                wsl::Vector2i current = newRoom.center();
+                wsl::Vector2i previous(rooms[rooms.size() - 1].center());
+                wsl::Vector2i current(newRoom.center());
                 if(wsl::randomBool())
                 {
                     hTunnel_(previous.x, current.x, previous.y);
