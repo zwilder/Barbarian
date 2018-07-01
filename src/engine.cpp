@@ -27,14 +27,18 @@ Engine::Engine()
     consoleWidth_ = 80; // consoleWidth_ and consoleHeight_ refer to the 'root' console
     consoleHeight_ = 50;
     spriteSize_ = 12;
+
     windowWidth_ = consoleWidth_ * spriteSize_;
     windowHeight_ = consoleHeight_ * spriteSize_;
     windowTitle_ = "Barbarian!";
     window_ = NULL;
+
     maxRoomSize_ = 10;
     minRoomSize_ = 6;
     maxRooms_ = 15; 
+
     visible_ = std::make_unique< std::vector<wsl::Vector2i> >();
+
     running_ = init();
 }
 
@@ -152,8 +156,6 @@ void Engine::handleEvents()
         if(!gameMap_->isBlocked(dPos.x,dPos.y))
         {
             player_.move(action.dir());
-            // visible_.clear();
-            // visible_ = fov::visible(gameMap_.get(), &player_);
             fov::visible(visible_.get(), gameMap_.get(), &player_);
         }
     }
@@ -161,8 +163,6 @@ void Engine::handleEvents()
     {
         *gameMap_ = GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
         player_.setPos(gameMap_->rooms[0].center());
-        // visible_.clear();
-        // visible_ = fov::visible(gameMap_.get(), &player_);
         fov::visible(visible_.get(), gameMap_.get(), &player_);
     }
 }
@@ -174,9 +174,11 @@ void Engine::update()
 
 void Engine::draw()
 {
-    // Render order, GameMap (Tiles) >> Items >> Stairs >> Entities.
+    // Render order, GameMap (Tiles) >> Stairs >> Items >> Entities.
     // Translate GameMap to virtual console (right now this is the 'root' console)
     console_->flush();
+
+    // Render tiles first, this loops through the entirety of the console_ width/height, since Tiles remain visible after being explored.
     for(int x = 0; x < console_->width(); ++x)
     {
         for(int y = 0; y < console_->height(); ++y)
@@ -185,7 +187,11 @@ void Engine::draw()
             wsl::Glyph glyph = gameMap_->tiles[index].glyph();
             if(fov::contains(visible_.get(), wsl::Vector2i(x,y)))
             { 
-                // glyph.setBgColor(wsl::Color::LtYellow);
+                if(glyph.symbol() != '#')
+                {
+                    glyph.setColor(glyph.bgColor());
+                    glyph.setBgColor(wsl::Color::LtYellow);
+                }
                 console_->put(x,y,glyph);
                 gameMap_->tiles[index].engage(Tile::Flags::EXPLORED);
             }
@@ -197,7 +203,10 @@ void Engine::draw()
         }
     }
 
-    //Place entity positions on console_
+    // Loop through entities here, rendering items if they've been seen (explored)
+
+    // Loop through entities again, rendering entities IF they are in the visible_ coordinates.
+    // Temporarily just rendering the player.
     console_->put(player_.pos().x, player_.pos().y, player_.glyph());
 
     // Clear the SDL window
@@ -205,9 +214,6 @@ void Engine::draw()
     SDL_RenderClear(renderer_);
 
     // Create sprites from the template sprites in spriteChars_ to represent the characters on the virtual console, and draw them to the screen
-    // So I had an epiphany at work - rendering 4000 sprites is just wasting processing time. SDL doesn't clear the renderer unless I explicitly call
-    // it - so, why not have ONE sprite, and just change it's position and rectangle when we loop through the console? It works, its faster. That's
-    // what I call a win!
     wsl::Sprite cursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_,spriteSize_),spriteSheet_); 
     wsl::Sprite bgCursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_,spriteSize_),spriteSheet_);
     for(int x = 0; x < console_->width(); ++x)
@@ -217,7 +223,7 @@ void Engine::draw()
             wsl::Color bgColor = console_->get(x,y).bgColor();
             if(bgColor != wsl::Color::Black)
             {
-                bgCursorSprite.setTexPos(spriteRects_[219]);
+                bgCursorSprite.setTexPos(spriteRects_[219]); // 219 is the white square in the CP437 font
                 bgCursorSprite.setPos(x * spriteSize_, y * spriteSize_);
             
                 bgCursorSprite.render(renderer_, bgColor);
