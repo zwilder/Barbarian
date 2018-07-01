@@ -88,7 +88,15 @@ void GameMap::makeMap_()
         int w = wsl::randomInt(roomSizeMin_, roomSizeMax_);
         int h = wsl::randomInt(roomSizeMin_, roomSizeMax_);
         int x = wsl::randomInt(0, width_ - w - 1);
+        while(x % 2 != 0)
+        {
+            x = wsl::randomInt(0, width_ - w - 1);
+        }
         int y = wsl::randomInt(0, height_ - h - 1);
+        while(y % 2 != 0)
+        {
+            y = wsl::randomInt(0, height_ - h - 1);
+        }
 
         wsl::Rect newRoom = wsl::Rect(x,y,w,h);
         bool intersect = false;

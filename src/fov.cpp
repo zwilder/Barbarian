@@ -30,7 +30,7 @@ void visible(std::vector<wsl::Vector2i> * results, GameMap * map, Entity * entit
 {
     // std::vector<wsl::Vector2i> results;
     results->clear();
-    std::cout << "results->size()" << results->size() << ", should be 0.\n";
+    // std::cout << "results->size()" << results->size() << ", should be 0.\n";
     if(!entity->hasPos())
     {
         // Entity has no position
@@ -46,11 +46,8 @@ void visible(std::vector<wsl::Vector2i> * results, GameMap * map, Entity * entit
     }
 
     int r = entity->vision(); // [r]ange
-    std::cout << "range: " << r << std::endl;
     int xO = entity->pos().x;
     int yO = entity->pos().y;
-    std::cout << "Entity x,y: " << xO << "," << yO << std::endl;
-/*
     for(int xF = xO - r; xF <= xO + r; ++xF)
     {
         bhline(xO,yO,xF,yO + r, results, map); 
@@ -61,15 +58,6 @@ void visible(std::vector<wsl::Vector2i> * results, GameMap * map, Entity * entit
         bhline(xO,yO,xO + r,yF, results, map); 
         bhline(xO,yO,xO - r,yF, results, map); 
     }
-    */
-    for(int x = xO - r; x <= xO + r; ++x)
-    {
-        for(int y = yO - r; y <= yO + r; ++y)
-        {
-            bhline(xO,yO,x,y,results,map);
-        }
-    }
-    std::cout << "results->size() = " << results->size() << std::endl;
     // return results;
 }
 
@@ -78,17 +66,22 @@ void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results
     int dX = abs(xF - xO);
     int dY = abs(yF - yO);
 
-    if(dX > dY)
+    if(dX >= dY)
     {
         int e = dY - dX; // [e]rror
         int j = yO;
 
         if(xO < xF)
         {
+            // std::cout << "Octants 1,2\n";
             // Octants 1,2
-            for(int i = xO; i <= xF + xO; ++i)
+            for(int i = xO; i <= xF; ++i)
             {
                 add(results, wsl::Vector2i(i,j));
+                if(map->tiles[map->index(i,j)].blocksLight())
+                {
+                    break;
+                }
                 if((e >= 0) && (yF >= yO))
                 {
                     // 1
@@ -102,18 +95,19 @@ void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results
                     e -= dX;
                 }
                 e += dY;
-                if(map->tiles[map->index(i,j)].blocksLight())
-                {
-                    break;
-                }
             }
         }
         else if(xO > xF)
         {
+            // std::cout << "Octants 5,6\n";
             // Octants 5,6
-            for(int i = xO; i >= xO - xF; --i)
+            for(int i = xO; i >= xF; --i)
             {
                 add(results, wsl::Vector2i(i, j));
+                if(map->tiles[map->index(i,j)].blocksLight())
+                {
+                    break;
+                }
                 if((e >= 0) && (yF >= yO))
                 {
                     // 6
@@ -127,10 +121,6 @@ void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results
                     e -= dX;
                 }
                 e += dY;
-                if(map->tiles[map->index(i,j)].blocksLight())
-                {
-                    break;
-                }
             }
         }
     }
@@ -140,10 +130,15 @@ void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results
         int i = xO;
         if(yO < yF)
         {
+            // std::cout << "Octants 7,8\n";
             // Octants 7,8
-            for(int j = yO; j <= yO + yF; ++j)
+            for(int j = yO; j <= yF; ++j)
             {
                 add(results, wsl::Vector2i(i,j));
+                if(map->tiles[map->index(i,j)].blocksLight())
+                {
+                    break;
+                }
                 if((e >= 0) && (xF >= xO))
                 {
                     // 8
@@ -157,18 +152,19 @@ void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results
                     e -= dY;
                 }
                 e += dX;
-                if(map->tiles[map->index(i,j)].blocksLight())
-                {
-                    break;
-                }
             }
         }
         else if(yO > yF)
         {
+            // std::cout << "Octants 3,4\n";
             // Octants 3,4
-            for(int j = yO; j >= yO - yF; --j)
+            for(int j = yO; j >= yF; --j)
             {
                 add(results, wsl::Vector2i(i,j));
+                if(map->tiles[map->index(i,j)].blocksLight())
+                {
+                    break;
+                }
                 if((e >= 0) && (xF >= xO))
                 {
                     // 3
@@ -182,10 +178,6 @@ void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results
                     e -= dY;
                 }
                 e += dX;
-                if(map->tiles[map->index(i,j)].blocksLight())
-                {
-                    break;
-                }
             }
         }
     }

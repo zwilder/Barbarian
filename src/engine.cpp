@@ -205,8 +205,13 @@ void Engine::draw()
             if(fov::contains(visible_.get(), wsl::Vector2i(x,y)))
             { 
                 glyph.setBgColor(wsl::Color::LtYellow);
+                console_->put(x,y,glyph);
+                gameMap_->tiles[index].engage(Tile::Flags::EXPLORED);
             }
-            console_->put(x,y,glyph);
+            if(gameMap_->tiles[index].explored())
+            {
+                console_->put(x,y,glyph);
+            }
         }
     }
 
