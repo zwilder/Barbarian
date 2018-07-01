@@ -169,26 +169,7 @@ void Engine::handleEvents()
 
 void Engine::update()
 {
-    /*
-    // Entity update routines will go here, eventually.
-    for(int i = 0; i < gameMap_->tiles.size(); ++i)
-    {
-        // set all tiles to not visible
-        gameMap_->tiles[i].toggle(Tile::Flags::VISIBLE);
-    }
-    for(int i = 0; i < visible_->size(); ++i)
-    {
-        std::vector<wsl::Vector2i> * testo = visible_.get();
-        Tile & tile = gameMap_->tileAt(testo->at(i).x, testo->at(i).y);
-        //set tiles visible
-        tile.toggle(Tile::Flags::VISIBLE);
-        //mark visible tiles explored
-        if(!tile.explored())
-        {
-            tile.toggle(Tile::Flags::EXPLORED);
-        }
-    }    
-    */
+    //
 }
 
 void Engine::draw()
@@ -204,12 +185,13 @@ void Engine::draw()
             wsl::Glyph glyph = gameMap_->tiles[index].glyph();
             if(fov::contains(visible_.get(), wsl::Vector2i(x,y)))
             { 
-                glyph.setBgColor(wsl::Color::LtYellow);
+                // glyph.setBgColor(wsl::Color::LtYellow);
                 console_->put(x,y,glyph);
                 gameMap_->tiles[index].engage(Tile::Flags::EXPLORED);
             }
             if(gameMap_->tiles[index].explored())
             {
+                // glyph.setBgColor(wsl::Color::DkGrey);
                 console_->put(x,y,glyph);
             }
         }
