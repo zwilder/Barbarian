@@ -36,7 +36,7 @@ void Entity::move(wsl::Vector2i delta)
     pos_ += delta;
 }
 
-wsl::Vector2i & Entity::pos()
+wsl::Vector2i Entity::pos()
 {
     return pos_;
 }

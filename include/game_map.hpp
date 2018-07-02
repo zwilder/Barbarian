@@ -27,6 +27,7 @@
 #include "tile.hpp"
 #include "rect.hpp"
 #include "BSP.hpp"
+#include "entity.hpp"
 
 class GameMap
 {
@@ -39,6 +40,8 @@ class GameMap
         bool isBlocked(int x, int y);
 
         Tile & tileAt(int x, int y);
+        
+        void placeEntities(std::vector<Entity> * entityList, int maxPerRoom);
         std::vector<Tile> tiles;
         std::vector<wsl::Rect> rooms;
         

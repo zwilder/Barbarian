@@ -119,6 +119,7 @@ bool Engine::init()
         fov::visible(visible_.get(), gameMap_.get(), &player_);
 
         // Tell gamemap to place some enemies
+        gameMap_->placeEntities(entityList_.get(), 3);
     }
     return success;
 }
@@ -168,6 +169,7 @@ void Engine::handleEvents()
         player_.setPos(gameMap_->rooms[0].center());
         fov::visible(visible_.get(), gameMap_.get(), &player_);
         // Tell gamemap to place some enemies
+        gameMap_->placeEntities(entityList_.get(), 3);
     }
 }
 
@@ -210,6 +212,16 @@ void Engine::draw()
     // Loop through entities here, rendering items if they've been seen (explored)
 
     // Loop through entities again, rendering entities IF they are in the visible_ coordinates.
+    for(int i = 0; i < entityList_->size(); ++i)
+    {
+        wsl::Vector2i entityPos = entityList_->at(i).pos();
+        wsl::Glyph entityGlyph = entityList_->at(i).glyph();
+        if(fov::contains(visible_.get(), entityPos))
+        {
+            console_->put(entityPos.x,entityPos.y,entityGlyph);
+        }
+    }
+
     // Temporarily just rendering the player.
     console_->put(player_.pos().x, player_.pos().y, player_.glyph());
 

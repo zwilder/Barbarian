@@ -149,3 +149,46 @@ bool GameMap::isBlocked(int x, int y)
     }
     return success;
 }
+
+void GameMap::placeEntities(std::vector<Entity> * entityList, int maxPerRoom)
+{
+    entityList->clear();
+    for(int i = 1; i < rooms.size(); ++i)
+    {
+        wsl::Rect & room = rooms[i];
+        int numEntities = wsl::randomInt(0, maxPerRoom);
+
+        for(int j = 0; j <= numEntities; ++j)
+        {
+            int x = wsl::randomInt(room.x1 + 1,room.x2 - 1);
+            int y = wsl::randomInt(room.y1 + 1, room.y2 - 1);
+            if(tileAt(x,y).blocksMovement())
+            {
+                continue;
+            }
+            wsl::Vector2i newPos(x,y);
+            bool entityBlocked = false;
+            for(int k = 0; k < entityList->size(); ++k)
+            {
+                if(entityList->at(k).pos() == newPos)
+                {
+                    entityBlocked = true;
+                    break;
+                }
+            }
+            if(!entityBlocked)
+            {
+                if(wsl::randomBool(0.8))
+                {
+                    Entity monster(newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), 6);
+                    entityList->push_back(monster);
+                }
+                else
+                {
+                    Entity monster(newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), 6);
+                    entityList->push_back(monster);
+                }
+            }
+        }
+    }
+}

@@ -50,12 +50,12 @@ class Entity
         bool hasVision() { return check(Flags::VISION); }
         
         void move(wsl::Vector2i delta);
-        wsl::Vector2i & pos();
+        wsl::Vector2i pos();
         void setPos(wsl::Vector2i pos);
 
         wsl::Glyph & glyph();
 
-        int vision() { return fovRange_; }
+        int & vision() { return fovRange_; }
     private:
         int mask_;
 
