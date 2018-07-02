@@ -20,7 +20,6 @@
 
 #include <cmath>
 #include <algorithm>
-#include <iostream> 
 #include "../include/fov.hpp"
 
 namespace fov
@@ -28,9 +27,7 @@ namespace fov
 
 void visible(std::vector<wsl::Vector2i> * results, GameMap * map, Entity * entity)
 {
-    // std::vector<wsl::Vector2i> results;
     results->clear();
-    // std::cout << "results->size()" << results->size() << ", should be 0.\n";
     if(!entity->hasPos())
     {
         // Entity has no position
@@ -48,17 +45,17 @@ void visible(std::vector<wsl::Vector2i> * results, GameMap * map, Entity * entit
     int r = entity->vision(); // [r]ange
     int xO = entity->pos().x;
     int yO = entity->pos().y;
-    for(int xF = xO - r; xF <= xO + r; ++xF)
+
+    for(int x = xO - r; x < xO + r; ++x)
     {
-        bhline(xO,yO,xF,yO + r, results, map); 
-        bhline(xO,yO,xF,yO - r, results, map); 
+        for(int y = yO - r; y < yO + r; ++y)
+        {
+            if(sqrt(pow(x - xO, 2) + pow(y - yO, 2)) <= r)
+            {
+                bhline(xO,yO,x,y,results,map);
+            }
+        }
     }
-    for(int yF = yO - r; yF <= yO + r; ++yF)
-    {
-        bhline(xO,yO,xO + r,yF, results, map); 
-        bhline(xO,yO,xO - r,yF, results, map); 
-    }
-    // return results;
 }
 
 void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results, GameMap * map)
@@ -73,7 +70,6 @@ void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results
 
         if(xO < xF)
         {
-            // std::cout << "Octants 1,2\n";
             // Octants 1,2
             for(int i = xO; i <= xF; ++i)
             {
@@ -99,7 +95,6 @@ void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results
         }
         else if(xO > xF)
         {
-            // std::cout << "Octants 5,6\n";
             // Octants 5,6
             for(int i = xO; i >= xF; --i)
             {
@@ -130,7 +125,6 @@ void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results
         int i = xO;
         if(yO < yF)
         {
-            // std::cout << "Octants 7,8\n";
             // Octants 7,8
             for(int j = yO; j <= yF; ++j)
             {
@@ -156,7 +150,6 @@ void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results
         }
         else if(yO > yF)
         {
-            // std::cout << "Octants 3,4\n";
             // Octants 3,4
             for(int j = yO; j >= yF; --j)
             {
