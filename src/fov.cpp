@@ -46,9 +46,9 @@ void visible(std::vector<wsl::Vector2i> * results, GameMap * map, Entity * entit
     int xO = entity->pos().x;
     int yO = entity->pos().y;
 
-    for(int x = xO - r; x < xO + r; ++x)
+    for(int x = xO - r; x <= xO + r; ++x)
     {
-        for(int y = yO - r; y < yO + r; ++y)
+        for(int y = yO - r; y <= yO + r; ++y)
         {
             if(sqrt(pow(x - xO, 2) + pow(y - yO, 2)) <= r)
             {

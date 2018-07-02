@@ -81,6 +81,7 @@ class Engine
         
         // Temporary variables
         Entity player_;
+        std::unique_ptr< std::vector<Entity> > entityList_;
 
 };
 

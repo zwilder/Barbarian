@@ -38,6 +38,7 @@ Engine::Engine()
     maxRooms_ = 15; 
 
     visible_ = std::make_unique< std::vector<wsl::Vector2i> >();
+    entityList_ = std::make_unique< std::vector<Entity> >();
 
     running_ = init();
 }
@@ -116,6 +117,8 @@ bool Engine::init()
         player_ = Entity(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), 4); // # is the FOV, this should be changed
         player_.setPos(gameMap_->rooms[0].center());
         fov::visible(visible_.get(), gameMap_.get(), &player_);
+
+        // Tell gamemap to place some enemies
     }
     return success;
 }
@@ -164,6 +167,7 @@ void Engine::handleEvents()
         *gameMap_ = GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
         player_.setPos(gameMap_->rooms[0].center());
         fov::visible(visible_.get(), gameMap_.get(), &player_);
+        // Tell gamemap to place some enemies
     }
 }
 
