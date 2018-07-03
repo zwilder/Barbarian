@@ -26,9 +26,15 @@ Entity::Entity()
     mask_ = Flags::NONE;
 } 
 
-Entity::Entity(wsl::Vector2i pos, wsl::Glyph glyph, int fovRange) : pos_(pos), glyph_(glyph), fovRange_(fovRange)
+Entity::Entity(wsl::Vector2i pos, wsl::Glyph glyph, int fovRange, std::string name, bool blocks) : pos_(pos), glyph_(glyph), fovRange_(fovRange),
+                                                                                                   name_(name)
 {
-    mask_ = Flags::POS | Flags::GLYPH | Flags::VISION; 
+    
+    mask_ = Flags::POS | Flags::GLYPH | Flags::VISION;
+    if(blocks)
+    {
+        this->toggle(Flags::BLOCKS);
+    }
 } 
 
 void Entity::move(wsl::Vector2i delta)

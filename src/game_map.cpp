@@ -34,6 +34,31 @@ Tile & GameMap::tileAt(int x, int y)
     return (tiles[index(x,y)]);
 }
 
+Tile & GameMap::tileAt(wsl::Vector2i pos)
+{
+    return (tileAt(pos.x,pos.y));
+}
+
+Entity * GameMap::entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList)
+{
+    Entity * result = NULL;
+
+    for(int i = 0; i < entityList->size(); ++i)
+    {
+        if(entityList->at(i).pos() == pos)
+        {
+            result = &entityList->at(i);
+        }
+    }
+
+    return result;
+}
+
+Entity * GameMap::entityAt(int x, int y, std::vector<Entity> * entityList)
+{
+    return entityAt(wsl::Vector2i(x,y), entityList);
+}
+
 void GameMap::initTiles_()
 {
     Tile wallTile = Tile::Wall;
@@ -129,15 +154,7 @@ void GameMap::makeMap_()
             numRooms += 1;
         }
     }
-    /*
-    std::unique_ptr<bsp::Tree> bspTree = std::make_unique<bsp::Tree>(wsl::Rect(0,0,width_,height_));
-    bsp::Dungeon dungeon(bspTree.get(), 8, false); // Access to tiles_
-
-    rooms.clear();
-    rooms = dungeon.rooms;
-    tiles = dungeon.dungeonMap;
-    */
-   
+  
 }
 
 bool GameMap::isBlocked(int x, int y)
@@ -180,12 +197,12 @@ void GameMap::placeEntities(std::vector<Entity> * entityList, int maxPerRoom)
             {
                 if(wsl::randomBool(0.8))
                 {
-                    Entity monster(newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), 6);
+                    Entity monster(newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), 6, "reanimated bones", true);
                     entityList->push_back(monster);
                 }
                 else
                 {
-                    Entity monster(newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), 6);
+                    Entity monster(newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), 6, "shambling corpse", true);
                     entityList->push_back(monster);
                 }
             }

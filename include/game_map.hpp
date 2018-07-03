@@ -40,6 +40,9 @@ class GameMap
         bool isBlocked(int x, int y);
 
         Tile & tileAt(int x, int y);
+        Tile & tileAt(wsl::Vector2i pos);
+        Entity * entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList);
+        Entity * entityAt(int x, int y, std::vector<Entity> * entityList);
         
         void placeEntities(std::vector<Entity> * entityList, int maxPerRoom);
         std::vector<Tile> tiles;

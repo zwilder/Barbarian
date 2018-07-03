@@ -40,6 +40,7 @@ Engine::Engine()
     visible_ = std::make_unique< std::vector<wsl::Vector2i> >();
     entityList_ = std::make_unique< std::vector<Entity> >();
 
+    gameState_ = GameState::PLAYERS_TURN;
     running_ = init();
 }
 
@@ -114,12 +115,12 @@ bool Engine::init()
 
         // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
         // which would facilitate a character creation option in the future. 
-        player_ = Entity(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), 4); // # is the FOV, this should be changed
+        player_ = Entity(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), 4, "Griff", true); // # is the FOV, this should be changed
         player_.setPos(gameMap_->rooms[0].center());
         fov::visible(visible_.get(), gameMap_.get(), &player_);
 
         // Tell gamemap to place some enemies
-        gameMap_->placeEntities(entityList_.get(), 3);
+        gameMap_->placeEntities(entityList_.get(), 2);
     }
     return success;
 }
@@ -159,9 +160,18 @@ void Engine::handleEvents()
         wsl::Vector2i dPos = player_.pos() + action.dir();
         if(!gameMap_->isBlocked(dPos.x,dPos.y))
         {
-            player_.move(action.dir());
-            fov::visible(visible_.get(), gameMap_.get(), &player_);
+            Entity * entity = gameMap_->entityAt(dPos, entityList_.get());
+            if(entity != NULL)
+            {
+                std::cout << "You kick the " << entity->name() << ", much to it's annoyance.\n"; 
+            }
+            else
+            {
+                player_.move(action.dir());
+                fov::visible(visible_.get(), gameMap_.get(), &player_);
+            }
         }
+        gameState_ = GameState::ENEMY_TURN;
     }
     if(action.nextLevel())
     {
@@ -169,13 +179,24 @@ void Engine::handleEvents()
         player_.setPos(gameMap_->rooms[0].center());
         fov::visible(visible_.get(), gameMap_.get(), &player_);
         // Tell gamemap to place some enemies
-        gameMap_->placeEntities(entityList_.get(), 3);
+        gameMap_->placeEntities(entityList_.get(), 2);
     }
 }
 
 void Engine::update()
 {
-    //
+    if(gameState_ == GameState::ENEMY_TURN)
+    {
+        for(int i = 0; i < entityList_->size(); ++i)
+        {
+            if(fov::contains(visible_.get(), entityList_->at(i).pos()))
+            {
+                wsl::Vector2i pos = entityList_->at(i).pos();
+                std::cout << "The " << entityList_->at(i).name() << " ponders it's existence.\n";
+            }
+        }
+        gameState_ = GameState::PLAYERS_TURN;
+    }
 }
 
 void Engine::draw()
@@ -193,17 +214,18 @@ void Engine::draw()
             wsl::Glyph glyph = gameMap_->tiles[index].glyph();
             if(fov::contains(visible_.get(), wsl::Vector2i(x,y)))
             { 
-                if(glyph.symbol() != '#')
-                {
-                    glyph.setColor(glyph.bgColor());
-                    glyph.setBgColor(wsl::Color::LtYellow);
-                }
+                // if(glyph.symbol() != '#')
+                // {
+                //     glyph.setColor(glyph.bgColor());
+                //     glyph.setBgColor(wsl::Color::LtYellow);
+                // }
                 console_->put(x,y,glyph);
                 gameMap_->tiles[index].engage(Tile::Flags::EXPLORED);
             }
-            if(gameMap_->tiles[index].explored())
+            else if(gameMap_->tiles[index].explored())
             {
-                // glyph.setBgColor(wsl::Color::DkGrey);
+                glyph.setColor(wsl::Color::DkGrey);
+                glyph.setBgColor(wsl::Color::Black);
                 console_->put(x,y,glyph);
             }
         }

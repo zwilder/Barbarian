@@ -20,5 +20,5 @@
 
 #include "../include/tile.hpp"
 
-const Tile Tile::Floor(Tile::Flags::NONE, wsl::Glyph('.', wsl::Color::LtGrey));
+const Tile Tile::Floor(Tile::Flags::NONE, wsl::Glyph('.', wsl::Color::White));
 const Tile Tile::Wall(Tile::Flags::BLOCKS_MOVEMENT | Tile::Flags::BLOCKS_LIGHT, wsl::Glyph('#', wsl::Color::Grey, wsl::Color::DkGrey));

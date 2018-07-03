@@ -37,6 +37,12 @@
 #include "texture.hpp"
 #include "sprite.hpp"
 
+enum class GameState : uint8_t
+{
+    PLAYERS_TURN,
+    ENEMY_TURN
+};
+
 class Engine
 {
     public:
@@ -54,6 +60,8 @@ class Engine
 
     private:
         bool running_;
+
+        // Console/Graphics
         int spriteSize_;
         int consoleWidth_;
         int consoleHeight_;
@@ -70,19 +78,24 @@ class Engine
         std::array<wsl::Rect, 256> spriteRects_;
         int spriteIndex_(int x, int y) { return (x + (y*consoleWidth_)); }
 
+        // Game Map
         std::unique_ptr<GameMap> gameMap_;
         int maxRoomSize_; // Do these three variables need to be stored?
         int minRoomSize_;
         int maxRooms_;
         
+        // FoV
         std::unique_ptr< std::vector<wsl::Vector2i> > visible_; 
 
+        // Input Handling
         void handleKeys_(int key);
         
-        // Temporary variables
+        // Entities
         Entity player_;
         std::unique_ptr< std::vector<Entity> > entityList_;
 
+        // Game state
+        GameState gameState_;
 };
 
 #endif //ENGINE_HPP
