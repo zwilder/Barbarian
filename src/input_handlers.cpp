@@ -37,38 +37,46 @@ Action handleKeys(int key)
 {
     switch(key)
     {
+        case SDLK_j:
         case SDLK_DOWN:
         case SDLK_KP_2:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(0,1)); 
         }
+        case SDLK_h:
         case SDLK_LEFT:
         case SDLK_KP_4:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(-1,0));
         }
+        case SDLK_k:
         case SDLK_UP:
         case SDLK_KP_8:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(0,-1));
         }
+        case SDLK_l:
         case SDLK_RIGHT:
         case SDLK_KP_6:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(1,0));
         }
+        case SDLK_y:
         case SDLK_KP_7:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(-1,-1));
         }
+        case SDLK_u:
         case SDLK_KP_9:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(1,-1));
         }
+        case SDLK_n:
         case SDLK_KP_3:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(1,1));
         }
+        case SDLK_b:
         case SDLK_KP_1:
         {
             return Action(Cmd::MOVE, wsl::Vector2i(-1,1));
