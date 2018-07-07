@@ -192,7 +192,7 @@ void Engine::update()
             if(fov::contains(visible_.get(), entityList_->at(i).pos()))
             {
                 wsl::Vector2i pos = entityList_->at(i).pos();
-                std::cout << "The " << entityList_->at(i).name() << " ponders it's existence.\n";
+                // std::cout << "The " << entityList_->at(i).name() << " ponders it's existence.\n";
             }
         }
         gameState_ = GameState::PLAYERS_TURN;
@@ -224,7 +224,14 @@ void Engine::draw()
             }
             else if(gameMap_->tiles[index].explored())
             {
-                glyph.setColor(wsl::Color::DkGrey);
+                if(glyph.symbol() != '#')
+                {
+                    glyph.setColor(wsl::Color::Black);
+                }
+                else
+                {
+                    glyph.setColor(wsl::Color::DkGrey);
+                }
                 glyph.setBgColor(wsl::Color::Black);
                 console_->put(x,y,glyph);
             }

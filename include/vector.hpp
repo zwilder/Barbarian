@@ -24,6 +24,7 @@
 #define VECTOR_HPP 
 
 #include <algorithm>
+#include <iostream>
 
 namespace wsl
 {
@@ -53,6 +54,7 @@ namespace wsl
         Vector2<T> operator /=(Vector2<T> a) { return Vector2<T>(x /= a.x, y /= a.y); }
 
         inline T distanceTo(Vector2<T> a) { return (sqrt(pow(x - a.x,2) + pow(y - a.y,2))); }
+
 	};
 
 	template <typename T>
@@ -79,6 +81,13 @@ namespace wsl
 	{
 		return (!(a == b));
 	}
+
+    template <typename T>
+    std::ostream & operator <<(std::ostream & os, const Vector2<T> & a)
+    {
+        os << "(" << a.x << "," << a.y << ")";
+        return os;
+    }
 
     typedef Vector2<int> Vector2i;
     typedef Vector2<float> Vector2f;

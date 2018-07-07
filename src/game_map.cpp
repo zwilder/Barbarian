@@ -197,7 +197,7 @@ void GameMap::placeEntities(std::vector<Entity> * entityList, int maxPerRoom)
             {
                 if(wsl::randomBool(0.8))
                 {
-                    Entity monster(newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), 6, "reanimated bones", true);
+                    Entity monster(newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), 6, "skeleton", true);
                     entityList->push_back(monster);
                 }
                 else

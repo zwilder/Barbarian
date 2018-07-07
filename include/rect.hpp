@@ -26,6 +26,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include "vector.hpp"
 
 namespace wsl
@@ -110,6 +111,14 @@ namespace wsl
 	{
 		return (!(a == b));
 	}
+    
+    template <typename T>
+    std::ostream & operator <<(std::ostream & os, const Rectangle<T> & a)
+    {
+        os << "(" << a.x1 << "," << a.y1 << "," << a.x2 << "," << a.y2 <<  ")";
+        return os;
+    }
+
 
     typedef Rectangle<int> Rect; // Rectangle defaults to this because when I wrote the original class all the files use it as "Rect" with ints.
     typedef Rectangle<float> fRect;
