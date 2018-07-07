@@ -137,7 +137,7 @@ void Engine::handleEvents()
 {
     // Poll the window for user input events (SFML)
     SDL_Event event;
-    Action action;
+    Input input;
     while(SDL_PollEvent(&event) != 0)
     {
         if(event.type == SDL_QUIT)
@@ -146,18 +146,18 @@ void Engine::handleEvents()
         }
         else if(event.type == SDL_KEYDOWN)
         {
-            action = handleKeys(event.key.keysym.sym);
+            input = handleKeys(event.key.keysym.sym);
         }
     }
 
-    // Evaluate the action to see if the engine needs to do anything.
-    if(action.quit())
+    // Evaluate the input to see if the engine needs to do anything.
+    if(input.quit())
     {
         running_ = false;
     }
-    if(action.move())
+    if(input.move())
     {
-        wsl::Vector2i dPos = player_.pos() + action.dir();
+        wsl::Vector2i dPos = player_.pos() + input.dir();
         if(!gameMap_->isBlocked(dPos.x,dPos.y))
         {
             Entity * entity = gameMap_->entityAt(dPos, entityList_.get());
@@ -167,13 +167,13 @@ void Engine::handleEvents()
             }
             else
             {
-                player_.move(action.dir());
+                player_.move(input.dir());
                 fov::visible(visible_.get(), gameMap_.get(), &player_);
             }
         }
         gameState_ = GameState::ENEMY_TURN;
     }
-    if(action.nextLevel())
+    if(input.nextLevel())
     {
         *gameMap_ = GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
         player_.setPos(gameMap_->rooms[0].center());

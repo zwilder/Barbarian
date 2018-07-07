@@ -36,11 +36,11 @@ enum Cmd : int
 };
         
 
-class Action
+class Input
 {
     public:
-        Action(int cmd = Cmd::NONE);
-        Action(int cmd, wsl::Vector2i delta);
+        Input(int cmd = Cmd::NONE);
+        Input(int cmd, wsl::Vector2i delta);
 
         bool move() { return((cmdMask_ & Cmd::MOVE) == Cmd::MOVE); }
         bool quit() { return((cmdMask_ & Cmd::QUIT) == Cmd::QUIT); }
@@ -53,6 +53,6 @@ class Action
         wsl::Vector2i dir_; 
  };
 
-Action handleKeys(int key);
+Input handleKeys(int key);
 
 #endif //INPUT_HANDLERS_HPP
