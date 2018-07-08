@@ -115,7 +115,7 @@ bool Engine::init()
 
         // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
         // which would facilitate a character creation option in the future. 
-        player_ = Entity(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), 4, "Griff", true); // # is the FOV, this should be changed
+        player_ = Entity(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff", 4); // # is the FOV, this should be changed
         player_.setPos(gameMap_->rooms[0].center());
         fov::visible(visible_.get(), gameMap_.get(), &player_);
 

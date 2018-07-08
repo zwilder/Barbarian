@@ -23,6 +23,7 @@
 #ifndef ENTITY_HPP
 #define ENTITY_HPP
 
+#include <memory>
 #include <string>
 #include "vector.hpp"
 #include "console.hpp"
@@ -31,7 +32,7 @@ class Entity
 {
     public:
         Entity();
-        Entity(wsl::Vector2i pos, wsl::Glyph glyph, int fovRange, std::string name, bool blocks = false);
+        Entity(wsl::Vector2i pos, wsl::Glyph glyph, std::string name, int fovRange);
 
         // Component flags
         enum Flags : uint8_t
@@ -41,14 +42,14 @@ class Entity
             GLYPH = 0x004,
             VISION = 0X008,
             BLOCKS = 0x010,
+            ACTOR = 0x020
         };
         
         int mask() { return mask_; }
         bool check(int flag) { return((mask_ & flag) == flag); }
-        // void toggle(int flag) { (mask_ & flag) == flag ? mask_ &= ~flag : mask_ &= flag; } // Turns a flag on or off
-        void toggle(int flag) { mask_ ^= flag; } // Turns a flag on or off
-        void remove(int flag) { mask_ *= ~flag; }
-        void engage(int flag) { mask_ |= flag; }
+        void toggle(int flag) { mask_ ^= flag; } // Toggles a flag on or off
+        void remove(int flag) { mask_ &= ~flag; } // Removes a flag (turns it off)
+        void engage(int flag) { mask_ |= flag; } // Adds a flag (turns it on)
 
         bool hasPos() { return check(Flags::POS); }
         bool hasGlyph() { return check(Flags::GLYPH); }
@@ -61,8 +62,9 @@ class Entity
 
         wsl::Glyph & glyph();
 
-        int & vision() { return fovRange_; }
+        const int & vision() { return fovRange_; }
         std::string name() { return name_; }
+
     private:
         int mask_;
 

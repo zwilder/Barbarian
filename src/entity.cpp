@@ -26,15 +26,10 @@ Entity::Entity()
     mask_ = Flags::NONE;
 } 
 
-Entity::Entity(wsl::Vector2i pos, wsl::Glyph glyph, int fovRange, std::string name, bool blocks) : pos_(pos), glyph_(glyph), fovRange_(fovRange),
-                                                                                                   name_(name)
+// Entities with FoV are actors and can have actions
+Entity::Entity(wsl::Vector2i pos, wsl::Glyph glyph, std::string name, int fovRange) : pos_(pos), glyph_(glyph), name_(name), fovRange_(fovRange)
 {
-    
-    mask_ = Flags::POS | Flags::GLYPH | Flags::VISION;
-    if(blocks)
-    {
-        this->toggle(Flags::BLOCKS);
-    }
+    mask_ = Flags::POS | Flags::GLYPH | Flags::VISION | Flags::ACTOR | Flags::BLOCKS;
 } 
 
 void Entity::move(wsl::Vector2i delta)
