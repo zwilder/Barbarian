@@ -28,26 +28,31 @@
 #include "vector.hpp"
 #include "console.hpp"
 
+// class GameMap;
 class Actor
 {
     public:
-        Actor(int speed = 100);
+        Actor(int speed = 100, int vision = 2);
 
         void grantEnergy();
         int & energy() { return energy_; }
         int & speed() { return speed_; }
+        int vision() { return vision_; }
 
     private:
         int energy_;
         int speed_;
+        int vision_;
 };
 
 class Entity
 {
     public:
         Entity();
-        Entity(wsl::Vector2i pos, wsl::Glyph glyph, std::string name, int fovRange);
+        Entity(wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
 
+        void makeActor(int speed, int vision);
+        void makeActor(Actor actor);
         // Component flags
         enum Flags : uint8_t
         {
@@ -76,11 +81,12 @@ class Entity
 
         wsl::Glyph & glyph();
 
-        int & vision() { return fovRange_; }
-        int & energy() { return actor_.energy(); }
-        void grantEnergy() { actor_.grantEnergy(); }
-        Actor & actor() { return actor_; }
         std::string name() { return name_; }
+
+        int vision();
+        int energy();
+        void grantEnergy();
+        Actor * actor();
 
     private:
         int mask_;
@@ -88,7 +94,6 @@ class Entity
         // Components
         wsl::Vector2i pos_; // x, y
         wsl::Glyph glyph_; // Color, symbol
-        int fovRange_;
         std::string name_;
         Actor actor_;
 };

@@ -41,8 +41,8 @@ Engine::Engine()
 
     ACTION_COST = 100;
     entityList_ = std::make_unique< std::vector<Entity> >();
-    player_ = std::make_unique<Entity>(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff", 4); // # is the FOV
-    player_->actor().speed() = 50;
+    player_ = std::make_unique<Entity>(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
+    player_->makeActor(50,4); // speed, vision
     schedule_ = std::make_unique< wsl::DLList<Entity *> >(player_.get());
 
     gameState_ = GameState::PLAYERS_TURN;
@@ -171,7 +171,7 @@ void Engine::handleEvents()
             }
             else
             {
-                player_->move(input.dir());
+                player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
                 fov::visible(visible_.get(), gameMap_.get(), player_.get());
             }
         }

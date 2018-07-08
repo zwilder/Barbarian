@@ -18,28 +18,20 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "../include/entity.hpp"
+// #include "../include/game_map.hpp"
 
-Actor::Actor(int speed) : speed_(speed)
-{
-    energy_ = 0;
-}
-
-void Actor::grantEnergy()
-{
-    energy_ += speed_;
-}
-
+/*****
+ * Generic Entity Functions
+ ****/
 Entity::Entity()
 {
     mask_ = Flags::NONE;
 } 
 
-// Entities with FoV are actors and can have actions
-Entity::Entity(wsl::Vector2i pos, wsl::Glyph glyph, std::string name, int fovRange) : pos_(pos), glyph_(glyph), name_(name), fovRange_(fovRange)
+Entity::Entity(wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : pos_(pos), glyph_(glyph), name_(name)
 {
-    mask_ = Flags::POS | Flags::GLYPH | Flags::VISION | Flags::ACTOR | Flags::BLOCKS;
+    mask_ = Flags::POS | Flags::GLYPH;
 } 
 
 void Entity::move(wsl::Vector2i delta)
@@ -61,3 +53,105 @@ wsl::Glyph & Entity::glyph()
 {
     return glyph_;
 }
+
+/*****
+ * Actor Functions
+ ****/
+void Entity::makeActor(int speed, int vision)
+{ 
+    engage(Flags::VISION);
+    engage(Flags::ACTOR);
+    engage(Flags::BLOCKS);
+    actor_ = Actor(speed, vision);
+}
+
+void Entity::makeActor(Actor actor)
+{
+    engage(Flags::VISION);
+    engage(Flags::ACTOR);
+    engage(Flags::BLOCKS);
+    actor_ = actor;
+}
+
+int Entity::vision()
+{
+    int result = 0;
+    if(check(Flags::VISION))
+    {
+        result = actor_.vision();
+    }
+    return result;        
+}
+
+int Entity::energy()
+{
+    int result = 0;
+    if(check(Flags::ACTOR))
+    {
+        result = actor_.energy();
+    }
+    return result;
+}
+
+void Entity::grantEnergy()
+{
+    if(check(Flags::ACTOR))
+    {
+        actor_.grantEnergy();
+    }
+}
+
+Actor * Entity::actor()
+{
+    Actor * result = NULL;
+    if(check(Flags::ACTOR))
+    {
+        result = &actor_;
+    }
+
+    return result;
+}
+/*
+void Entity::update(GameMap * map)
+{
+    if(!check(Flags::ACTOR))
+    {
+        return;
+    }
+
+    if(check(Flags::AI))
+    {
+        action = actor_->update(GameMap * map);
+    }
+    
+    int action = actor_->getAction();
+    // Do cool stuff
+}
+*/
+Actor::Actor(int speed, int vision) : speed_(speed), vision_(vision)
+{
+    energy_ = 0;
+}
+
+void Actor::grantEnergy()
+{
+    energy_ += speed_;
+}
+/*
+void Actor::update(GameMap * map)
+{
+    //
+}
+
+void Actor::setNextAction(int cmd, wsl::Vector2i dir)
+{
+    nextAction_ = cmd;
+    actionDir_ = dir; 
+}
+
+int Actor::getAction()
+{
+    int result = nextAction_;
+    nextAction = Cmd::NONE;
+    return result;
+}*/
