@@ -28,6 +28,20 @@
 #include "vector.hpp"
 #include "console.hpp"
 
+class Actor
+{
+    public:
+        Actor(int speed = 100);
+
+        void grantEnergy();
+        int & energy() { return energy_; }
+        int & speed() { return speed_; }
+
+    private:
+        int energy_;
+        int speed_;
+};
+
 class Entity
 {
     public:
@@ -62,7 +76,10 @@ class Entity
 
         wsl::Glyph & glyph();
 
-        const int & vision() { return fovRange_; }
+        int & vision() { return fovRange_; }
+        int & energy() { return actor_.energy(); }
+        void grantEnergy() { actor_.grantEnergy(); }
+        Actor & actor() { return actor_; }
         std::string name() { return name_; }
 
     private:
@@ -73,6 +90,7 @@ class Entity
         wsl::Glyph glyph_; // Color, symbol
         int fovRange_;
         std::string name_;
+        Actor actor_;
 };
 
 #endif //ENTITY_HPP

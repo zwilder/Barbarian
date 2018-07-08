@@ -59,6 +59,8 @@ class DLList
         T popFront();
         T popBack();
 
+        bool isEmpty() { return (head_ == NULL); }
+
         DLNode<T> * tail();
         void print();
         
@@ -112,8 +114,11 @@ template <typename T>
 void DLList<T>::push(T data)
 {
     DLNode<T> * newNode = new DLNode<T>(data);
-    newNode->next = head_;
-    head_->prev = newNode;
+    if(head_ != NULL)
+    {
+        newNode->next = head_;
+        head_->prev = newNode;
+    }
     head_ = newNode;
 }
 

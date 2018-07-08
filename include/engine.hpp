@@ -36,6 +36,7 @@
 #include "fov.hpp"
 #include "texture.hpp"
 #include "sprite.hpp"
+#include "dllist.hpp"
 
 enum class GameState : uint8_t
 {
@@ -91,8 +92,11 @@ class Engine
         void handleKeys_(int key);
         
         // Entities
-        Entity player_;
+        int ACTION_COST;
+        std::unique_ptr< Entity > player_;
         std::unique_ptr< std::vector<Entity> > entityList_;
+        std::unique_ptr< wsl::DLList<Entity *> > schedule_;
+        Entity * curActor_;
 
         // Game state
         GameState gameState_;

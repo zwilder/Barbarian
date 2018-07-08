@@ -21,6 +21,16 @@
 
 #include "../include/entity.hpp"
 
+Actor::Actor(int speed) : speed_(speed)
+{
+    energy_ = 0;
+}
+
+void Actor::grantEnergy()
+{
+    energy_ += speed_;
+}
+
 Entity::Entity()
 {
     mask_ = Flags::NONE;

@@ -38,7 +38,12 @@ Engine::Engine()
     maxRooms_ = 15; 
 
     visible_ = std::make_unique< std::vector<wsl::Vector2i> >();
+
+    ACTION_COST = 100;
     entityList_ = std::make_unique< std::vector<Entity> >();
+    player_ = std::make_unique<Entity>(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff", 4); // # is the FOV
+    player_->actor().speed() = 50;
+    schedule_ = std::make_unique< wsl::DLList<Entity *> >(player_.get());
 
     gameState_ = GameState::PLAYERS_TURN;
     running_ = init();
@@ -115,9 +120,8 @@ bool Engine::init()
 
         // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
         // which would facilitate a character creation option in the future. 
-        player_ = Entity(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff", 4); // # is the FOV, this should be changed
-        player_.setPos(gameMap_->rooms[0].center());
-        fov::visible(visible_.get(), gameMap_.get(), &player_);
+        player_->setPos(gameMap_->rooms[0].center());
+        fov::visible(visible_.get(), gameMap_.get(), player_.get());
 
         // Tell gamemap to place some enemies
         gameMap_->placeEntities(entityList_.get(), 2);
@@ -157,7 +161,7 @@ void Engine::handleEvents()
     }
     if(input.move())
     {
-        wsl::Vector2i dPos = player_.pos() + input.dir();
+        wsl::Vector2i dPos = player_->pos() + input.dir();
         if(!gameMap_->isBlocked(dPos.x,dPos.y))
         {
             Entity * entity = gameMap_->entityAt(dPos, entityList_.get());
@@ -167,8 +171,8 @@ void Engine::handleEvents()
             }
             else
             {
-                player_.move(input.dir());
-                fov::visible(visible_.get(), gameMap_.get(), &player_);
+                player_->move(input.dir());
+                fov::visible(visible_.get(), gameMap_.get(), player_.get());
             }
         }
         gameState_ = GameState::ENEMY_TURN;
@@ -176,8 +180,8 @@ void Engine::handleEvents()
     if(input.nextLevel())
     {
         *gameMap_ = GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
-        player_.setPos(gameMap_->rooms[0].center());
-        fov::visible(visible_.get(), gameMap_.get(), &player_);
+        player_->setPos(gameMap_->rooms[0].center());
+        fov::visible(visible_.get(), gameMap_.get(), player_.get());
         // Tell gamemap to place some enemies
         gameMap_->placeEntities(entityList_.get(), 2);
     }
@@ -185,18 +189,60 @@ void Engine::handleEvents()
 
 void Engine::update()
 {
-    if(gameState_ == GameState::ENEMY_TURN)
+    if(!schedule_->isEmpty())
+    // while(schedule_->head() != NULL)
     {
+        // std::cout << "Schedule is not empty\n";
+        if(curActor_ == NULL)
+        {
+            curActor_ = schedule_->popFront();
+        }
+        if(gameState_ == GameState::PLAYERS_TURN)
+        {
+            return;
+        }
+        else
+        {
+            //curActor_->update();
+        }
+        // std::cout << curActor_->name() << " took turn!\n";
+        curActor_->energy() -= ACTION_COST;
+        curActor_ = schedule_->popFront();
+        return;
+    }
+    else
+    {
+        // std::cout << "Schedule is empty\n";
         for(int i = 0; i < entityList_->size(); ++i)
         {
-            if(fov::contains(visible_.get(), entityList_->at(i).pos()))
+            entityList_->at(i).grantEnergy();
+            // std::cout << "Granted energy to actor " << entityList_->at(i).name() << " >> " << entityList_->at(i).energy() << std::endl;
+            if(entityList_->at(i).energy() >= ACTION_COST)
             {
-                wsl::Vector2i pos = entityList_->at(i).pos();
-                // std::cout << "The " << entityList_->at(i).name() << " ponders it's existence.\n";
+                // std::cout << "\tEntity " << i << " added to schedule\n";
+                schedule_->push(&entityList_->at(i));
             }
         }
+        player_->grantEnergy();
+        if(player_->energy() >= ACTION_COST)
+        {
+            schedule_->push(player_.get());
+        }
         gameState_ = GameState::PLAYERS_TURN;
+        // schedule_->print();
     }
+    // if(gameState_ == GameState::ENEMY_TURN)
+    // {
+    //     for(int i = 0; i < entityList_->size(); ++i)
+    //     {
+    //         if(fov::contains(visible_.get(), entityList_->at(i).pos()))
+    //         {
+    //             wsl::Vector2i pos = entityList_->at(i).pos();
+    //             // std::cout << "The " << entityList_->at(i).name() << " ponders it's existence.\n";
+    //         }
+    //     }
+    //     gameState_ = GameState::PLAYERS_TURN;
+    // }
 }
 
 void Engine::draw()
@@ -252,7 +298,7 @@ void Engine::draw()
     }
 
     // Temporarily just rendering the player.
-    console_->put(player_.pos().x, player_.pos().y, player_.glyph());
+    console_->put(player_->pos().x, player_->pos().y, player_->glyph());
 
     // Clear the SDL window
     SDL_SetRenderDrawColor(renderer_, 0x00, 0x00, 0x00, 0x00);
