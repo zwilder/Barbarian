@@ -84,7 +84,7 @@ class Entity
         std::string name() { return name_; }
 
         int vision();
-        int energy();
+        int & energy();
         void grantEnergy();
         Actor * actor();
 

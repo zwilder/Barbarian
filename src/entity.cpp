@@ -83,14 +83,15 @@ int Entity::vision()
     return result;        
 }
 
-int Entity::energy()
+int & Entity::energy()
 {
-    int result = 0;
-    if(check(Flags::ACTOR))
-    {
-        result = actor_.energy();
-    }
-    return result;
+    // int result = 0;
+    // if(check(Flags::ACTOR))
+    // {
+        // result = actor_.energy();
+    // }
+    // return result;
+    return actor_.energy();
 }
 
 void Entity::grantEnergy()
