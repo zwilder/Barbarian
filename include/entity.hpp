@@ -45,11 +45,12 @@ class Actor
         int vision_;
 };
 
+class Engine;
 class Entity
 {
     public:
         Entity();
-        Entity(wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
+        Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
 
         void makeActor(int speed, int vision);
         void makeActor(Actor actor);
@@ -89,6 +90,7 @@ class Entity
         Actor * actor();
 
     private:
+        Engine * game_;
         int mask_;
 
         // Components

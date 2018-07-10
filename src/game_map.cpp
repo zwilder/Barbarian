@@ -21,13 +21,16 @@
 #include <iostream>
 #include "../include/random.hpp"
 #include "../include/game_map.hpp"
+#include "../include/engine.hpp"
 
-GameMap::GameMap(int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax) : width_(w), height_(h), roomSizeMax_(roomSizeMax),
+GameMap::GameMap(Engine * owner, int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax) : owner_(owner), width_(w), height_(h), roomSizeMax_(roomSizeMax),
     roomSizeMin_(roomSizeMin), numRoomsMax_(numRoomsMax)
 {
     initTiles_();
     makeMap_();
 }
+
+std::array<wsl::Vector2i, 4> GameMap::DIRS = {wsl::Vector2i(-1,0), wsl::Vector2i(1,0), wsl::Vector2i(0,-1), wsl::Vector2i(0,1)};
 
 Tile & GameMap::tileAt(int x, int y)
 {
@@ -167,8 +170,9 @@ bool GameMap::isBlocked(int x, int y)
     return success;
 }
 
-void GameMap::placeEntities(std::vector<Entity> * entityList, int maxPerRoom)
+void GameMap::placeEntities(int maxPerRoom)
 {
+    std::vector<Entity> * entityList = owner_->entityList();
     entityList->clear();
     for(int i = 1; i < rooms.size(); ++i)
     {
@@ -197,13 +201,13 @@ void GameMap::placeEntities(std::vector<Entity> * entityList, int maxPerRoom)
             {
                 if(wsl::randomBool(0.8))
                 {
-                    Entity monster(newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), "skeleton");
+                    Entity monster(owner_, newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), "skeleton");
                     monster.makeActor(25,4);
                     entityList->push_back(monster);
                 }
                 else
                 {
-                    Entity monster(newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse");
+                    Entity monster(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse");
                     monster.makeActor(75,6);
                     entityList->push_back(monster);
                 }
@@ -211,3 +215,26 @@ void GameMap::placeEntities(std::vector<Entity> * entityList, int maxPerRoom)
         }
     }
 }
+
+std::vector<wsl::Vector2i> GameMap::neighbors(wsl::Vector2i start)
+{
+    std::vector<wsl::Vector2i> results;
+    for(wsl::Vector2i dir : DIRS)
+    {
+        wsl::Vector2i next = start + dir;
+        if(!tileAt(next).blocksMovement() && inBounds_(next))
+        {
+            results.push_back(next);
+        }
+    }
+    return results;
+
+}
+
+bool GameMap::inBounds_(wsl::Vector2i pos)
+{
+    return (0 <= pos.x) && (pos.x < width_) && (0 <= pos.y) && (pos.y < height_);
+}
+
+
+   

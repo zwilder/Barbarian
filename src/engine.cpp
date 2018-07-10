@@ -41,7 +41,7 @@ Engine::Engine()
 
     ACTION_COST = 100;
     entityList_ = std::make_unique< std::vector<Entity> >();
-    player_ = std::make_unique<Entity>(wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
+    player_ = std::make_unique<Entity>(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
     player_->makeActor(50,4); // speed, vision
     schedule_ = std::make_unique< wsl::DLList<Entity *> >(player_.get());
 
@@ -116,7 +116,7 @@ bool Engine::init()
         }
         
         // Setup the game map width/height - should be a different function, with the next three arguments passed in.
-        gameMap_ = std::make_unique<GameMap>(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
+        gameMap_ = std::make_unique<GameMap>(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
         // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
         // which would facilitate a character creation option in the future. 
@@ -124,7 +124,7 @@ bool Engine::init()
         fov::visible(visible_.get(), gameMap_.get(), player_.get());
 
         // Tell gamemap to place some enemies
-        gameMap_->placeEntities(entityList_.get(), 2);
+        gameMap_->placeEntities(2);
     }
     return success;
 }
@@ -179,11 +179,11 @@ void Engine::handleEvents()
     }
     if(input.nextLevel())
     {
-        *gameMap_ = GameMap(consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
+        *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
         player_->setPos(gameMap_->rooms[0].center());
         fov::visible(visible_.get(), gameMap_.get(), player_.get());
         // Tell gamemap to place some enemies
-        gameMap_->placeEntities(entityList_.get(), 2);
+        gameMap_->placeEntities(2);
     }
 }
 

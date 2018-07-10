@@ -56,6 +56,8 @@ class DLList
         void append(T data);
         void remove(T data);
         void remove(DLNode<T> * node);
+        bool contains(T data);
+
         T popFront();
         T popBack();
 
@@ -186,6 +188,24 @@ void DLList<T>::remove(DLNode<T> * node)
     delete(node);
 }
 
+template <typename T>
+bool DLList<T>::contains(T data)
+{
+    bool success = false;
+
+    DLNode<T> * last = head_;
+
+    while(last->next != NULL)
+    {
+        if(last->data == data)
+        {
+            success = true;
+            break;
+        }
+        last = last->next;
+    }
+    return success;
+}
 template <typename T>
 T DLList<T>::popFront()
 {

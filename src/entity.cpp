@@ -29,7 +29,7 @@ Entity::Entity()
     mask_ = Flags::NONE;
 } 
 
-Entity::Entity(wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : pos_(pos), glyph_(glyph), name_(name)
+Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph), name_(name)
 {
     mask_ = Flags::POS | Flags::GLYPH;
 } 

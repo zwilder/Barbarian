@@ -59,6 +59,10 @@ class Engine
         int windowWidth() { return windowWidth_; }
         int windowHeight() { return windowHeight_; }
 
+        GameMap * gameMap() { return gameMap_.get(); }
+        std::vector<Entity> * entityList() { return entityList_.get(); }
+        Entity * player() { return player_.get(); }
+
     private:
         bool running_;
 

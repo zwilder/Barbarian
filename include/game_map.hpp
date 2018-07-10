@@ -18,7 +18,6 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #pragma once
 #ifndef GAME_MAP_HPP
 #define GAME_MAP_HPP
@@ -29,10 +28,12 @@
 #include "BSP.hpp"
 #include "entity.hpp"
 
+class Engine;
 class GameMap
 {
     public:
-        GameMap(int w, int h, int roomSizeMax = 10, int roomSizeMin = 6, int numRoomsMax = 30);
+        GameMap(Engine * owner, int w, int h, int roomSizeMax = 10, int roomSizeMin = 6, int numRoomsMax = 30);
+        static std::array<wsl::Vector2i, 4> DIRS;
         int width() { return width_; }
         int height() { return height_; }
 
@@ -44,11 +45,15 @@ class GameMap
         Entity * entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList);
         Entity * entityAt(int x, int y, std::vector<Entity> * entityList);
         
-        void placeEntities(std::vector<Entity> * entityList, int maxPerRoom);
+        void placeEntities(int maxPerRoom);
+        
+        std::vector<wsl::Vector2i> neighbors(wsl::Vector2i start);
+
         std::vector<Tile> tiles;
         std::vector<wsl::Rect> rooms;
         
     private:
+        Engine * owner_;
         int width_;
         int height_;
         int roomSizeMax_;
@@ -60,6 +65,8 @@ class GameMap
         void createRoom_(wsl::Rect room);
         void hTunnel_(int x1, int x2, int y);
         void vTunnel_(int y1, int y2, int x);
+
+        bool inBounds_(wsl::Vector2i pos);
 };
 
 #endif //GAME_MAP_HPP
