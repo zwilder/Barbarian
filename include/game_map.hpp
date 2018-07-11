@@ -33,7 +33,8 @@ class GameMap
 {
     public:
         GameMap(Engine * owner, int w, int h, int roomSizeMax = 10, int roomSizeMin = 6, int numRoomsMax = 30);
-        static std::array<wsl::Vector2i, 4> DIRS;
+        // static std::array<wsl::Vector2i, 4> DIRS;
+        static std::array<wsl::Vector2i, 8> DIRS;
         int width() { return width_; }
         int height() { return height_; }
 

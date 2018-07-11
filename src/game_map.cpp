@@ -30,7 +30,23 @@ GameMap::GameMap(Engine * owner, int w, int h, int roomSizeMax, int roomSizeMin,
     makeMap_();
 }
 
-std::array<wsl::Vector2i, 4> GameMap::DIRS = {wsl::Vector2i(-1,0), wsl::Vector2i(1,0), wsl::Vector2i(0,-1), wsl::Vector2i(0,1)};
+std::array<wsl::Vector2i, 8> GameMap::DIRS = {
+    wsl::Vector2i(-1,0),
+    wsl::Vector2i(1,0),
+    wsl::Vector2i(0,-1),
+    wsl::Vector2i(0,1),
+    wsl::Vector2i(-1,1),
+    wsl::Vector2i(1,1),
+    wsl::Vector2i(-1,-1),
+    wsl::Vector2i(1,-1)
+};
+
+// std::array<wsl::Vector2i, 4> GameMap::DIRS = {
+//     wsl::Vector2i(-1,0),
+//     wsl::Vector2i(1,0),
+//     wsl::Vector2i(0,-1),
+//     wsl::Vector2i(0,1)
+// };
 
 Tile & GameMap::tileAt(int x, int y)
 {
