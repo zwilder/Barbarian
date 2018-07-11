@@ -9,5 +9,6 @@ I'll be updating [the blog](https://wsl-blog.com) with my thoughts and rambles a
 - [Week 1: Parts 0-2](https://wsl-blog.com/posts/2018-06-20-the-roguelike-tutorial-week1/): Setting up the project, getting the `@` moving, setting up the map.
 - [Week 2: Parts 3](https://wsl-blog.com/posts/2018-06-25-the-roguelike-tutorial-week2/): The switch to SDL, dungeon generation.
 - [Week 3: Part 4](https://wsl-blog.com/posts/2018-07-02-the-roguelike-tutorial-week3/): FoV and Bresenham's line drawing.
+- [Week 3b: Part 5](https://wsl-blog.com/posts/2018-07-10-the-roguelike-tutorial-week3b/): Adding entities, scheduling and pathfinding.
 
 **Stay tuned for next week!**
