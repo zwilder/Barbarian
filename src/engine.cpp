@@ -43,7 +43,7 @@ Engine::Engine()
     entityList_ = std::make_unique< std::vector<Entity> >();
     player_ = std::make_unique<Entity>(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
     player_->makeActor(50,4); // speed, vision
-    schedule_ = std::make_unique< wsl::DLList<Entity *> >(player_.get());
+    schedule_ = std::make_unique< wsl::DLList<Actor *> >(player_->actor());
 
     gameState_ = GameState::PLAYERS_TURN;
     running_ = init();
@@ -212,24 +212,25 @@ void Engine::update()
     }
     else
     {
-        // std::cout << "Schedule is empty\n";
         for(int i = 0; i < entityList_->size(); ++i)
         {
-            entityList_->at(i).grantEnergy();
-            // std::cout << "Granted energy to actor " << entityList_->at(i).name() << " >> " << entityList_->at(i).energy() << std::endl;
-            if(entityList_->at(i).energy() >= ACTION_COST)
+            if(entityList_->at(i).actor() == NULL)
             {
-                // std::cout << "\tEntity " << i << " added to schedule\n";
-                schedule_->push(&entityList_->at(i));
+                continue;
+            }
+            Actor * actor = entityList_->at(i).actor();
+            actor->grantEnergy();
+            if(actor->energy() >= ACTION_COST)
+            {
+                schedule_->push(actor);
             }
         }
-        player_->grantEnergy();
-        if(player_->energy() >= ACTION_COST)
+        player_->actor()->grantEnergy();
+        if(player_->actor()->energy() >= ACTION_COST)
         {
-            schedule_->push(player_.get());
+            schedule_->push(player_->actor());
         }
         gameState_ = GameState::PLAYERS_TURN;
-        // schedule_->print();
     }
     // if(gameState_ == GameState::ENEMY_TURN)
     // {

@@ -27,33 +27,16 @@
 #include <string>
 #include "vector.hpp"
 #include "console.hpp"
-
-// class GameMap;
-class Actor
-{
-    public:
-        Actor(int speed = 100, int vision = 2);
-
-        void grantEnergy();
-        int & energy() { return energy_; }
-        int & speed() { return speed_; }
-        int vision() { return vision_; }
-
-    private:
-        int energy_;
-        int speed_;
-        int vision_;
-};
+#include "actor.hpp"
 
 class Engine;
 class Entity
 {
     public:
-        Entity();
+        // Entity();
         Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
 
         void makeActor(int speed, int vision);
-        void makeActor(Actor actor);
         // Component flags
         enum Flags : uint8_t
         {
@@ -84,9 +67,6 @@ class Entity
 
         std::string name() { return name_; }
 
-        int vision();
-        int & energy();
-        void grantEnergy();
         Actor * actor();
 
     private:
@@ -99,5 +79,4 @@ class Entity
         std::string name_;
         Actor actor_;
 };
-
 #endif //ENTITY_HPP

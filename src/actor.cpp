@@ -18,26 +18,35 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
-#ifndef PATHFINDING_HPP
-#define PATHFINDING_HPP
+#include "../include/actor.hpp"
 
-#include <vector>
-
-#include "vector.hpp"
-#include "dllist.hpp"
-
-class GameMap;
-namespace wsl
+/*****
+ * Actor Functions
+ ****/
+Actor::Actor(Entity * owner, int speed, int vision) : owner_(owner), speed_(speed), vision_(vision)
 {
+    energy_ = 0;
+}
 
-std::vector< Vector2<Vector2i> > breadthFirstSearch(GameMap * map, Vector2i start, Vector2i goal);
+void Actor::grantEnergy()
+{
+    energy_ += speed_;
+}
+/*
+void Actor::update(GameMap * map)
+{
+    //
+}
 
-bool bfsContains(std::vector< Vector2<Vector2i> > * vec, Vector2i id);
-Vector2i bfsIndex(std::vector< Vector2<Vector2i> > * vec, Vector2i id);
-float bfsHeuristic(Vector2i a, Vector2i b);
+void Actor::setNextAction(int cmd, wsl::Vector2i dir)
+{
+    nextAction_ = cmd;
+    actionDir_ = dir; 
+}
 
-DLList<Vector2i> bfsPath(std::vector< Vector2<Vector2i> > * vec, Vector2i start, Vector2i goal);
-} // namespace wsl
-
-#endif // PATHFINDING_HPP
+int Actor::getAction()
+{
+    int result = nextAction_;
+    nextAction = Cmd::NONE;
+    return result;
+}*/

@@ -25,7 +25,6 @@
 #include <vector>
 #include "tile.hpp"
 #include "rect.hpp"
-#include "BSP.hpp"
 #include "entity.hpp"
 
 class Engine;

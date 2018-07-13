@@ -19,16 +19,11 @@
 */
 
 #include "../include/entity.hpp"
-// #include "../include/game_map.hpp"
+#include "../include/game_map.hpp"
 
 /*****
  * Generic Entity Functions
  ****/
-Entity::Entity()
-{
-    mask_ = Flags::NONE;
-} 
-
 Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph), name_(name)
 {
     mask_ = Flags::POS | Flags::GLYPH;
@@ -54,57 +49,17 @@ wsl::Glyph & Entity::glyph()
     return glyph_;
 }
 
-/*****
- * Actor Functions
- ****/
 void Entity::makeActor(int speed, int vision)
 { 
     engage(Flags::VISION);
     engage(Flags::ACTOR);
     engage(Flags::BLOCKS);
-    actor_ = Actor(speed, vision);
-}
-
-void Entity::makeActor(Actor actor)
-{
-    engage(Flags::VISION);
-    engage(Flags::ACTOR);
-    engage(Flags::BLOCKS);
-    actor_ = actor;
-}
-
-int Entity::vision()
-{
-    int result = 0;
-    if(check(Flags::VISION))
-    {
-        result = actor_.vision();
-    }
-    return result;        
-}
-
-int & Entity::energy()
-{
-    // int result = 0;
-    // if(check(Flags::ACTOR))
-    // {
-        // result = actor_.energy();
-    // }
-    // return result;
-    return actor_.energy();
-}
-
-void Entity::grantEnergy()
-{
-    if(check(Flags::ACTOR))
-    {
-        actor_.grantEnergy();
-    }
+    actor_ = Actor(this, speed, vision);
 }
 
 Actor * Entity::actor()
 {
-    Actor * result = NULL;
+    Actor * result = NULL; 
     if(check(Flags::ACTOR))
     {
         result = &actor_;
@@ -112,47 +67,4 @@ Actor * Entity::actor()
 
     return result;
 }
-/*
-void Entity::update(GameMap * map)
-{
-    if(!check(Flags::ACTOR))
-    {
-        return;
-    }
 
-    if(check(Flags::AI))
-    {
-        action = actor_->update(GameMap * map);
-    }
-    
-    int action = actor_->getAction();
-    // Do cool stuff
-}
-*/
-Actor::Actor(int speed, int vision) : speed_(speed), vision_(vision)
-{
-    energy_ = 0;
-}
-
-void Actor::grantEnergy()
-{
-    energy_ += speed_;
-}
-/*
-void Actor::update(GameMap * map)
-{
-    //
-}
-
-void Actor::setNextAction(int cmd, wsl::Vector2i dir)
-{
-    nextAction_ = cmd;
-    actionDir_ = dir; 
-}
-
-int Actor::getAction()
-{
-    int result = nextAction_;
-    nextAction = Cmd::NONE;
-    return result;
-}*/

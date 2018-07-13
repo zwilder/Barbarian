@@ -26,6 +26,10 @@
  * A lot of this is my adaptation of the Red Blob Games pathfinding at https://www.redblobgames.com/pathfinding/a-star/introduction.html
  * std::priority_queue and std::map didn't want to play nicely with my classes - I can't figure out why, but boy does it piss off the compiler!
  * At least this gave me an opportunity to use classes I've already written in new ways!
+ *
+ * std::map is replaced here by using a vector of Vector2<Vector2i> - each element looks like ((x,y),(x,y)). The bfsContains function looks through the 
+ * vector of vectors and returns true if the id (left side pair) is in the vector. bfsIndex looks through the vector for an id (left side pair) and
+ * returns the right side pair as the value.
  */
 
 namespace wsl
@@ -36,11 +40,11 @@ DLList<Vector2i> bfsPath(GameMap * map, Vector2i start, Vector2i goal)
     
     Vector2i current = goal;
     DLList<Vector2i> path(current);
-    current = bfsIndex(vec, current);
+    current = bfsIndex(&vec, current);
     while(current != start)
     {
         path.push(current);
-        current = bfsIndex(vec, current);
+        current = bfsIndex(&vec, current);
     }
     return path;
 }

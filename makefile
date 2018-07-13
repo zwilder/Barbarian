@@ -3,7 +3,7 @@ CXX = g++
 OPTS = -std=c++17 -O2
 LIBS = -lSDL2 -lSDL2_image
 
-FILES := color texture sprite random console input_handlers entity tile game_map fov engine main
+FILES := color texture sprite random console input_handlers actor entity tile game_map pathfinding fov engine main
 OBJS := $(FILES:=.o)
 SRC := $(OBJS:.o=.cpp)
 VPATH = ./src:./include

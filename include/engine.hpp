@@ -99,8 +99,8 @@ class Engine
         int ACTION_COST;
         std::unique_ptr< Entity > player_;
         std::unique_ptr< std::vector<Entity> > entityList_;
-        std::unique_ptr< wsl::DLList<Entity *> > schedule_;
-        Entity * curActor_;
+        std::unique_ptr< wsl::DLList<Actor *> > schedule_;
+        Actor * curActor_;
 
         // Game state
         GameState gameState_;

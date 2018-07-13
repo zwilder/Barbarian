@@ -19,25 +19,26 @@
 */
 
 #pragma once
-#ifndef PATHFINDING_HPP
-#define PATHFINDING_HPP
+#ifndef ACTOR_HPP
+#define ACTOR_HPP
 
 #include <vector>
-
-#include "vector.hpp"
-#include "dllist.hpp"
-
-class GameMap;
-namespace wsl
+class Entity;
+class Actor
 {
+    public:
+        Actor(Entity * owner = NULL, int speed = 100, int vision = 2);
 
-std::vector< Vector2<Vector2i> > breadthFirstSearch(GameMap * map, Vector2i start, Vector2i goal);
+        void grantEnergy();
+        int & energy() { return energy_; }
+        int & speed() { return speed_; }
+        int vision() { return vision_; }
 
-bool bfsContains(std::vector< Vector2<Vector2i> > * vec, Vector2i id);
-Vector2i bfsIndex(std::vector< Vector2<Vector2i> > * vec, Vector2i id);
-float bfsHeuristic(Vector2i a, Vector2i b);
+    private:
+        Entity * owner_;
+        int energy_;
+        int speed_;
+        int vision_;
+};
 
-DLList<Vector2i> bfsPath(std::vector< Vector2<Vector2i> > * vec, Vector2i start, Vector2i goal);
-} // namespace wsl
-
-#endif // PATHFINDING_HPP
+#endif //ACTOR_HPP
