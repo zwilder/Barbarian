@@ -161,21 +161,22 @@ void Engine::handleEvents()
     }
     if(input.move())
     {
-        wsl::Vector2i dPos = player_->pos() + input.dir();
-        if(!gameMap_->isBlocked(dPos.x,dPos.y))
-        {
-            Entity * entity = gameMap_->entityAt(dPos, entityList_.get());
-            if(entity != NULL)
-            {
-                std::cout << "You kick the " << entity->name() << ", much to it's annoyance.\n"; 
-            }
-            else
-            {
-                player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
-                fov::visible(visible_.get(), gameMap_.get(), player_.get());
-            }
-        }
-        gameState_ = GameState::ENEMY_TURN;
+        // wsl::Vector2i dPos = player_->pos() + input.dir();
+        // if(!gameMap_->isBlocked(dPos.x,dPos.y))
+        // {
+        //     Entity * entity = gameMap_->entityAt(dPos, entityList_.get());
+        //     if(entity != NULL)
+        //     {
+        //         std::cout << "You kick the " << entity->name() << ", much to it's annoyance.\n"; 
+        //     }
+        //     else
+        //     {
+        //         player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
+        //         fov::visible(visible_.get(), gameMap_.get(), player_.get());
+        //     }
+        // }
+        // gameState_ = GameState::ENEMY_TURN;
+        player_->actor()->setNextAction(Action::Type::Attack, input.dir());
     }
     if(input.nextLevel())
     {
@@ -193,19 +194,23 @@ void Engine::update()
     // while(schedule_->head() != NULL)
     {
         // std::cout << "Schedule is not empty\n";
-        if(curActor_ == NULL)
-        {
-            curActor_ = schedule_->popFront();
-        }
-        if(gameState_ == GameState::PLAYERS_TURN)
-        {
-            return;
-        }
-        else
-        {
-            //curActor_->update();
-        }
+        // if(curActor_ == NULL)
+        // {
+        //     curActor_ = schedule_->popFront();
+        // }
+        // if(gameState_ == GameState::PLAYERS_TURN)
+        // {
+        //     return;
+        // }
+        // else
+        // {
+        //     //curActor_->update();
+        // }
         // std::cout << curActor_->name() << " took turn!\n";
+        if(!curActor_->update())
+        {
+            return; // Current actor failed to take turn
+        }
         curActor_->energy() -= ACTION_COST;
         curActor_ = schedule_->popFront();
         return;

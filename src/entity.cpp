@@ -24,9 +24,20 @@
 /*****
  * Generic Entity Functions
  ****/
+Entity::Entity()
+{
+    game_ = NULL;
+    pos_ = wsl::Vector2i();
+    glyph_ = wsl::Glyph();
+    name_ = "";
+    mask_ = Flags::NONE;
+    actor_ = std::make_shared<Actor>(this);
+}
+
 Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph), name_(name)
 {
     mask_ = Flags::POS | Flags::GLYPH;
+    actor_ = std::make_shared<Actor>(this);
 } 
 
 void Entity::move(wsl::Vector2i delta)
@@ -54,7 +65,7 @@ void Entity::makeActor(int speed, int vision)
     engage(Flags::VISION);
     engage(Flags::ACTOR);
     engage(Flags::BLOCKS);
-    actor_ = Actor(this, speed, vision);
+    *actor_ = Actor(this, speed, vision);
 }
 
 Actor * Entity::actor()
@@ -62,7 +73,8 @@ Actor * Entity::actor()
     Actor * result = NULL; 
     if(check(Flags::ACTOR))
     {
-        result = &actor_;
+        // result = &actor_;
+        result = actor_.get();
     }
 
     return result;

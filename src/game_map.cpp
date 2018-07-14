@@ -219,12 +219,14 @@ void GameMap::placeEntities(int maxPerRoom)
                 {
                     Entity monster(owner_, newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), "skeleton");
                     monster.makeActor(25,4);
+                    monster.engage(Entity::Flags::AI);
                     entityList->push_back(monster);
                 }
                 else
                 {
                     Entity monster(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse");
                     monster.makeActor(75,6);
+                    monster.engage(Entity::Flags::AI);
                     entityList->push_back(monster);
                 }
             }

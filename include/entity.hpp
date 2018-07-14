@@ -33,7 +33,7 @@ class Engine;
 class Entity
 {
     public:
-        // Entity();
+        Entity();
         Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
 
         void makeActor(int speed, int vision);
@@ -45,11 +45,12 @@ class Entity
             GLYPH = 0x004,
             VISION = 0X008,
             BLOCKS = 0x010,
-            ACTOR = 0x020
+            ACTOR = 0x020,
+            AI = 0x040
         };
         
         int mask() { return mask_; }
-        bool check(int flag) { return((mask_ & flag) == flag); }
+        inline bool check(int flag) { return((mask_ & flag) == flag); }
         void toggle(int flag) { mask_ ^= flag; } // Toggles a flag on or off
         void remove(int flag) { mask_ &= ~flag; } // Removes a flag (turns it off)
         void engage(int flag) { mask_ |= flag; } // Adds a flag (turns it on)
@@ -68,6 +69,7 @@ class Entity
         std::string name() { return name_; }
 
         Actor * actor();
+        Engine * game() { return game_; }
 
     private:
         Engine * game_;
@@ -77,6 +79,6 @@ class Entity
         wsl::Vector2i pos_; // x, y
         wsl::Glyph glyph_; // Color, symbol
         std::string name_;
-        Actor actor_;
+        std::shared_ptr<Actor> actor_;
 };
 #endif //ENTITY_HPP

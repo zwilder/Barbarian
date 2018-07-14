@@ -17,8 +17,71 @@
 * You should have received a copy of the GNU General Public License
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <iostream>
 
 #include "../include/actor.hpp"
+#include "../include/entity.hpp"
+#include "../include/engine.hpp"
+
+/*****
+ * Action Functions
+ ****/
+Action::Action(Actor * owner, int type, wsl::Vector2i dir) : actor_(owner), type_(type), dir_(dir)
+{
+    success_ = false;
+}
+
+void Action::perform()
+{
+    switch(type_)
+    {
+        case Type::Attack: attack_(); break;
+        case Type::Move: move_(); break;
+        case Type::Rest: rest_(); break;
+    }
+}
+
+void Action::attack_()
+{
+    wsl::Vector2i pos = dir_ + actor_->owner()->pos();
+    Entity * entity = actor_->owner()->game()->gameMap()->entityAt(pos, actor_->owner()->game()->entityList());
+    if(entity != NULL && entity != actor_->owner())
+    {
+        if(entity->check(Entity::Flags::ACTOR))
+        {
+
+            std::cout << actor_->owner()->name() << " kicks the " << entity->name() << ", much to it's annoyance.\n"; 
+            success_ = true;
+        }
+    }
+    else
+    {
+        //Attack failed, try move action
+        move_();
+    }
+}
+
+void Action::move_()
+{
+    wsl::Vector2i pos = dir_ + actor_->owner()->pos();
+    if(!actor_->owner()->game()->gameMap()->tileAt(pos).blocksMovement())
+    {
+        actor_->owner()->move(dir_);// Need to move this to the player's "update" routine, so the player takes their turn in proper order.
+        // fov::visible(visible_.get(), gameMap_.get(), player_.get());
+        success_ = true;
+    }
+    else
+    {
+        // Move failed
+        rest_();
+    }
+}
+
+void Action::rest_()
+{
+    std::cout << actor_->owner()->name() << " contemplates it's existence.\n";
+    success_ = true;
+}
 
 /*****
  * Actor Functions
@@ -32,21 +95,50 @@ void Actor::grantEnergy()
 {
     energy_ += speed_;
 }
-/*
-void Actor::update(GameMap * map)
+
+void Actor::setNextAction(int type, wsl::Vector2i dir)
 {
-    //
+    // Passes a NEW action, nextAction_ = action;
+    // nextAction_ = action;
+    nextAction_ = new Action(this, type, dir);
 }
 
-void Actor::setNextAction(int cmd, wsl::Vector2i dir)
+Action * Actor::getAction()
 {
-    nextAction_ = cmd;
-    actionDir_ = dir; 
-}
-
-int Actor::getAction()
-{
-    int result = nextAction_;
-    nextAction = Cmd::NONE;
+    // Returns Action, nextAction_ = NULL
+    std::cout << "Getting next action...";
+    Action * result = nextAction_;
+    nextAction_ = NULL;
     return result;
-}*/
+}
+
+bool Actor::update()
+{
+    //IF AI, update AI component of owner (??). getAction(). !NULL ? action->perform(). action->succcess() ? DELETE action, return true
+    std::cout << "Update start.\n";
+    bool success = false;
+    // std::cout << "Checking owner flags...\n";
+    if(owner_->check(Entity::Flags::AI))
+    {
+        // owner_->ai()->update();
+        std::cout << "AI update\n";
+        setNextAction(Action::Type::Rest); // Temporary, until the AI component is added
+    }
+
+    std::cout << "Calling getAction()... ";
+    Action * action = getAction();
+    std::cout << "Got next action...";
+    if(action != NULL)
+    {
+        action->perform();
+        std::cout << " Performed.\n";
+        if(action->success())
+        {
+            std::cout << "Action successful!\n";
+            delete action;
+            success = true;
+        }
+    }
+    return success;
+}
+
