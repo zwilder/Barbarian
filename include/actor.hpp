@@ -60,7 +60,8 @@ class Action
 class Actor
 {
     public:
-        Actor(Entity * owner = NULL, int speed = 100, int vision = 2);
+        Actor();
+        Actor(Entity * owner, int speed = 100, int vision = 2);
 
         enum Flags : uint8_t
         {

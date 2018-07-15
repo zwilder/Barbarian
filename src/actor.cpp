@@ -86,9 +86,18 @@ void Action::rest_()
 /*****
  * Actor Functions
  ****/
+Actor::Actor()
+{
+    owner_ = NULL;
+    speed_ = 0;
+    vision_ = 0;
+    energy_ = 0;
+    std::cout << "Null entity created!\n";
+}
 Actor::Actor(Entity * owner, int speed, int vision) : owner_(owner), speed_(speed), vision_(vision)
 {
     energy_ = 0;
+    std::cout << owner->name() << ": " << owner  << ", " << owner_ << std::endl;
 }
 
 void Actor::grantEnergy()
@@ -114,10 +123,16 @@ Action * Actor::getAction()
 
 bool Actor::update()
 {
+    std::cout << owner_ << std::endl;
+    if(owner_ == NULL)
+    {
+        std::cout << "ERROR! Owner is NULL!\n";
+        return false;
+    }
     //IF AI, update AI component of owner (??). getAction(). !NULL ? action->perform(). action->succcess() ? DELETE action, return true
     std::cout << "Update start.\n";
     bool success = false;
-    // std::cout << "Checking owner flags...\n";
+    std::cout << "Checking owner flags...\t" << Entity::Flags::AI << std::endl;
     if(owner_->check(Entity::Flags::AI))
     {
         // owner_->ai()->update();

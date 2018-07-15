@@ -35,6 +35,7 @@ class Entity
     public:
         Entity();
         Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
+        ~Entity();
 
         void makeActor(int speed, int vision);
         // Component flags
@@ -79,6 +80,8 @@ class Entity
         wsl::Vector2i pos_; // x, y
         wsl::Glyph glyph_; // Color, symbol
         std::string name_;
-        std::shared_ptr<Actor> actor_;
+        // std::shared_ptr<Actor> actor_;
+        // Actor * actor_;
+        Actor actor_;
 };
 #endif //ENTITY_HPP

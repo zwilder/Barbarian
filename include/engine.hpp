@@ -61,7 +61,7 @@ class Engine
 
         GameMap * gameMap() { return gameMap_.get(); }
         std::vector<Entity> * entityList() { return entityList_.get(); }
-        Entity * player() { return player_.get(); }
+        Entity * player() { return player_; }
 
     private:
         bool running_;
@@ -97,7 +97,8 @@ class Engine
         
         // Entities
         int ACTION_COST;
-        std::unique_ptr< Entity > player_;
+        // std::unique_ptr< Entity > player_;
+        Entity * player_;
         std::unique_ptr< std::vector<Entity> > entityList_;
         std::unique_ptr< wsl::DLList<Actor *> > schedule_;
         Actor * curActor_;

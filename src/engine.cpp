@@ -41,10 +41,7 @@ Engine::Engine()
 
     ACTION_COST = 100;
     entityList_ = std::make_unique< std::vector<Entity> >();
-    player_ = std::make_unique<Entity>(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
-    player_->makeActor(50,4); // speed, vision
-    schedule_ = std::make_unique< wsl::DLList<Actor *> >(player_->actor());
-
+    // player_ = std::make_unique<Entity>(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
     gameState_ = GameState::PLAYERS_TURN;
     running_ = init();
 }
@@ -120,8 +117,13 @@ bool Engine::init()
 
         // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
         // which would facilitate a character creation option in the future. 
+    player_ = new Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
+    player_->makeActor(50,4); // speed, vision
+    schedule_ = std::make_unique< wsl::DLList<Actor *> >(player_->actor());
+
+    schedule_->popFront();
         player_->setPos(gameMap_->rooms[0].center());
-        fov::visible(visible_.get(), gameMap_.get(), player_.get());
+        fov::visible(visible_.get(), gameMap_.get(), player_);
 
         // Tell gamemap to place some enemies
         gameMap_->placeEntities(2);
@@ -172,7 +174,7 @@ void Engine::handleEvents()
         //     else
         //     {
         //         player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
-        //         fov::visible(visible_.get(), gameMap_.get(), player_.get());
+        //         fov::visible(visible_.get(), gameMap_.get(), player_);
         //     }
         // }
         // gameState_ = GameState::ENEMY_TURN;
@@ -182,7 +184,7 @@ void Engine::handleEvents()
     {
         *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
         player_->setPos(gameMap_->rooms[0].center());
-        fov::visible(visible_.get(), gameMap_.get(), player_.get());
+        fov::visible(visible_.get(), gameMap_.get(), player_);
         // Tell gamemap to place some enemies
         gameMap_->placeEntities(2);
     }
