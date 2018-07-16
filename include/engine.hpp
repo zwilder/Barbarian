@@ -60,7 +60,8 @@ class Engine
         int windowHeight() { return windowHeight_; }
 
         GameMap * gameMap() { return gameMap_.get(); }
-        std::vector<Entity> * entityList() { return entityList_.get(); }
+        // std::vector<Entity> * entityList() { return entityList_.get(); }
+        wsl::DLList<Entity> * entityList() { return &entityList_; }
         Entity * player() { return player_; }
 
     private:
@@ -99,7 +100,8 @@ class Engine
         int ACTION_COST;
         // std::unique_ptr< Entity > player_;
         Entity * player_;
-        std::unique_ptr< std::vector<Entity> > entityList_;
+        // std::unique_ptr< std::vector<Entity> > entityList_;
+        wsl::DLList<Entity> entityList_;
         std::unique_ptr< wsl::DLList<Actor *> > schedule_;
         Actor * curActor_;
 

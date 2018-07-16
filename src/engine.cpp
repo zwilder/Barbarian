@@ -40,7 +40,7 @@ Engine::Engine()
     visible_ = std::make_unique< std::vector<wsl::Vector2i> >();
 
     ACTION_COST = 100;
-    entityList_ = std::make_unique< std::vector<Entity> >();
+    // entityList_ = std::make_unique< std::vector<Entity> >();
     // player_ = std::make_unique<Entity>(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
     gameState_ = GameState::PLAYERS_TURN;
     running_ = init();
@@ -163,22 +163,23 @@ void Engine::handleEvents()
     }
     if(input.move())
     {
-        // wsl::Vector2i dPos = player_->pos() + input.dir();
-        // if(!gameMap_->isBlocked(dPos.x,dPos.y))
-        // {
-        //     Entity * entity = gameMap_->entityAt(dPos, entityList_.get());
-        //     if(entity != NULL)
-        //     {
-        //         std::cout << "You kick the " << entity->name() << ", much to it's annoyance.\n"; 
-        //     }
-        //     else
-        //     {
-        //         player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
-        //         fov::visible(visible_.get(), gameMap_.get(), player_);
-        //     }
-        // }
-        // gameState_ = GameState::ENEMY_TURN;
-        player_->actor()->setNextAction(Action::Type::Attack, input.dir());
+        wsl::Vector2i dPos = player_->pos() + input.dir();
+        if(!gameMap_->isBlocked(dPos.x,dPos.y))
+        {
+            // Entity * entity = gameMap_->entityAt(dPos, entityList_.get());
+            Entity * entity = gameMap_->entityAt(dPos);
+            if(entity != NULL)
+            {
+                std::cout << "You kick the " << entity->name() << ", much to it's annoyance.\n"; 
+            }
+            else
+            {
+                player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
+                fov::visible(visible_.get(), gameMap_.get(), player_);
+            }
+        }
+        gameState_ = GameState::ENEMY_TURN;
+        // player_->actor()->setNextAction(Action::Type::Attack, input.dir());
     }
     if(input.nextLevel())
     {
@@ -192,6 +193,7 @@ void Engine::handleEvents()
 
 void Engine::update()
 {
+    /*
     if(!schedule_->isEmpty())
     // while(schedule_->head() != NULL)
     {
@@ -219,13 +221,17 @@ void Engine::update()
     }
     else
     {
-        for(int i = 0; i < entityList_->size(); ++i)
+        // for(int i = 0; i < entityList_->size(); ++i)
+        for(wsl::DLNode<Entity> * temp = entityList_.head(); temp != NULL; temp = temp->next)
         {
-            if(entityList_->at(i).actor() == NULL)
+            // if(entityList_->at(i).actor() == NULL)
+            Entity & entity = temp->data;
+            Actor * actor = entity.actor();
+            if(actor == NULL)
             {
                 continue;
             }
-            Actor * actor = entityList_->at(i).actor();
+            // Actor * actor = entityList_->at(i).actor();
             actor->grantEnergy();
             if(actor->energy() >= ACTION_COST)
             {
@@ -239,18 +245,27 @@ void Engine::update()
         }
         gameState_ = GameState::PLAYERS_TURN;
     }
-    // if(gameState_ == GameState::ENEMY_TURN)
-    // {
-    //     for(int i = 0; i < entityList_->size(); ++i)
-    //     {
-    //         if(fov::contains(visible_.get(), entityList_->at(i).pos()))
-    //         {
-    //             wsl::Vector2i pos = entityList_->at(i).pos();
-    //             // std::cout << "The " << entityList_->at(i).name() << " ponders it's existence.\n";
-    //         }
-    //     }
-    //     gameState_ = GameState::PLAYERS_TURN;
-    // }
+    */
+    if(gameState_ == GameState::ENEMY_TURN)
+    {
+        for(wsl::DLNode<Entity> * temp = entityList_.head(); temp != NULL; temp = temp->next)
+        {
+            Entity & entity = temp->data;
+            if(fov::contains(visible_.get(), entity.pos()))
+            {
+                // wsl::Vector2i pos = entity.pos();
+            }
+        }
+        // for(int i = 0; i < entityList_->size(); ++i)
+        // {
+        //     if(fov::contains(visible_.get(), entityList_->at(i).pos()))
+        //     {
+        //         wsl::Vector2i pos = entityList_->at(i).pos();
+        //         // std::cout << "The " << entityList_->at(i).name() << " ponders it's existence.\n";
+        //     }
+        // }
+        gameState_ = GameState::PLAYERS_TURN;
+    }
 }
 
 void Engine::draw()
@@ -295,10 +310,14 @@ void Engine::draw()
     // Loop through entities here, rendering items if they've been seen (explored)
 
     // Loop through entities again, rendering entities IF they are in the visible_ coordinates.
-    for(int i = 0; i < entityList_->size(); ++i)
+    // for(int i = 0; i < entityList_->size(); ++i)
+    for(wsl::DLNode<Entity> * temp = entityList_.head(); temp != NULL; temp = temp->next)
     {
-        wsl::Vector2i entityPos = entityList_->at(i).pos();
-        wsl::Glyph entityGlyph = entityList_->at(i).glyph();
+        Entity & entity = temp->data;
+        wsl::Vector2i entityPos = entity.pos();
+        wsl::Glyph entityGlyph = entity.glyph();
+        // wsl::Vector2i entityPos = entityList_->at(i).pos();
+        // wsl::Glyph entityGlyph = entityList_->at(i).glyph();
         if(fov::contains(visible_.get(), entityPos))
         {
             console_->put(entityPos.x,entityPos.y,entityGlyph);

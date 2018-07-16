@@ -25,6 +25,7 @@
 #include <vector>
 #include "tile.hpp"
 #include "rect.hpp"
+#include "dllist.hpp"
 #include "entity.hpp"
 
 class Engine;
@@ -42,8 +43,12 @@ class GameMap
 
         Tile & tileAt(int x, int y);
         Tile & tileAt(wsl::Vector2i pos);
-        Entity * entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList);
-        Entity * entityAt(int x, int y, std::vector<Entity> * entityList);
+        Entity * entityAt(wsl::Vector2i pos);
+        Entity * entityAt(int x, int y);
+        // Entity * entityAt(wsl::Vector2i pos, wsl::DLList<Entity> * entityList);
+        // Entity * entityAt(int x, int y, wsl::DLList<Entity> * entityList);
+        // Entity * entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList);
+        // Entity * entityAt(int x, int y, std::vector<Entity> * entityList);
         
         void placeEntities(int maxPerRoom);
         

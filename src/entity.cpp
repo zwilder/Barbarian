@@ -20,6 +20,7 @@
 
 #include "../include/entity.hpp"
 #include "../include/game_map.hpp"
+#include "../include/engine.hpp"
 
 /*****
  * Generic Entity Functions
@@ -31,20 +32,21 @@ Entity::Entity()
     glyph_ = wsl::Glyph();
     name_ = "";
     mask_ = Flags::NONE;
-    // actor_ = NULL;
-    actor_ = Actor();
+    actor_ = NULL;
+    // actor_ = Actor();
 }
 
 Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph), name_(name)
 {
     mask_ = Flags::POS | Flags::GLYPH;
-    // actor_ = NULL;
-    actor_ = Actor();
+    actor_ = NULL;
+    // std::cout << game_->gameMap()->width() << std::endl;
+    // actor_ = Actor();
 } 
 
 Entity::~Entity()
 {
-    // if(actor_ != NULL)
+    // if(actor_ != NULL && check(Flags::ACTOR))
     // {
     //     delete actor_;
     // }
@@ -75,8 +77,8 @@ void Entity::makeActor(int speed, int vision)
     engage(Flags::VISION);
     engage(Flags::ACTOR);
     engage(Flags::BLOCKS);
-    // actor_ = new Actor(this, speed, vision);
-    actor_ = Actor(this, speed, vision);
+    actor_ = new Actor(this, speed, vision);
+    // actor_ = Actor(this, speed, vision);
 }
 
 Actor * Entity::actor()
@@ -84,7 +86,8 @@ Actor * Entity::actor()
     Actor * result = NULL; 
     if(check(Flags::ACTOR))
     {
-        result = &actor_;
+        result = actor_;
+        // result = &actor_;
         // result = actor_.get();
     }
 

@@ -58,24 +58,35 @@ Tile & GameMap::tileAt(wsl::Vector2i pos)
     return (tileAt(pos.x,pos.y));
 }
 
-Entity * GameMap::entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList)
+// Entity * GameMap::entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList)
+// Entity * GameMap::entityAt(wsl::Vector2i pos, wsl::DLList<Entity> * entityList)
+Entity * GameMap::entityAt(wsl::Vector2i pos)
 {
     Entity * result = NULL;
+    wsl::DLList<Entity> * entityList = owner_->entityList();
 
-    for(int i = 0; i < entityList->size(); ++i)
+    // for(int i = 0; i < entityList->size(); ++i)
+    for(wsl::DLNode<Entity> * temp = entityList->head(); temp != NULL; temp = temp->next)
     {
-        if(entityList->at(i).pos() == pos)
+        // if(entityList->at(i).pos() == pos)
+        Entity * entity = &temp->data;
+        if(entity->pos() == pos)
         {
-            result = &entityList->at(i);
+            // result = &entityList->at(i);
+            result = entity;
+            break;
         }
     }
 
     return result;
 }
 
-Entity * GameMap::entityAt(int x, int y, std::vector<Entity> * entityList)
+// Entity * GameMap::entityAt(int x, int y, std::vector<Entity> * entityList)
+// Entity * GameMap::entityAt(int x, int y, wsl::DLList<Entity> * entityList)
+Entity * GameMap::entityAt(int x, int y)
 {
-    return entityAt(wsl::Vector2i(x,y), entityList);
+    // return entityAt(wsl::Vector2i(x,y), entityList);
+    return entityAt(wsl::Vector2i(x,y));
 }
 
 void GameMap::initTiles_()
@@ -188,7 +199,14 @@ bool GameMap::isBlocked(int x, int y)
 
 void GameMap::placeEntities(int maxPerRoom)
 {
-    std::vector<Entity> * entityList = owner_->entityList();
+    // std::vector<Entity> * entityList = owner_->entityList();
+    wsl::DLList<Entity> * entityList = owner_->entityList();
+    // entityList->clear();
+    // while(!entityList->isEmpty())
+    // {
+    //     // If this works it should be added to DLList as a function... DLList::clear()
+    //     entityList->popFront();
+    // }
     entityList->clear();
     for(int i = 1; i < rooms.size(); ++i)
     {
@@ -205,14 +223,19 @@ void GameMap::placeEntities(int maxPerRoom)
             }
             wsl::Vector2i newPos(x,y);
             bool entityBlocked = false;
-            for(int k = 0; k < entityList->size(); ++k)
+            // if(entityAt(newPos, entityList) != NULL)
+            if(entityAt(newPos) != NULL)
             {
-                if(entityList->at(k).pos() == newPos)
-                {
-                    entityBlocked = true;
-                    break;
-                }
+                entityBlocked = true;
             }
+            // for(int k = 0; k < entityList->size(); ++k)
+            // {
+            //     if(entityList->at(k).pos() == newPos)
+            //     {
+            //         entityBlocked = true;
+            //         break;
+            //     }
+            // }
             if(!entityBlocked)
             {
                 if(wsl::randomBool(0.8))
@@ -220,14 +243,16 @@ void GameMap::placeEntities(int maxPerRoom)
                     Entity monster(owner_, newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), "skeleton");
                     monster.makeActor(25,4);
                     monster.engage(Entity::Flags::AI);
-                    entityList->push_back(monster);
+                    // entityList->push_back(monster);
+                    entityList->push(monster);
                 }
                 else
                 {
                     Entity monster(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse");
                     monster.makeActor(75,6);
                     monster.engage(Entity::Flags::AI);
-                    entityList->push_back(monster);
+                    // entityList->push_back(monster);
+                    entityList->push(monster);
                 }
             }
         }

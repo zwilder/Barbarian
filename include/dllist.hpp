@@ -44,6 +44,7 @@ template <typename T>
 class DLList
 {
     public:
+        DLList();
         DLList(T data);
         ~DLList();
 
@@ -57,6 +58,7 @@ class DLList
         void remove(T data);
         void remove(DLNode<T> * node);
         bool contains(T data);
+        void clear();
 
         T popFront();
         T popBack();
@@ -70,6 +72,12 @@ class DLList
         DLNode<T> * head_;
         
 };
+
+template <typename T>
+DLList<T>::DLList()
+{
+    head_ = NULL;
+}
 
 template <typename T>
 DLList<T>::DLList(T data)
@@ -206,6 +214,16 @@ bool DLList<T>::contains(T data)
     }
     return success;
 }
+
+template <typename T>
+void DLList<T>::clear()
+{
+    while(!isEmpty())
+    {
+        popFront();
+    }
+}
+
 template <typename T>
 T DLList<T>::popFront()
 {
@@ -225,6 +243,11 @@ T DLList<T>::popBack()
 template <typename T>
 DLNode<T> * DLList<T>::tail()
 {
+    if(head_ == NULL)
+    {
+        return NULL;
+    }
+
     DLNode<T> * tail = head_;
     while(tail->next != NULL)
     {

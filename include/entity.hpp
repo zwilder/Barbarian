@@ -81,7 +81,7 @@ class Entity
         wsl::Glyph glyph_; // Color, symbol
         std::string name_;
         // std::shared_ptr<Actor> actor_;
-        // Actor * actor_;
-        Actor actor_;
+        Actor * actor_;
+        // Actor actor_;
 };
 #endif //ENTITY_HPP
