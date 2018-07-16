@@ -59,7 +59,6 @@ Tile & GameMap::tileAt(wsl::Vector2i pos)
 }
 
 // Entity * GameMap::entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList)
-// Entity * GameMap::entityAt(wsl::Vector2i pos, wsl::DLList<Entity> * entityList)
 Entity * GameMap::entityAt(wsl::Vector2i pos)
 {
     Entity * result = NULL;
@@ -82,7 +81,6 @@ Entity * GameMap::entityAt(wsl::Vector2i pos)
 }
 
 // Entity * GameMap::entityAt(int x, int y, std::vector<Entity> * entityList)
-// Entity * GameMap::entityAt(int x, int y, wsl::DLList<Entity> * entityList)
 Entity * GameMap::entityAt(int x, int y)
 {
     // return entityAt(wsl::Vector2i(x,y), entityList);
@@ -201,12 +199,6 @@ void GameMap::placeEntities(int maxPerRoom)
 {
     // std::vector<Entity> * entityList = owner_->entityList();
     wsl::DLList<Entity> * entityList = owner_->entityList();
-    // entityList->clear();
-    // while(!entityList->isEmpty())
-    // {
-    //     // If this works it should be added to DLList as a function... DLList::clear()
-    //     entityList->popFront();
-    // }
     entityList->clear();
     for(int i = 1; i < rooms.size(); ++i)
     {

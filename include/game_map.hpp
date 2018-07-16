@@ -45,8 +45,6 @@ class GameMap
         Tile & tileAt(wsl::Vector2i pos);
         Entity * entityAt(wsl::Vector2i pos);
         Entity * entityAt(int x, int y);
-        // Entity * entityAt(wsl::Vector2i pos, wsl::DLList<Entity> * entityList);
-        // Entity * entityAt(int x, int y, wsl::DLList<Entity> * entityList);
         // Entity * entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList);
         // Entity * entityAt(int x, int y, std::vector<Entity> * entityList);
         

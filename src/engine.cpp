@@ -115,13 +115,10 @@ bool Engine::init()
         // Setup the game map width/height - should be a different function, with the next three arguments passed in.
         gameMap_ = std::make_unique<GameMap>(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
-        // Create empty vector to hold entities, and add the player entity - Should also be a separate function,
+        // Add the player entity - Should be a separate function,
         // which would facilitate a character creation option in the future. 
-    player_ = new Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
-    player_->makeActor(50,4); // speed, vision
-    schedule_ = std::make_unique< wsl::DLList<Actor *> >(player_->actor());
-
-    schedule_->popFront();
+        player_ = new Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
+        player_->makeActor(50,4); // speed, vision
         player_->setPos(gameMap_->rooms[0].center());
         fov::visible(visible_.get(), gameMap_.get(), player_);
 
@@ -134,6 +131,7 @@ bool Engine::init()
 void Engine::cleanup()
 {
     delete spriteSheet_;
+    delete player_;
     SDL_DestroyRenderer(renderer_);
     SDL_DestroyWindow(window_);
 	SDL_Quit();
@@ -166,7 +164,6 @@ void Engine::handleEvents()
         wsl::Vector2i dPos = player_->pos() + input.dir();
         if(!gameMap_->isBlocked(dPos.x,dPos.y))
         {
-            // Entity * entity = gameMap_->entityAt(dPos, entityList_.get());
             Entity * entity = gameMap_->entityAt(dPos);
             if(entity != NULL)
             {
@@ -251,19 +248,12 @@ void Engine::update()
         for(wsl::DLNode<Entity> * temp = entityList_.head(); temp != NULL; temp = temp->next)
         {
             Entity & entity = temp->data;
+            entity.update();
             if(fov::contains(visible_.get(), entity.pos()))
             {
                 // wsl::Vector2i pos = entity.pos();
             }
         }
-        // for(int i = 0; i < entityList_->size(); ++i)
-        // {
-        //     if(fov::contains(visible_.get(), entityList_->at(i).pos()))
-        //     {
-        //         wsl::Vector2i pos = entityList_->at(i).pos();
-        //         // std::cout << "The " << entityList_->at(i).name() << " ponders it's existence.\n";
-        //     }
-        // }
         gameState_ = GameState::PLAYERS_TURN;
     }
 }

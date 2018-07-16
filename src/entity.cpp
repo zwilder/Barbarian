@@ -21,10 +21,8 @@
 #include "../include/entity.hpp"
 #include "../include/game_map.hpp"
 #include "../include/engine.hpp"
+#include "../include/pathfinding.hpp"
 
-/*****
- * Generic Entity Functions
- ****/
 Entity::Entity()
 {
     game_ = NULL;
@@ -32,25 +30,16 @@ Entity::Entity()
     glyph_ = wsl::Glyph();
     name_ = "";
     mask_ = Flags::NONE;
-    actor_ = NULL;
-    // actor_ = Actor();
+    vision_ = 0;
+    speed_ = 0;
 }
 
 Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph), name_(name)
 {
     mask_ = Flags::POS | Flags::GLYPH;
-    actor_ = NULL;
-    // std::cout << game_->gameMap()->width() << std::endl;
-    // actor_ = Actor();
+    vision_ = 0;
+    speed_ = 0;
 } 
-
-Entity::~Entity()
-{
-    // if(actor_ != NULL && check(Flags::ACTOR))
-    // {
-    //     delete actor_;
-    // }
-}
 
 void Entity::move(wsl::Vector2i delta)
 {
@@ -77,20 +66,49 @@ void Entity::makeActor(int speed, int vision)
     engage(Flags::VISION);
     engage(Flags::ACTOR);
     engage(Flags::BLOCKS);
-    actor_ = new Actor(this, speed, vision);
-    // actor_ = Actor(this, speed, vision);
+    speed_ = speed;
+    vision_ = vision;
 }
 
-Actor * Entity::actor()
+void Entity::grantEnergy()
 {
-    Actor * result = NULL; 
     if(check(Flags::ACTOR))
     {
-        result = actor_;
-        // result = &actor_;
-        // result = actor_.get();
+        energy_ += speed_;
     }
-
-    return result;
 }
 
+bool Entity::update()
+{
+    bool success = false;
+    if(!check(Flags::ACTOR))
+    {
+        success = false;
+    }
+    else if(!check(Flags::AI))
+    {
+        //Player update
+        success = true;
+    }
+    else if(fov::contains(game_->visible(), pos_)) // Right now the entities only move when they see the player
+    {
+        //Enemy update
+        wsl::Vector2i next = path::bfsStep(game_->gameMap(), pos_, game_->player()->pos());
+        Entity * entity = game_->gameMap()->entityAt(next);
+        if(entity != NULL)
+        {
+            std::cout << name_ << " kicks the " << entity->name() << ", much to it's annoyance.\n"; 
+        }
+        else if(next == game_->player()->pos())
+        {
+            std::cout << name_ << " kicks " << game_->player()->name() << "!\n"; 
+        }
+        else
+        {
+            //BFS will never set the next position in a blocked tile so there is no need to check for that here.
+            setPos(next);
+        }
+        success = true;
+    }
+    return success;
+}

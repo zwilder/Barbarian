@@ -42,7 +42,7 @@ void visible(std::vector<wsl::Vector2i> * results, GameMap * map, Entity * entit
         return;// results;
     }
 
-    int r = entity->actor()->vision(); // [r]ange
+    int r = entity->vision(); // [r]ange
     int xO = entity->pos().x;
     int yO = entity->pos().y;
 

@@ -27,7 +27,6 @@
 #include <string>
 #include "vector.hpp"
 #include "console.hpp"
-#include "actor.hpp"
 
 class Engine;
 class Entity
@@ -35,7 +34,6 @@ class Entity
     public:
         Entity();
         Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
-        ~Entity();
 
         void makeActor(int speed, int vision);
         // Component flags
@@ -48,6 +46,14 @@ class Entity
             BLOCKS = 0x010,
             ACTOR = 0x020,
             AI = 0x040
+        };
+
+        enum Action
+        {
+            None,
+            Attack,
+            Move,
+            Rest
         };
         
         int mask() { return mask_; }
@@ -64,12 +70,16 @@ class Entity
         void move(wsl::Vector2i delta);
         wsl::Vector2i pos();
         void setPos(wsl::Vector2i pos);
-
         wsl::Glyph & glyph();
-
         std::string name() { return name_; }
+        
+        void grantEnergy();
+        int & energy() { return energy_; }
+        int & speed() { return speed_; }
+        void setNextAction(Action action);
+        int vision() { return vision_; }
+        bool update();
 
-        Actor * actor();
         Engine * game() { return game_; }
 
     private:
@@ -80,8 +90,8 @@ class Entity
         wsl::Vector2i pos_; // x, y
         wsl::Glyph glyph_; // Color, symbol
         std::string name_;
-        // std::shared_ptr<Actor> actor_;
-        Actor * actor_;
-        // Actor actor_;
+        int vision_;
+        int energy_;
+        int speed_;
 };
 #endif //ENTITY_HPP

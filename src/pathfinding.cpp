@@ -32,14 +32,14 @@
  * returns the right side pair as the value.
  */
 
-namespace wsl
+namespace path
 {
-DLList<Vector2i> bfsPath(GameMap * map, Vector2i start, Vector2i goal)
+wsl::DLList<wsl::Vector2i> bfsPath(GameMap * map, wsl::Vector2i start, wsl::Vector2i goal)
 {
-    std::vector< Vector2<Vector2i> > vec = breadthFirstSearch(map, start, goal);
+    std::vector< wsl::Vector2<wsl::Vector2i> > vec = breadthFirstSearch(map, start, goal);
     
-    Vector2i current = goal;
-    DLList<Vector2i> path(current);
+    wsl::Vector2i current = goal;
+    wsl::DLList<wsl::Vector2i> path(current);
     current = bfsIndex(&vec, current);
     while(current != start)
     {
@@ -49,37 +49,43 @@ DLList<Vector2i> bfsPath(GameMap * map, Vector2i start, Vector2i goal)
     return path;
 }
 
-std::vector< Vector2<Vector2i> > breadthFirstSearch(GameMap * map, Vector2i start, Vector2i goal)
+wsl::Vector2i bfsStep(GameMap * map, wsl::Vector2i start, wsl::Vector2i goal)
+{
+    wsl::Vector2i result = bfsPath(map, start, goal).popFront();
+    return result;
+}
+
+std::vector< wsl::Vector2<wsl::Vector2i> > breadthFirstSearch(GameMap * map, wsl::Vector2i start, wsl::Vector2i goal)
 {
     /*
      * BFS uses DLList
-     * Greedy BFS uses PQList
+     * Greedy BFS uses wsl::PQList
      * Both have early exit
      */
     // DLList<Vector2i> frontier(start);
-    PQList<Vector2i> frontier(start, 0);
+    wsl::PQList<wsl::Vector2i> frontier(start, 0);
 
-    std::vector< Vector2<Vector2i> > cameFrom;
-    cameFrom.push_back( Vector2<Vector2i>(start, start) );
+    std::vector< wsl::Vector2<wsl::Vector2i> > cameFrom;
+    cameFrom.push_back( wsl::Vector2<wsl::Vector2i>(start, start) );
 
     while(!frontier.isEmpty())
     {
-        Vector2i current = frontier.pop();
+        wsl::Vector2i current = frontier.pop();
 
         if(current == goal)
         {
             break;
         }
-        std::vector<Vector2i> neighbors = map->neighbors(current);
+        std::vector<wsl::Vector2i> neighbors = map->neighbors(current);
         for(int i = 0; i < neighbors.size(); ++i)
         {
-            Vector2i next = neighbors[i];
+            wsl::Vector2i next = neighbors[i];
             if(!bfsContains(&cameFrom, next))
             {
                 float priority = bfsHeuristic(goal, next);
                 frontier.push(next, priority);
                 // frontier.push(next);
-                cameFrom.push_back( Vector2<Vector2i>(next, current) );
+                cameFrom.push_back( wsl::Vector2<wsl::Vector2i>(next, current) );
             }
         }
     }
@@ -87,7 +93,7 @@ std::vector< Vector2<Vector2i> > breadthFirstSearch(GameMap * map, Vector2i star
 }
 
 
-bool bfsContains(std::vector< Vector2<Vector2i> > * vec, Vector2i id)
+bool bfsContains(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i id)
 {
     bool success = false;
     for(int i = 0; i < vec->size(); ++i)
@@ -101,9 +107,9 @@ bool bfsContains(std::vector< Vector2<Vector2i> > * vec, Vector2i id)
     return success;
 }
 
-Vector2i bfsIndex(std::vector< Vector2<Vector2i> > * vec, Vector2i id)
+wsl::Vector2i bfsIndex(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i id)
 {
-    Vector2i result;
+    wsl::Vector2i result;
     for(int i = 0; i < vec->size(); ++i)
     {
         if(vec->at(i).x == id)
@@ -115,7 +121,7 @@ Vector2i bfsIndex(std::vector< Vector2<Vector2i> > * vec, Vector2i id)
     return result;
 }
 
-float bfsHeuristic(Vector2i a, Vector2i b)
+float bfsHeuristic(wsl::Vector2i a, wsl::Vector2i b)
 {
     float result = fabs(a.x - b.x) + fabs(a.y - b.y); // Manhattan distance
     return result;

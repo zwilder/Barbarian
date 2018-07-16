@@ -28,16 +28,18 @@
 #include "dllist.hpp"
 
 class GameMap;
-namespace wsl
+namespace path 
 {
 
-std::vector< Vector2<Vector2i> > breadthFirstSearch(GameMap * map, Vector2i start, Vector2i goal);
+std::vector< wsl::Vector2<wsl::Vector2i> > breadthFirstSearch(GameMap * map, wsl::Vector2i start, wsl::Vector2i goal);
 
-bool bfsContains(std::vector< Vector2<Vector2i> > * vec, Vector2i id);
-Vector2i bfsIndex(std::vector< Vector2<Vector2i> > * vec, Vector2i id);
-float bfsHeuristic(Vector2i a, Vector2i b);
+bool bfsContains(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i id);
+wsl::Vector2i bfsIndex(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i id);
+float bfsHeuristic(wsl::Vector2i a, wsl::Vector2i b);
 
-DLList<Vector2i> bfsPath(std::vector< Vector2<Vector2i> > * vec, Vector2i start, Vector2i goal);
+// wsl::DLList<wsl::Vector2i> bfsPath(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i start, wsl::Vector2i goal);
+wsl::DLList<wsl::Vector2i> bfsPath(GameMap * map, wsl::Vector2i start, wsl::Vector2i goal);
+wsl::Vector2i bfsStep(GameMap * map, wsl::Vector2i start, wsl::Vector2i goal);
 } // namespace wsl
 
 #endif // PATHFINDING_HPP
