@@ -1,6 +1,6 @@
 CXX = g++
 # -g For debugging flags, -O2 for optimization
-OPTS = -std=c++17 -O2 -g
+OPTS = -std=c++17 -Og -g -Wall
 LIBS = -lSDL2 -lSDL2_image
 
 FILES := color texture sprite random console input_handlers entity tile game_map pathfinding fov engine main

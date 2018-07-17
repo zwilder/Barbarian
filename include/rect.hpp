@@ -40,8 +40,8 @@ namespace wsl
             Rectangle(T x, T y, T width, T height);
 
             T x1;
-            T x2;
             T y1;
+            T x2;
             T y2;
             T w;
             T h;

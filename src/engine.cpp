@@ -96,7 +96,7 @@ bool Engine::init()
         // Create sprite rectangles for all sprites on the spritesheet 
         int x = 0;
         int y = 0;
-        for(int i = 0; i < spriteRects_.size(); ++i)
+        for(size_t i = 0; i < spriteRects_.size(); ++i)
         {
             spriteRects_[i] = wsl::Rect(x,y,spriteSize_, spriteSize_);
 

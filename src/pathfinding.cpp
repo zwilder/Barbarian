@@ -77,7 +77,7 @@ std::vector< wsl::Vector2<wsl::Vector2i> > breadthFirstSearch(GameMap * map, wsl
             break;
         }
         std::vector<wsl::Vector2i> neighbors = map->neighbors(current);
-        for(int i = 0; i < neighbors.size(); ++i)
+        for(size_t i = 0; i < neighbors.size(); ++i)
         {
             wsl::Vector2i next = neighbors[i];
             if(!bfsContains(&cameFrom, next))
@@ -96,7 +96,7 @@ std::vector< wsl::Vector2<wsl::Vector2i> > breadthFirstSearch(GameMap * map, wsl
 bool bfsContains(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i id)
 {
     bool success = false;
-    for(int i = 0; i < vec->size(); ++i)
+    for(size_t i = 0; i < vec->size(); ++i)
     {
         if(vec->at(i).x == id)
         {
@@ -110,7 +110,7 @@ bool bfsContains(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i
 wsl::Vector2i bfsIndex(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i id)
 {
     wsl::Vector2i result;
-    for(int i = 0; i < vec->size(); ++i)
+    for(size_t i = 0; i < vec->size(); ++i)
     {
         if(vec->at(i).x == id)
         {

@@ -153,7 +153,7 @@ void GameMap::makeMap_()
 
         wsl::Rect newRoom = wsl::Rect(x,y,w,h);
         bool intersect = false;
-        for(int j = 0; j < rooms.size(); ++j)
+        for(size_t j = 0; j < rooms.size(); ++j)
         {
             if(rooms[j].intersect(newRoom))
             {
@@ -200,7 +200,7 @@ void GameMap::placeEntities(int maxPerRoom)
     // std::vector<Entity> * entityList = owner_->entityList();
     wsl::DLList<Entity> * entityList = owner_->entityList();
     entityList->clear();
-    for(int i = 1; i < rooms.size(); ++i)
+    for(size_t i = 1; i < rooms.size(); ++i)
     {
         wsl::Rect & room = rooms[i];
         int numEntities = wsl::randomInt(0, maxPerRoom);

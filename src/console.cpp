@@ -79,7 +79,7 @@ void Console::clear(int x, int y)
 
 void Console::flush()
 {
-    for(int i = 0; i < screen_.size(); ++i)
+    for(size_t i = 0; i < screen_.size(); ++i)
     {
         screen_[i] = Glyph(' ');
     }
