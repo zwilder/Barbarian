@@ -232,19 +232,22 @@ void GameMap::placeEntities(int maxPerRoom)
             {
                 if(wsl::randomBool(0.8))
                 {
-                    Entity monster(owner_, newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), "skeleton");
-                    monster.makeActor(25,4);
-                    monster.engage(Entity::Flags::AI);
-                    // entityList->push_back(monster);
-                    entityList->push(monster);
+                    entityList->push(Entity(owner_, newPos, wsl::Glyph('s', wsl::Color::LtGrey, wsl::Color::Black), "skeleton"));
+                    entityList->head()->data.makeActor(Actor(25,4));
+                    entityList->head()->data.engage(Entity::Flags::AI);
+                    // Entity monster(owner_, newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), "skeleton");
+                    // monster.makeActor(Actor(25,4));
+                    // monster.engage(Entity::Flags::AI);
+                    // // entityList->push_back(monster);
+                    // entityList->push(monster);
                 }
                 else
                 {
-                    Entity monster(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse");
-                    monster.makeActor(75,6);
-                    monster.engage(Entity::Flags::AI);
-                    // entityList->push_back(monster);
-                    entityList->push(monster);
+                    // Entity monster(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse");
+                    // monster.makeActor(Actor(75,6));
+                    // monster.engage(Entity::Flags::AI);
+                    // // entityList->push_back(monster);
+                    // entityList->push(monster);
                 }
             }
         }

@@ -28,14 +28,29 @@
 #include "vector.hpp"
 #include "console.hpp"
 
+class Actor
+{
+    public:
+        Actor(int s = 50, int v = 4, int mH = 30, int d = 1, int p = 6);
+        int speed;
+        int vision;
+        int energy;
+        int maxHP;
+        int HP;
+        int defense;
+        int power;
+};
+
 class Engine;
 class Entity
 {
     public:
         Entity();
         Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
+        ~Entity();
 
-        void makeActor(int speed, int vision);
+        // void makeActor(int speed, int vision);
+        void makeActor(Actor actor);
         // Component flags
         enum Flags : uint8_t
         {
@@ -48,13 +63,13 @@ class Entity
             AI = 0x040
         };
 
-        enum Action
-        {
-            None,
-            Attack,
-            Move,
-            Rest
-        };
+        // enum Action
+        // {
+        //     None,
+        //     Attack,
+        //     Move,
+        //     Rest
+        // };
         
         int mask() { return mask_; }
         inline bool check(int flag) { return((mask_ & flag) == flag); }
@@ -73,11 +88,14 @@ class Entity
         wsl::Glyph & glyph();
         std::string name() { return name_; }
         
-        void grantEnergy();
-        int & energy() { return energy_; }
-        int & speed() { return speed_; }
-        void setNextAction(Action action);
-        int vision() { return vision_; }
+        // void grantEnergy();
+        // int & energy() { return energy_; }
+        // int & speed() { return speed_; }
+        // void setNextAction(Action action);
+        int & hp() { return actor_->HP; }
+        int & defense() { return actor_->defense; }
+        int & power() { return actor_->power; }
+        int vision() { return actor_->vision; }
         bool update();
 
         Engine * game() { return game_; }
@@ -90,8 +108,13 @@ class Entity
         wsl::Vector2i pos_; // x, y
         wsl::Glyph glyph_; // Color, symbol
         std::string name_;
-        int vision_;
-        int energy_;
-        int speed_;
+        Actor * actor_;
+        // int vision_; // FoV radius
+        // int energy_; // speed is added to energy each turn
+        // int speed_;
+        // int maxHP_; // The max health the player can have
+        // int hp_; // The player's current health
+        // int defense_; // The player's defense
+        // int power_; // The player's power
 };
 #endif //ENTITY_HPP

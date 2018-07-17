@@ -23,6 +23,12 @@
 #include "../include/engine.hpp"
 #include "../include/pathfinding.hpp"
 
+Actor::Actor(int s, int v, int mH, int d, int p) : speed(s), vision(v), maxHP(mH), defense(d), power(p)
+{
+    HP = maxHP;
+    energy = 0;
+}
+
 Entity::Entity()
 {
     game_ = NULL;
@@ -30,16 +36,35 @@ Entity::Entity()
     glyph_ = wsl::Glyph();
     name_ = "";
     mask_ = Flags::NONE;
-    vision_ = 0;
-    speed_ = 0;
+    actor_ = NULL;
+    // vision_ = 0;
+    // speed_ = 0;
+    // hp_ = 0;
+    // maxHP_ = 0;
+    // defense_ = 0;
+    // power_ = 0;
 }
 
 Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph), name_(name)
 {
     mask_ = Flags::POS | Flags::GLYPH;
-    vision_ = 0;
-    speed_ = 0;
+    actor_ = NULL;
+    // vision_ = 0;
+    // speed_ = 0;
+    // hp_ = 0;
+    // maxHP_ = 0;
+    // defense_ = 0;
+    // power_ = 0;
 } 
+
+Entity::~Entity()
+{
+    std::cout << this << " destructor called. (" << name_ << ")\n";
+    if(actor_)
+    {
+        delete actor_;
+    }
+}
 
 void Entity::move(wsl::Vector2i delta)
 {
@@ -61,22 +86,30 @@ wsl::Glyph & Entity::glyph()
     return glyph_;
 }
 
-void Entity::makeActor(int speed, int vision)
-{ 
+// void Entity::makeActor(int speed, int vision)
+// { 
+//     engage(Flags::VISION);
+//     engage(Flags::ACTOR);
+//     engage(Flags::BLOCKS);
+//     speed_ = speed;
+//     vision_ = vision;
+// }
+void Entity::makeActor(Actor actor)
+{
     engage(Flags::VISION);
     engage(Flags::ACTOR);
     engage(Flags::BLOCKS);
-    speed_ = speed;
-    vision_ = vision;
+    actor_ = new Actor();
+    *actor_ = actor;
 }
 
-void Entity::grantEnergy()
-{
-    if(check(Flags::ACTOR))
-    {
-        energy_ += speed_;
-    }
-}
+// void Entity::grantEnergy()
+// {
+//     if(check(Flags::ACTOR))
+//     {
+//         energy_ += speed_;
+//     }
+// }
 
 bool Entity::update()
 {
