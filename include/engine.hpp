@@ -41,7 +41,8 @@
 enum class GameState : uint8_t
 {
     PLAYERS_TURN,
-    ENEMY_TURN
+    ENEMY_TURN,
+    GAME_OVER
 };
 
 class Engine
@@ -58,6 +59,8 @@ class Engine
 
         int windowWidth() { return windowWidth_; }
         int windowHeight() { return windowHeight_; }
+
+        void playerDied() { gameState_ = GameState::GAME_OVER; }
 
         GameMap * gameMap() { return gameMap_.get(); }
         wsl::DLList<Entity> * entityList() { return &entityList_; }

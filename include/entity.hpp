@@ -47,7 +47,7 @@ class Entity
     public:
         Entity();
         Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
-        ~Entity();
+        // ~Entity();
 
         // void makeActor(int speed, int vision);
         void makeActor(Actor actor);
@@ -60,7 +60,8 @@ class Entity
             VISION = 0X008,
             BLOCKS = 0x010,
             ACTOR = 0x020,
-            AI = 0x040
+            AI = 0x040,
+            DEAD = 0x080
         };
 
         // enum Action
@@ -81,6 +82,7 @@ class Entity
         bool hasGlyph() { return check(Flags::GLYPH); }
         bool hasVision() { return check(Flags::VISION); }
         bool blocks() { return check(Flags::BLOCKS); }
+        bool isActor() { return check(Flags::ACTOR); }
         
         void move(wsl::Vector2i delta);
         wsl::Vector2i pos();
@@ -96,6 +98,7 @@ class Entity
         int & defense() { return actor_->defense; }
         int & power() { return actor_->power; }
         int vision() { return actor_->vision; }
+        void takeDamage(int damage);
         bool update();
 
         Engine * game() { return game_; }
@@ -108,7 +111,8 @@ class Entity
         wsl::Vector2i pos_; // x, y
         wsl::Glyph glyph_; // Color, symbol
         std::string name_;
-        Actor * actor_;
+        std::shared_ptr<Actor> actor_;
+        // Actor * actor_;
         // int vision_; // FoV radius
         // int energy_; // speed is added to energy each turn
         // int speed_;

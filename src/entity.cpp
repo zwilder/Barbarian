@@ -31,40 +31,19 @@ Actor::Actor(int s, int v, int mH, int d, int p) : speed(s), vision(v), maxHP(mH
 
 Entity::Entity()
 {
-    game_ = NULL;
+    game_ = nullptr;
     pos_ = wsl::Vector2i();
     glyph_ = wsl::Glyph();
     name_ = "";
     mask_ = Flags::NONE;
-    actor_ = NULL;
-    // vision_ = 0;
-    // speed_ = 0;
-    // hp_ = 0;
-    // maxHP_ = 0;
-    // defense_ = 0;
-    // power_ = 0;
+    actor_ = nullptr;
 }
 
 Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph), name_(name)
 {
     mask_ = Flags::POS | Flags::GLYPH;
-    actor_ = NULL;
-    // vision_ = 0;
-    // speed_ = 0;
-    // hp_ = 0;
-    // maxHP_ = 0;
-    // defense_ = 0;
-    // power_ = 0;
+    actor_ = nullptr;
 } 
-
-Entity::~Entity()
-{
-    std::cout << this << " destructor called. (" << name_ << ")\n";
-    if(actor_)
-    {
-        delete actor_;
-    }
-}
 
 void Entity::move(wsl::Vector2i delta)
 {
@@ -86,20 +65,13 @@ wsl::Glyph & Entity::glyph()
     return glyph_;
 }
 
-// void Entity::makeActor(int speed, int vision)
-// { 
-//     engage(Flags::VISION);
-//     engage(Flags::ACTOR);
-//     engage(Flags::BLOCKS);
-//     speed_ = speed;
-//     vision_ = vision;
-// }
 void Entity::makeActor(Actor actor)
 {
     engage(Flags::VISION);
     engage(Flags::ACTOR);
     engage(Flags::BLOCKS);
-    actor_ = new Actor();
+    // actor_ = new Actor();
+    actor_ = std::make_shared<Actor>();
     *actor_ = actor;
 }
 
@@ -110,6 +82,28 @@ void Entity::makeActor(Actor actor)
 //         energy_ += speed_;
 //     }
 // }
+void Entity::takeDamage(int damage)
+{
+    actor_->HP -= damage;
+    if(actor_->HP <= 0)
+    {
+        remove(Flags::ACTOR);
+        remove(Flags::BLOCKS);
+        if(this == game_->player())
+        {
+            glyph() = wsl::Glyph('%', wsl::Color::Black, wsl::Color::DkRed);
+            std::cout << game_->player()->name() << " has perished!\n";
+            game_->playerDied();
+        }
+        else
+        {
+            wsl::Glyph oldGlyph = glyph();
+            glyph() = wsl::Glyph('%', oldGlyph.color(), oldGlyph.bgColor());
+            std::cout << "The " << name_ << " collapses!\n";
+            engage(Flags::DEAD);
+        }
+    }
+}
 
 bool Entity::update()
 {
@@ -123,23 +117,37 @@ bool Entity::update()
         //Player update
         success = true;
     }
-    else if(fov::contains(game_->visible(), pos_)) // Right now the entities only move when they see the player
+    else // if(fov::contains(game_->visible(), pos_)) // Right now the entities only move when they see the player
     {
         //Enemy update
-        wsl::Vector2i next = path::bfsStep(game_->gameMap(), pos_, game_->player()->pos());
-        Entity * entity = game_->gameMap()->entityAt(next);
-        if(entity != NULL)
+        // Almost all of this could be moved into a separate AI component...
+        std::vector<wsl::Vector2i> visible;
+        fov::visible(&visible, game_->gameMap(), this);
+        if(fov::contains(&visible, game_->player()->pos()))
         {
-            std::cout << name_ << " kicks the " << entity->name() << ", much to it's annoyance.\n"; 
-        }
-        else if(next == game_->player()->pos())
-        {
-            std::cout << name_ << " kicks " << game_->player()->name() << "!\n"; 
-        }
-        else
-        {
-            //BFS will never set the next position in a blocked tile so there is no need to check for that here.
-            setPos(next);
+            wsl::Vector2i next = path::bfsStep(game_->gameMap(), pos_, game_->player()->pos());
+            Entity * entity = game_->gameMap()->entityAt(next);
+            if(entity != NULL)
+            {
+                if(entity->isActor())
+                {
+                    std::cout << name_ << " kicks the " << entity->name() << ", much to it's annoyance.\n"; 
+                }
+                else
+                {
+                    setPos(next);
+                }
+            }
+            else if(next == game_->player()->pos())
+            {
+                std::cout << "The " << name_ << " viciously claws at " << game_->player()->name() << "!\n"; 
+                game_->player()->takeDamage(power() - game_->player()->defense());
+            }
+            else
+            {
+                //BFS will never set the next position in a blocked tile so there is no need to check for that here.
+                setPos(next);
+            }
         }
         success = true;
     }

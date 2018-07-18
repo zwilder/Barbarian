@@ -159,17 +159,31 @@ void Engine::handleEvents()
     {
         running_ = false;
     }
-    if(input.move())
+    if(input.move() && gameState_ == GameState::PLAYERS_TURN)
     {
         wsl::Vector2i dPos = player_->pos() + input.dir();
-        if(!gameMap_->isBlocked(dPos.x,dPos.y))
+        if(!gameMap_->tileAt(dPos).blocksMovement())
         {
             Entity * entity = gameMap_->entityAt(dPos);
-            if(entity != NULL)
+            bool move = false;
+            if(entity)
             {
-                std::cout << "You kick the " << entity->name() << ", much to it's annoyance.\n"; 
+                if(entity->isActor())
+                {
+                    //attack
+                    std::cout << "You attack the " << entity->name() << " for " << player_->power() - entity->defense() << " damage!\n";
+                    entity->takeDamage(player_->power() - entity->defense());
+                }
+                //else if(entity->isItem())
+                //{
+                    //move and get
+                //}
+                else
+                {
+                    move = true;
+                }
             }
-            else
+            if(!entity || move == true)
             {
                 player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
                 fov::visible(visible_.get(), gameMap_.get(), player_);
@@ -178,7 +192,7 @@ void Engine::handleEvents()
         gameState_ = GameState::ENEMY_TURN;
         // player_->actor()->setNextAction(Action::Type::Attack, input.dir());
     }
-    if(input.nextLevel())
+    if(input.nextLevel() && gameState_ == GameState::PLAYERS_TURN)
     {
         *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
         player_->setPos(gameMap_->rooms[0].center());
@@ -249,12 +263,31 @@ void Engine::update()
         {
             Entity & entity = temp->data;
             entity.update();
-            if(fov::contains(visible_.get(), entity.pos()))
-            {
-                // wsl::Vector2i pos = entity.pos();
-            }
+            // if(fov::contains(visible_.get(), entity.pos()))
+            // {
+            //     // wsl::Vector2i pos = entity.pos();
+            // }
         }
-        gameState_ = GameState::PLAYERS_TURN;
+        if(gameState_ != GameState::GAME_OVER)
+        {
+            gameState_ = GameState::PLAYERS_TURN;
+        }
+    }
+    //Remove dead entities (and leave corpses!)
+    wsl::DLNode<Entity> * current = entityList_.head();
+    while(current != NULL)
+    {
+        if(current->data.check(Entity::Flags::DEAD))
+        {
+            wsl::DLNode<Entity> * dead = current;
+            current = current->next;
+            gameMap_->tileAt(dead->data.pos()).glyph() = wsl::Glyph(dead->data.glyph().symbol(), dead->data.glyph().color(), dead->data.glyph().bgColor());
+            entityList_.remove(dead);
+        }
+        else
+        {
+            current = current->next;
+        }
     }
 }
 

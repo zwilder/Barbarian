@@ -185,12 +185,24 @@ void GameMap::makeMap_()
   
 }
 
+bool GameMap::isBlocked(wsl::Vector2i pos)
+{
+    return isBlocked(pos.x,pos.y);
+}
+
 bool GameMap::isBlocked(int x, int y)
 {
     bool success = false;
     if(tiles[index(x,y)].blocksMovement())
     {
         success = true;
+    }
+    if(entityAt(x,y) != NULL)
+    {
+        if(entityAt(x,y)->blocks())
+        {
+            success = true;
+        }
     }
     return success;
 }
@@ -214,40 +226,19 @@ void GameMap::placeEntities(int maxPerRoom)
                 continue;
             }
             wsl::Vector2i newPos(x,y);
-            bool entityBlocked = false;
-            // if(entityAt(newPos, entityList) != NULL)
-            if(entityAt(newPos) != NULL)
-            {
-                entityBlocked = true;
-            }
-            // for(int k = 0; k < entityList->size(); ++k)
-            // {
-            //     if(entityList->at(k).pos() == newPos)
-            //     {
-            //         entityBlocked = true;
-            //         break;
-            //     }
-            // }
-            if(!entityBlocked)
+            if(!entityAt(newPos))
             {
                 if(wsl::randomBool(0.8))
                 {
                     entityList->push(Entity(owner_, newPos, wsl::Glyph('s', wsl::Color::LtGrey, wsl::Color::Black), "skeleton"));
-                    entityList->head()->data.makeActor(Actor(25,4));
+                    entityList->head()->data.makeActor(Actor(25,4,10,0,3));
                     entityList->head()->data.engage(Entity::Flags::AI);
-                    // Entity monster(owner_, newPos, wsl::Glyph('S',wsl::Color::LtGrey, wsl::Color::Black), "skeleton");
-                    // monster.makeActor(Actor(25,4));
-                    // monster.engage(Entity::Flags::AI);
-                    // // entityList->push_back(monster);
-                    // entityList->push(monster);
                 }
                 else
                 {
-                    // Entity monster(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse");
-                    // monster.makeActor(Actor(75,6));
-                    // monster.engage(Entity::Flags::AI);
-                    // // entityList->push_back(monster);
-                    // entityList->push(monster);
+                    entityList->push(Entity(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse"));
+                    entityList->head()->data.makeActor(Actor(75,6,16,1,4));
+                    entityList->head()->data.engage(Entity::Flags::AI);
                 }
             }
         }
@@ -260,7 +251,7 @@ std::vector<wsl::Vector2i> GameMap::neighbors(wsl::Vector2i start)
     for(wsl::Vector2i dir : DIRS)
     {
         wsl::Vector2i next = start + dir;
-        if(!tileAt(next).blocksMovement() && inBounds_(next))
+        if(!isBlocked(next) && inBounds_(next))
         {
             results.push_back(next);
         }

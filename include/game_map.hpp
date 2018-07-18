@@ -40,6 +40,7 @@ class GameMap
 
         inline int index(int x, int y) { return (x + (y * width_)); }           
         bool isBlocked(int x, int y);
+        bool isBlocked(wsl::Vector2i pos);
 
         Tile & tileAt(int x, int y);
         Tile & tileAt(wsl::Vector2i pos);
