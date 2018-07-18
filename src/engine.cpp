@@ -174,7 +174,8 @@ void Engine::handleEvents()
                 if(entity->isActor())
                 {
                     //attack
-                    std::cout << "You attack the " << entity->name() << " for " << player_->power() - entity->defense() << " damage!\n";
+                    // std::cout << "You attack the " << entity->name() << " for " << player_->power() - entity->defense() << " damage!\n";
+                    addMessage("You attack the " + entity->name() + " for " + std::to_string(player_->power() - entity->defense()) + " damage!");
                     entity->takeDamage(player_->power() - entity->defense());
                 }
                 //else if(entity->isItem())
@@ -274,6 +275,15 @@ void Engine::update()
         if(gameState_ != GameState::GAME_OVER)
         {
             gameState_ = GameState::PLAYERS_TURN;
+        }
+
+        if(!msgList_.isEmpty())
+        {
+            currentMsg_ = msgList_.popFront();
+        }
+        else
+        {
+            currentMsg_ = "";
         }
     }
     //Remove dead entities (and leave corpses!)
@@ -387,4 +397,28 @@ void Engine::draw()
     
     // Display the SDL window
     SDL_RenderPresent(renderer_);
+}
+
+void Engine::addMessage(std::string msg)
+{
+    int maxLength = console_->width() * 3; // 3 lines
+    maxLength -= 7; // [MORE]
+    // maxLength -= 28; // [Press any key to continue]
+    // Check message head, if message head is less than maxLength, pop and combine with msg.
+    if(!msgList_.isEmpty())
+    {
+        std::string & msgHead = msgList_.head()->data;
+        // msg = msg + " " + msgHead;
+        msg = msgHead + " " + msg;
+        msgList_.popFront();
+    }
+    // if(msg.size() > maxLength)
+    // {
+        // Split message?
+        // Break into words, adding words to msg until maxLength. Then add [Press any key to continue]. Push msg to list and continue until all words are added.
+    // }
+    // else
+    // {
+        msgList_.push(msg);
+    // }
 }

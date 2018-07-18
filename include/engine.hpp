@@ -61,6 +61,7 @@ class Engine
         int windowHeight() { return windowHeight_; }
 
         void playerDied() { gameState_ = GameState::GAME_OVER; }
+        void addMessage(std::string msg);
 
         GameMap * gameMap() { return gameMap_.get(); }
         wsl::DLList<Entity> * entityList() { return &entityList_; }
@@ -110,6 +111,7 @@ class Engine
         GameState gameState_;
 
         // GUI
+        wsl::DLList<std::string> msgList_;
         std::string currentMsg_;
 };
 
