@@ -95,6 +95,7 @@ class Entity
         // int & speed() { return speed_; }
         // void setNextAction(Action action);
         int & hp() { return actor_->HP; }
+        int & maxHP() { return actor_->maxHP; }
         int & defense() { return actor_->defense; }
         int & power() { return actor_->power; }
         int vision() { return actor_->vision; }

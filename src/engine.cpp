@@ -44,6 +44,9 @@ Engine::Engine()
     // player_ = std::make_unique<Entity>(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
     gameState_ = GameState::PLAYERS_TURN;
     running_ = init();
+
+    // currentMsg_ = "This is a really long message to test out the message line wrapping and see if it breaks everything or like, nah.";
+    currentMsg_ = "";
 }
 
 bool Engine::init()
@@ -349,6 +352,10 @@ void Engine::draw()
 
     // Temporarily just rendering the player.
     console_->put(player_->pos().x, player_->pos().y, player_->glyph());
+
+    console_->print(0,0, currentMsg_);
+    console_->print(0,console_->height() - 2, player_->name());
+    console_->print(0,console_->height() - 1, "HP: " + std::to_string(player_->hp()) + "(" + std::to_string(player_->maxHP()) + ")");
 
     // Clear the SDL window
     SDL_SetRenderDrawColor(renderer_, 0x00, 0x00, 0x00, 0x00);

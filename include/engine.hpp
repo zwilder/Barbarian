@@ -108,6 +108,9 @@ class Engine
 
         // Game state
         GameState gameState_;
+
+        // GUI
+        std::string currentMsg_;
 };
 
 #endif //ENGINE_HPP

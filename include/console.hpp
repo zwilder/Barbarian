@@ -23,6 +23,7 @@
 #ifndef CONSOLE_HPP
 #define CONSOLE_HPP
 
+#include <string>
 #include <vector>
 #include "color.hpp"
 
@@ -59,6 +60,7 @@ namespace wsl
             void clear(int x, int y);
             inline int index(int x, int y) { return (x + (y * width_)); }           
             void flush();
+            void print(int x, int y, std::string msg);
         private:
             int width_;
             int height_;

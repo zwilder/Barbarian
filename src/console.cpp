@@ -77,6 +77,31 @@ void Console::clear(int x, int y)
     screen_[x + (y * width_)] = Glyph(' ');
 }
 
+void Console::print(int x, int y, std::string msg)
+{
+    size_t msgLength = msg.size();
+    int widthAvailable = width_ - x;
+    int dX = 0;
+    int dY = y;
+    for(size_t i = 0; i < msgLength; ++i)
+    {
+        if(dY != y)
+        {
+            dX = x + int(i) - widthAvailable;
+        }
+        else
+        {
+            dX = x + int(i);
+        }
+        if(dX >= width_)
+        {
+            dX = 0;
+            dY += 1;
+        }
+        screen_[dX + (dY * width_)] = msg[i];
+    }
+}
+
 void Console::flush()
 {
     for(size_t i = 0; i < screen_.size(); ++i)
