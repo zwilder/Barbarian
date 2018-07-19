@@ -42,7 +42,8 @@ enum class GameState : uint8_t
 {
     PLAYERS_TURN,
     ENEMY_TURN,
-    GAME_OVER
+    GAME_OVER,
+    MSG_WAIT
 };
 
 class Engine

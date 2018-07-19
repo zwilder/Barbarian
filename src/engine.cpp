@@ -20,6 +20,8 @@
 
 
 #include <iostream>
+#include <iterator>
+#include <sstream>
 #include "../include/engine.hpp"
 
 Engine::Engine()
@@ -145,6 +147,7 @@ void Engine::handleEvents()
     // Poll the window for user input events (SFML)
     SDL_Event event;
     Input input;
+    bool keyPressed = false;
     while(SDL_PollEvent(&event) != 0)
     {
         if(event.type == SDL_QUIT)
@@ -154,6 +157,7 @@ void Engine::handleEvents()
         else if(event.type == SDL_KEYDOWN)
         {
             input = handleKeys(event.key.keysym.sym);
+            keyPressed = true;
         }
     }
 
@@ -162,47 +166,62 @@ void Engine::handleEvents()
     {
         running_ = false;
     }
-    if(input.move() && gameState_ == GameState::PLAYERS_TURN)
+    if(gameState_ == GameState::PLAYERS_TURN)
     {
-        wsl::Vector2i dPos = player_->pos() + input.dir();
-        if(!gameMap_->tileAt(dPos).blocksMovement())
+        if(input.move())
         {
-            Entity * entity = gameMap_->entityAt(dPos);
-            bool move = false;
-            if(entity)
+            wsl::Vector2i dPos = player_->pos() + input.dir();
+            if(!gameMap_->tileAt(dPos).blocksMovement())
             {
-                if(entity->isActor())
+                Entity * entity = gameMap_->entityAt(dPos);
+                bool move = false;
+                if(entity)
                 {
-                    //attack
-                    // std::cout << "You attack the " << entity->name() << " for " << player_->power() - entity->defense() << " damage!\n";
-                    addMessage("You attack the " + entity->name() + " for " + std::to_string(player_->power() - entity->defense()) + " damage!");
-                    entity->takeDamage(player_->power() - entity->defense());
+                    if(entity->isActor())
+                    {
+                        //attack
+                        // std::cout << "You attack the " << entity->name() << " for " << player_->power() - entity->defense() << " damage!\n";
+                        addMessage("You attack the " + entity->name() + " for " + std::to_string(player_->power() - entity->defense()) + " damage!");
+                        entity->takeDamage(player_->power() - entity->defense());
+                    }
+                    //else if(entity->isItem())
+                    //{
+                        //move and get
+                    //}
+                    else
+                    {
+                        move = true;
+                    }
                 }
-                //else if(entity->isItem())
-                //{
-                    //move and get
-                //}
-                else
+                if(!entity || move == true)
                 {
-                    move = true;
+                    player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
+                    fov::visible(visible_.get(), gameMap_.get(), player_);
                 }
             }
-            if(!entity || move == true)
-            {
-                player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
-                fov::visible(visible_.get(), gameMap_.get(), player_);
-            }
+            gameState_ = GameState::ENEMY_TURN;
+            // player_->actor()->setNextAction(Action::Type::Attack, input.dir());
         }
-        gameState_ = GameState::ENEMY_TURN;
-        // player_->actor()->setNextAction(Action::Type::Attack, input.dir());
+        if(input.nextLevel())
+        {
+            *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
+            player_->setPos(gameMap_->rooms[0].center());
+            fov::visible(visible_.get(), gameMap_.get(), player_);
+            // Tell gamemap to place some enemies
+            gameMap_->placeEntities(2);
+        }
     }
-    if(input.nextLevel() && gameState_ == GameState::PLAYERS_TURN)
+    else if(gameState_ == GameState::MSG_WAIT && keyPressed)
     {
-        *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
-        player_->setPos(gameMap_->rooms[0].center());
-        fov::visible(visible_.get(), gameMap_.get(), player_);
-        // Tell gamemap to place some enemies
-        gameMap_->placeEntities(2);
+        if(!msgList_.isEmpty())
+        {
+            currentMsg_ = msgList_.popFront();
+        }
+        else
+        {
+            currentMsg_ = "";
+            gameState_ = GameState::PLAYERS_TURN;
+        }
     }
 }
 
@@ -401,9 +420,9 @@ void Engine::draw()
 
 void Engine::addMessage(std::string msg)
 {
-    int maxLength = console_->width() * 3; // 3 lines
-    maxLength -= 7; // [MORE]
-    // maxLength -= 28; // [Press any key to continue]
+    int maxLength = console_->width() * 2; // # lines
+    // maxLength -= 7; // [MORE]
+    maxLength -= 28; // [Press any key to continue]
     // Check message head, if message head is less than maxLength, pop and combine with msg.
     if(!msgList_.isEmpty())
     {
@@ -412,10 +431,31 @@ void Engine::addMessage(std::string msg)
         msg = msgHead + " " + msg;
         msgList_.popFront();
     }
-    // if(msg.size() > maxLength)
+    // if(int(msg.size()) > maxLength)
     // {
-        // Split message?
-        // Break into words, adding words to msg until maxLength. Then add [Press any key to continue]. Push msg to list and continue until all words are added.
+    //     // Split message?
+    //     // Break into words, adding words to msg until maxLength. Then add [Press any key to continue]. Push msg to list and continue until all words are added.
+    //     std::istringstream iss(msg);
+    //     std::vector<std::string> results((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+    //     std::string first = "";
+    //     std::string remainder = "";
+    //     for(size_t i = 0; i < results.size(); ++i)
+    //     {
+    //         std::string & word = results[i];
+    //         //is wordSize + first.size() > maxLength?
+    //         //T - add word + " " to remainder
+    //         //F - add word + " " to first;
+    //         if(int(word.size()) + int(first.size()) >= maxLength)
+    //         {
+    //             remainder = remainder + word + " ";
+    //         }
+    //         else
+    //         {
+    //             first = first + word + " ";
+    //         }
+    //     }
+    //     addMessage(remainder);
+    //     addMessage(first);
     // }
     // else
     // {
