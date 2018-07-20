@@ -74,7 +74,8 @@ class Engine
         bool running_;
 
         // Console/Graphics
-        int spriteSize_;
+        // int spriteSize_;
+        wsl::Vector2i spriteSize_;
         int consoleWidth_;
         int consoleHeight_;
         int windowWidth_;

@@ -26,12 +26,13 @@
 
 Engine::Engine()
 {
-    consoleWidth_ = 80; // consoleWidth_ and consoleHeight_ refer to the 'root' console
-    consoleHeight_ = 50;
-    spriteSize_ = 12;
+    consoleWidth_ = 114; // consoleWidth_ and consoleHeight_ refer to the 'root' console
+    consoleHeight_ = 55;
+    // spriteSize_ = 12;
+    spriteSize_ = wsl::Vector2i(9,14);
 
-    windowWidth_ = consoleWidth_ * spriteSize_;
-    windowHeight_ = consoleHeight_ * spriteSize_;
+    windowWidth_ = consoleWidth_ * spriteSize_.x;
+    windowHeight_ = consoleHeight_ * spriteSize_.y;
     windowTitle_ = "Barbarian!";
     window_ = NULL;
 
@@ -96,23 +97,23 @@ bool Engine::init()
     {
         // Load the cp437 texture image
         spriteSheet_ = new wsl::Texture;
-        success = spriteSheet_->loadFromFile("assets/cp437_12x12.png", renderer_);
+        success = spriteSheet_->loadFromFile("assets/IBM_9x14.png", renderer_);
 
         // Create sprite rectangles for all sprites on the spritesheet 
         int x = 0;
         int y = 0;
         for(size_t i = 0; i < spriteRects_.size(); ++i)
         {
-            spriteRects_[i] = wsl::Rect(x,y,spriteSize_, spriteSize_);
+            spriteRects_[i] = wsl::Rect(x,y,spriteSize_.x, spriteSize_.y);
 
-            x += spriteSize_;
+            x += spriteSize_.x;
             if(i == 0)
             {
                 continue;
             }
-            if(x == 16 * spriteSize_)
+            if(x == 16 * spriteSize_.x)
             {
-                y += spriteSize_;
+                y += spriteSize_.y;
                 x = 0;
             }
         }
@@ -399,8 +400,8 @@ void Engine::draw()
     SDL_RenderClear(renderer_);
 
     // Create sprites from the template sprites in spriteChars_ to represent the characters on the virtual console, and draw them to the screen
-    wsl::Sprite cursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_,spriteSize_),spriteSheet_); 
-    wsl::Sprite bgCursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_,spriteSize_),spriteSheet_);
+    wsl::Sprite cursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_.x,spriteSize_.y),spriteSheet_); 
+    wsl::Sprite bgCursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_.x,spriteSize_.y),spriteSheet_);
     for(int x = 0; x < console_->width(); ++x)
     {
         for(int y = 0; y < console_->height(); ++y)
@@ -409,12 +410,12 @@ void Engine::draw()
             if(bgColor != wsl::Color::Black)
             {
                 bgCursorSprite.setTexPos(spriteRects_[219]); // 219 is the white square in the CP437 font
-                bgCursorSprite.setPos(x * spriteSize_, y * spriteSize_);
+                bgCursorSprite.setPos(x * spriteSize_.x, y * spriteSize_.y);
             
                 bgCursorSprite.render(renderer_, bgColor);
             }
             wsl::Rect & textureRect = spriteRects_[console_->get(x,y).symbol()];
-            cursorSprite.setPos(x * spriteSize_, y * spriteSize_);
+            cursorSprite.setPos(x * spriteSize_.x, y * spriteSize_.y);
             cursorSprite.setTexPos(wsl::Rect(textureRect.x1, textureRect.y1, textureRect.w, textureRect.h));
             wsl::Color color = console_->get(x,y).color();
 
