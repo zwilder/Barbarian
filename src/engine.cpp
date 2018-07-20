@@ -26,9 +26,8 @@
 
 Engine::Engine()
 {
-    consoleWidth_ = 114; // consoleWidth_ and consoleHeight_ refer to the 'root' console
-    consoleHeight_ = 55;
-    // spriteSize_ = 12;
+    consoleWidth_ = 88; // consoleWidth_ and consoleHeight_ refer to the 'root' console
+    consoleHeight_ = 42;
     spriteSize_ = wsl::Vector2i(9,14);
 
     windowWidth_ = consoleWidth_ * spriteSize_.x;
@@ -43,12 +42,10 @@ Engine::Engine()
     visible_ = std::make_unique< std::vector<wsl::Vector2i> >();
 
     ACTION_COST = 100;
-    // entityList_ = std::make_unique< std::vector<Entity> >();
-    // player_ = std::make_unique<Entity>(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
     gameState_ = GameState::PLAYERS_TURN;
+    prevGameState_ = gameState_;
     running_ = init();
 
-    // currentMsg_ = "This is a really long message to test out the message line wrapping and see if it breaks everything or like, nah.";
     currentMsg_ = "";
 }
 
@@ -200,6 +197,7 @@ void Engine::handleEvents()
                     fov::visible(visible_.get(), gameMap_.get(), player_);
                 }
             }
+            prevGameState_ = gameState_;
             gameState_ = GameState::ENEMY_TURN;
             // player_->actor()->setNextAction(Action::Type::Attack, input.dir());
         }
@@ -212,22 +210,22 @@ void Engine::handleEvents()
             gameMap_->placeEntities(2);
         }
     }
-    else if(gameState_ == GameState::MSG_WAIT && input.enter())
-    {
-        if(!msgList_.isEmpty())
-        {
-            currentMsg_ = msgList_.popFront();
-            if(msgList_.isEmpty())
-            {
-                gameState_ = GameState::PLAYERS_TURN;
-            }
-        }
-        else
-        {
-            currentMsg_ = "";
-            gameState_ = GameState::PLAYERS_TURN;
-        }
-    }
+    // else if(gameState_ == GameState::MSG_WAIT && input.enter())
+    // {
+    //     if(!msgList_.isEmpty())
+    //     {
+    //         currentMsg_ = msgList_.popFront();
+    //         if(msgList_.isEmpty())
+    //         {
+    //             gameState_ = GameState::PLAYERS_TURN;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         currentMsg_ = "";
+    //         gameState_ = GameState::PLAYERS_TURN;
+    //     }
+    // }
     else if(gameState_ == GameState::GAME_OVER && keyPressed)
     {
         newGame();
@@ -295,13 +293,10 @@ void Engine::update()
         {
             Entity & entity = temp->data;
             entity.update();
-            // if(fov::contains(visible_.get(), entity.pos()))
-            // {
-            //     // wsl::Vector2i pos = entity.pos();
-            // }
         }
-        if((gameState_ != GameState::GAME_OVER) && (gameState_ != GameState::MSG_WAIT))
+        if((gameState_ != GameState::GAME_OVER))// && (gameState_ != GameState::MSG_WAIT))
         {
+            prevGameState_ = gameState_;
             gameState_ = GameState::PLAYERS_TURN;
         }
 
@@ -347,11 +342,6 @@ void Engine::draw()
             wsl::Glyph glyph = gameMap_->tiles[index].glyph();
             if(fov::contains(visible_.get(), wsl::Vector2i(x,y)))
             { 
-                // if(glyph.symbol() != '#')
-                // {
-                //     glyph.setColor(glyph.bgColor());
-                //     glyph.setBgColor(wsl::Color::LtYellow);
-                // }
                 console_->put(x,y,glyph);
                 gameMap_->tiles[index].engage(Tile::Flags::EXPLORED);
             }
@@ -374,14 +364,11 @@ void Engine::draw()
     // Loop through entities here, rendering items if they've been seen (explored)
 
     // Loop through entities again, rendering entities IF they are in the visible_ coordinates.
-    // for(int i = 0; i < entityList_->size(); ++i)
     for(wsl::DLNode<Entity> * temp = entityList_.head(); temp != NULL; temp = temp->next)
     {
         Entity & entity = temp->data;
         wsl::Vector2i entityPos = entity.pos();
         wsl::Glyph entityGlyph = entity.glyph();
-        // wsl::Vector2i entityPos = entityList_->at(i).pos();
-        // wsl::Glyph entityGlyph = entityList_->at(i).glyph();
         if(fov::contains(visible_.get(), entityPos))
         {
             console_->put(entityPos.x,entityPos.y,entityGlyph);
@@ -429,55 +416,55 @@ void Engine::draw()
 
 void Engine::addMessage(std::string msg)
 {
-    int maxLength = console_->width() * 2; // # lines
-    // maxLength -= 7; // [MORE]
-    maxLength -= 26; // [Press enter to continue]
     // Check message head, if message head is less than maxLength, pop and combine with msg.
     if(!msgList_.isEmpty())
     {
         std::string & msgHead = msgList_.head()->data;
-        // msg = msg + " " + msgHead;
         msg = msgHead + " " + msg;
         msgList_.popFront();
     }
-    if(int(msg.size()) > maxLength)
-    {
-        // Split message?
-        // Break into words, adding words to msg until maxLength. Then add [Press any key to continue]. Push msg to list and continue until all words are added.
-        std::istringstream iss(msg);
-        std::vector<std::string> results((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
-        std::string first = "";
-        std::string remainder = "";
-        for(size_t i = 0; i < results.size(); ++i)
-        {
-            std::string & word = results[i];
-            word += " ";
-            if((int(word.size()) + int(first.size())) > maxLength)
-            {
-                //Exceeded max length, add the word to remainder
-                remainder += word;
-            }
-            else
-            {
-                first += word;
-            }
-        }
-        first += " [Press enter to continue]";
-        msgList_.push(remainder);
-        msgList_.push(first);
-        gameState_ = GameState::MSG_WAIT;
-        // addMessage(remainder);
-        // addMessage(first);
-    }
-    else
-    {
-        msgList_.push(msg);
-    }
+    msgList_.push(msg);
+
+    // int maxLength = console_->width() * 3; // # lines
+    // maxLength -= 7; // [MORE]
+    // maxLength -= 26; // [Press enter to continue]
+    // if(int(msg.size()) > maxLength)
+    // {
+    //     // Split message?
+    //     // Break into words, adding words to msg until maxLength. Then add [Press any key to continue]. Push msg to list and continue until all words are added.
+    //     std::istringstream iss(msg);
+    //     std::vector<std::string> results((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+    //     std::string first = "";
+    //     std::string remainder = "";
+    //     for(size_t i = 0; i < results.size(); ++i)
+    //     {
+    //         std::string & word = results[i];
+    //         word += " ";
+    //         if((int(word.size()) + int(first.size())) > maxLength)
+    //         {
+    //             //Exceeded max length, add the word to remainder
+    //             remainder += word;
+    //         }
+    //         else
+    //         {
+    //             first += word;
+    //         }
+    //     }
+    //     first += " [Press enter to continue]";
+    //     msgList_.push(remainder);
+    //     msgList_.push(first);
+    //     gameState_ = GameState::MSG_WAIT;
+    //     // addMessage(remainder);
+    //     // addMessage(first);
+    // }
+    // else
+    // {
+        // msgList_.push(msg);
+    // }
 }
 
 void Engine::newGame()
 {
-    // Setup the game map width/height - should be a different function, with the next three arguments passed in.
     *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
     // Add the player entity - Should be a separate function,
@@ -490,6 +477,7 @@ void Engine::newGame()
     // Tell gamemap to place some enemies
     gameMap_->placeEntities(2);
     gameState_ = GameState::PLAYERS_TURN;
+    prevGameState_ = gameState_;
     msgList_.clear();
     currentMsg_ = "";
 }

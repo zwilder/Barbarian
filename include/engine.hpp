@@ -112,6 +112,7 @@ class Engine
 
         // Game state
         GameState gameState_;
+        GameState prevGameState_;
 
         // GUI
         wsl::DLList<std::string> msgList_;
