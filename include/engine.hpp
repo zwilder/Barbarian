@@ -63,6 +63,7 @@ class Engine
 
         void playerDied() { gameState_ = GameState::GAME_OVER; }
         void addMessage(std::string msg);
+        void newGame();
 
         GameMap * gameMap() { return gameMap_.get(); }
         wsl::DLList<Entity> * entityList() { return &entityList_; }

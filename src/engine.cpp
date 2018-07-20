@@ -211,17 +211,25 @@ void Engine::handleEvents()
             gameMap_->placeEntities(2);
         }
     }
-    else if(gameState_ == GameState::MSG_WAIT && keyPressed)
+    else if(gameState_ == GameState::MSG_WAIT && input.enter())
     {
         if(!msgList_.isEmpty())
         {
             currentMsg_ = msgList_.popFront();
+            if(msgList_.isEmpty())
+            {
+                gameState_ = GameState::PLAYERS_TURN;
+            }
         }
         else
         {
             currentMsg_ = "";
             gameState_ = GameState::PLAYERS_TURN;
         }
+    }
+    else if(gameState_ == GameState::GAME_OVER && keyPressed)
+    {
+        newGame();
     }
 }
 
@@ -291,7 +299,7 @@ void Engine::update()
             //     // wsl::Vector2i pos = entity.pos();
             // }
         }
-        if(gameState_ != GameState::GAME_OVER)
+        if((gameState_ != GameState::GAME_OVER) && (gameState_ != GameState::MSG_WAIT))
         {
             gameState_ = GameState::PLAYERS_TURN;
         }
@@ -422,7 +430,7 @@ void Engine::addMessage(std::string msg)
 {
     int maxLength = console_->width() * 2; // # lines
     // maxLength -= 7; // [MORE]
-    maxLength -= 28; // [Press any key to continue]
+    maxLength -= 26; // [Press enter to continue]
     // Check message head, if message head is less than maxLength, pop and combine with msg.
     if(!msgList_.isEmpty())
     {
@@ -431,34 +439,56 @@ void Engine::addMessage(std::string msg)
         msg = msgHead + " " + msg;
         msgList_.popFront();
     }
-    // if(int(msg.size()) > maxLength)
-    // {
-    //     // Split message?
-    //     // Break into words, adding words to msg until maxLength. Then add [Press any key to continue]. Push msg to list and continue until all words are added.
-    //     std::istringstream iss(msg);
-    //     std::vector<std::string> results((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
-    //     std::string first = "";
-    //     std::string remainder = "";
-    //     for(size_t i = 0; i < results.size(); ++i)
-    //     {
-    //         std::string & word = results[i];
-    //         //is wordSize + first.size() > maxLength?
-    //         //T - add word + " " to remainder
-    //         //F - add word + " " to first;
-    //         if(int(word.size()) + int(first.size()) >= maxLength)
-    //         {
-    //             remainder = remainder + word + " ";
-    //         }
-    //         else
-    //         {
-    //             first = first + word + " ";
-    //         }
-    //     }
-    //     addMessage(remainder);
-    //     addMessage(first);
-    // }
-    // else
-    // {
+    if(int(msg.size()) > maxLength)
+    {
+        // Split message?
+        // Break into words, adding words to msg until maxLength. Then add [Press any key to continue]. Push msg to list and continue until all words are added.
+        std::istringstream iss(msg);
+        std::vector<std::string> results((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+        std::string first = "";
+        std::string remainder = "";
+        for(size_t i = 0; i < results.size(); ++i)
+        {
+            std::string & word = results[i];
+            word += " ";
+            if((int(word.size()) + int(first.size())) > maxLength)
+            {
+                //Exceeded max length, add the word to remainder
+                remainder += word;
+            }
+            else
+            {
+                first += word;
+            }
+        }
+        first += " [Press enter to continue]";
+        msgList_.push(remainder);
+        msgList_.push(first);
+        gameState_ = GameState::MSG_WAIT;
+        // addMessage(remainder);
+        // addMessage(first);
+    }
+    else
+    {
         msgList_.push(msg);
-    // }
+    }
+}
+
+void Engine::newGame()
+{
+    // Setup the game map width/height - should be a different function, with the next three arguments passed in.
+    *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
+
+    // Add the player entity - Should be a separate function,
+    // which would facilitate a character creation option in the future. 
+    *player_ = Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
+    player_->makeActor(Actor(50,4)); // speed, vision
+    player_->setPos(gameMap_->rooms[0].center());
+    fov::visible(visible_.get(), gameMap_.get(), player_);
+
+    // Tell gamemap to place some enemies
+    gameMap_->placeEntities(2);
+    gameState_ = GameState::PLAYERS_TURN;
+    msgList_.clear();
+    currentMsg_ = "";
 }
