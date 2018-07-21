@@ -32,7 +32,8 @@ enum Cmd : int
     MOVE = 0x02,
     QUIT = 0x04,
     FULLSCREEN = 0x04,
-    NEXT_LEVEL = 0x08
+    NEXT_LEVEL = 0x08,
+    ENTER = 0x10
 };
         
 
@@ -46,6 +47,7 @@ class Input
         bool quit() { return((cmdMask_ & Cmd::QUIT) == Cmd::QUIT); }
         bool fullscreen() { return((cmdMask_ & Cmd::FULLSCREEN) == Cmd::FULLSCREEN); }
         bool nextLevel() { return((cmdMask_ & Cmd::NEXT_LEVEL) == Cmd::NEXT_LEVEL); }
+        bool enter() { return((cmdMask_ & Cmd::ENTER) == Cmd::ENTER); }
 
         wsl::Vector2i dir() { return dir_; }
     private:

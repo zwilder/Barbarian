@@ -42,7 +42,8 @@ enum class GameState : uint8_t
 {
     PLAYERS_TURN,
     ENEMY_TURN,
-    GAME_OVER
+    GAME_OVER,
+    MSG_WAIT
 };
 
 class Engine
@@ -62,6 +63,7 @@ class Engine
 
         void playerDied() { gameState_ = GameState::GAME_OVER; }
         void addMessage(std::string msg);
+        void newGame();
 
         GameMap * gameMap() { return gameMap_.get(); }
         wsl::DLList<Entity> * entityList() { return &entityList_; }
@@ -72,7 +74,8 @@ class Engine
         bool running_;
 
         // Console/Graphics
-        int spriteSize_;
+        // int spriteSize_;
+        wsl::Vector2i spriteSize_;
         int consoleWidth_;
         int consoleHeight_;
         int windowWidth_;
@@ -109,6 +112,7 @@ class Engine
 
         // Game state
         GameState gameState_;
+        GameState prevGameState_;
 
         // GUI
         wsl::DLList<std::string> msgList_;

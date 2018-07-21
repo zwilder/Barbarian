@@ -18,6 +18,9 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sstream>
+#include <iostream>
+#include <iterator>
 
 #include "../include/console.hpp"
 
@@ -79,26 +82,41 @@ void Console::clear(int x, int y)
 
 void Console::print(int x, int y, std::string msg)
 {
-    size_t msgLength = msg.size();
-    int widthAvailable = width_ - x;
-    int dX = 0;
-    int dY = y;
-    for(size_t i = 0; i < msgLength; ++i)
+    std::istringstream iss(msg);
+    std::vector<std::string> results((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+    int curX = x;
+    int curY = y;
+    for(size_t i = 0; i < results.size(); ++i)
     {
-        if(dY != y)
+        // Each results[i] is a word to be printed
+        // So we need the length of the word
+        std::string & word = results[i];
+        size_t wordLength = word.size();
+        // We then check to see if there is enough room to print the word
+        bool enoughRoom = (curX + int(wordLength)) < width_;
+        // If there is enough room print, the word. Otherwise advance the curY, reset the curX to x, and print the word.
+        if(enoughRoom)
         {
-            dX = x + int(i) - widthAvailable;
+            for(size_t j = 0; j < wordLength; ++j)
+            {
+                screen_[curX + (curY * width_)] = Glyph(word[j]);
+                curX++;
+            }
+            screen_[curX + (curY * width_)] = Glyph(' '); 
+            curX++;
         }
-        else
+        else //!enoughRoom
         {
-            dX = x + int(i);
+            curY++;
+            curX = x;
+            for(size_t j = 0; j < wordLength; ++j)
+            {
+                screen_[curX + (curY * width_)] = Glyph(word[j]);
+                curX++;
+            }
+            screen_[curX + (curY * width_)] = Glyph(' '); 
+            curX++;
         }
-        if(dX >= width_)
-        {
-            dX = 0;
-            dY += 1;
-        }
-        screen_[dX + (dY * width_)] = msg[i];
     }
 }
 

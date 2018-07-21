@@ -89,7 +89,11 @@ Input handleKeys(int key)
         case SDLK_RETURN:
         case SDLK_KP_ENTER:
         {
-            return Input(Cmd::NEXT_LEVEL);
+            return Input(Cmd::ENTER);
+        }
+        case SDLK_F1:
+        {
+            return Input(Cmd::FULLSCREEN);
         }
         default: { break; }
     }
