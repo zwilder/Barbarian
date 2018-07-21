@@ -91,6 +91,10 @@ Input handleKeys(int key)
         {
             return Input(Cmd::ENTER);
         }
+        case SDLK_F1:
+        {
+            return Input(Cmd::FULLSCREEN);
+        }
         default: { break; }
     }
 

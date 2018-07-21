@@ -30,8 +30,10 @@ Engine::Engine()
     consoleHeight_ = 42;
     spriteSize_ = wsl::Vector2i(9,14);
 
-    windowWidth_ = consoleWidth_ * spriteSize_.x;
-    windowHeight_ = consoleHeight_ * spriteSize_.y;
+    // windowWidth_ = consoleWidth_ * spriteSize_.x;
+    // windowHeight_ = consoleHeight_ * spriteSize_.y;
+    windowWidth_ = 800;
+    windowHeight_ = 600;
     windowTitle_ = "Barbarian!";
     window_ = NULL;
 
@@ -163,6 +165,14 @@ void Engine::handleEvents()
     if(input.quit())
     {
         running_ = false;
+    }
+    if(input.fullscreen())
+    {
+        // Uint32 flags = (SDL_GetWindowFlags(window_) ^ SDL_WINDOW_FULLSCREEN_DESKTOP);
+        if(SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP) < 0)
+        {
+           std::cout << "Failed to set fullscreen: " << SDL_GetError() << std::endl;
+        }
     }
     if(gameState_ == GameState::PLAYERS_TURN)
     {
