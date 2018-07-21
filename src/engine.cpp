@@ -26,16 +26,15 @@
 
 Engine::Engine()
 {
-    consoleWidth_ = 88; // consoleWidth_ and consoleHeight_ refer to the 'root' console
-    consoleHeight_ = 42;
-    spriteSize_ = wsl::Vector2i(9,14);
-
-    // windowWidth_ = consoleWidth_ * spriteSize_.x;
-    // windowHeight_ = consoleHeight_ * spriteSize_.y;
-    windowWidth_ = 800;
+    windowWidth_ = 800; // Window is set to 800x600 so the console can be 'centered' in it
     windowHeight_ = 600;
     windowTitle_ = "Barbarian!";
     window_ = NULL;
+
+    spriteSize_ = wsl::Vector2i(9,14);
+    consoleWidth_ = windowWidth_ / spriteSize_.x; // 88; // consoleWidth_ and consoleHeight_ refer to the 'root' console
+    consoleHeight_ = windowHeight_ / spriteSize_.y; // 42; 
+    fullscreen_ = false;
 
     maxRoomSize_ = 10;
     minRoomSize_ = 6;
@@ -168,10 +167,29 @@ void Engine::handleEvents()
     }
     if(input.fullscreen())
     {
+        // This is very broken, and I don't know why
         // Uint32 flags = (SDL_GetWindowFlags(window_) ^ SDL_WINDOW_FULLSCREEN_DESKTOP);
-        if(SDL_SetWindowFullscreen(window_, SDL_WINDOW_FULLSCREEN_DESKTOP) < 0)
+        // if(SDL_SetWindowFullscreen(window_, flags) < 0)
+        // {
+        //    std::cout << "Failed to set fullscreen: " << SDL_GetError() << std::endl;
+        // }
+        if(fullscreen_)
         {
-           std::cout << "Failed to set fullscreen: " << SDL_GetError() << std::endl;
+            windowWidth_ = 800;
+            windowHeight_ = 600;
+            SDL_SetWindowSize(window_, windowWidth_, windowHeight_);
+            SDL_SetWindowPosition(window_, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+            fullscreen_ = false;
+        }
+        else
+        {
+            SDL_DisplayMode dm;
+            SDL_GetDesktopDisplayMode(0, &dm);
+            windowWidth_ = dm.w;
+            windowHeight_ = dm.h;
+            SDL_SetWindowSize(window_, windowWidth_ + 10, windowHeight_ + 10);
+            SDL_SetWindowPosition(window_, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+            fullscreen_ = true;
         }
     }
     if(gameState_ == GameState::PLAYERS_TURN)
@@ -207,8 +225,9 @@ void Engine::handleEvents()
                     fov::visible(visible_.get(), gameMap_.get(), player_);
                 }
             }
-            prevGameState_ = gameState_;
-            gameState_ = GameState::ENEMY_TURN;
+            changeState(GameState::ENEMY_TURN);
+            // prevGameState_ = gameState_;
+            // gameState_ = GameState::ENEMY_TURN;
             // player_->actor()->setNextAction(Action::Type::Attack, input.dir());
         }
         if(input.nextLevel())
@@ -236,6 +255,14 @@ void Engine::handleEvents()
     //         gameState_ = GameState::PLAYERS_TURN;
     //     }
     // }
+    else if (gameState_ == GameState::INVENTORY)
+    {
+        // Inventory menu needs to correlate keypress with item
+    }
+    else if (gameState_ == GameState::EQUIP)
+    {
+        //
+    }
     else if(gameState_ == GameState::GAME_OVER && keyPressed)
     {
         newGame();
@@ -306,8 +333,7 @@ void Engine::update()
         }
         if((gameState_ != GameState::GAME_OVER))// && (gameState_ != GameState::MSG_WAIT))
         {
-            prevGameState_ = gameState_;
-            gameState_ = GameState::PLAYERS_TURN;
+            changeState(GameState::PLAYERS_TURN);
         }
 
         if(!msgList_.isEmpty())
@@ -399,6 +425,8 @@ void Engine::draw()
     // Create sprites from the template sprites in spriteChars_ to represent the characters on the virtual console, and draw them to the screen
     wsl::Sprite cursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_.x,spriteSize_.y),spriteSheet_); 
     wsl::Sprite bgCursorSprite = wsl::Sprite(wsl::Rect(0,0,spriteSize_.x,spriteSize_.y),spriteSheet_);
+    int xOfs = (windowWidth_ - (console_->width() * spriteSize_.x)) / 2; // Centers the console on the window
+    int yOfs = (windowHeight_ - (console_->height() * spriteSize_.y)) / 2;
     for(int x = 0; x < console_->width(); ++x)
     {
         for(int y = 0; y < console_->height(); ++y)
@@ -407,12 +435,12 @@ void Engine::draw()
             if(bgColor != wsl::Color::Black)
             {
                 bgCursorSprite.setTexPos(spriteRects_[219]); // 219 is the white square in the CP437 font
-                bgCursorSprite.setPos(x * spriteSize_.x, y * spriteSize_.y);
+                bgCursorSprite.setPos((x * spriteSize_.x) + xOfs, (y * spriteSize_.y) + yOfs);
             
                 bgCursorSprite.render(renderer_, bgColor);
             }
             wsl::Rect & textureRect = spriteRects_[console_->get(x,y).symbol()];
-            cursorSprite.setPos(x * spriteSize_.x, y * spriteSize_.y);
+            cursorSprite.setPos((x * spriteSize_.x) + xOfs, (y * spriteSize_.y) + yOfs);
             cursorSprite.setTexPos(wsl::Rect(textureRect.x1, textureRect.y1, textureRect.w, textureRect.h));
             wsl::Color color = console_->get(x,y).color();
 
@@ -471,6 +499,17 @@ void Engine::addMessage(std::string msg)
     // {
         // msgList_.push(msg);
     // }
+}
+
+void Engine::changeState(GameState newState)
+{
+    prevGameState_ = gameState_;
+    gameState_ = newState;
+}
+
+void Engine::revertState()
+{
+    gameState_ = prevGameState_;
 }
 
 void Engine::newGame()

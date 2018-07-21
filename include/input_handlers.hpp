@@ -29,11 +29,11 @@
 enum Cmd : int
 {
     NONE = 0,
-    MOVE = 0x02,
-    QUIT = 0x04,
-    FULLSCREEN = 0x04,
-    NEXT_LEVEL = 0x08,
-    ENTER = 0x10
+    MOVE = 0x002,
+    QUIT = 0x004,
+    FULLSCREEN = 0x008,
+    NEXT_LEVEL = 0x010,
+    ENTER = 0x020
 };
         
 

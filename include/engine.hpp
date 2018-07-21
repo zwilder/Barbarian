@@ -43,7 +43,9 @@ enum class GameState : uint8_t
     PLAYERS_TURN,
     ENEMY_TURN,
     GAME_OVER,
-    MSG_WAIT
+    MSG_WAIT,
+    INVENTORY,
+    EQUIP
 };
 
 class Engine
@@ -61,7 +63,9 @@ class Engine
         int windowWidth() { return windowWidth_; }
         int windowHeight() { return windowHeight_; }
 
-        void playerDied() { gameState_ = GameState::GAME_OVER; }
+        // void playerDied() { gameState_ = GameState::GAME_OVER; }
+        void changeState(GameState newState);
+        void revertState();
         void addMessage(std::string msg);
         void newGame();
 
@@ -74,13 +78,13 @@ class Engine
         bool running_;
 
         // Console/Graphics
-        // int spriteSize_;
         wsl::Vector2i spriteSize_;
         int consoleWidth_;
         int consoleHeight_;
         int windowWidth_;
         int windowHeight_;
         std::string windowTitle_;
+        bool fullscreen_;
 
         std::unique_ptr<wsl::Console> console_;
         

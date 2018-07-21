@@ -84,6 +84,10 @@ void Entity::makeActor(Actor actor)
 // }
 void Entity::takeDamage(int damage)
 {
+    if((actor_->HP <= 0) || check(Flags::DEAD))
+    {
+        return;
+    }
     actor_->HP -= damage;
     if(actor_->HP <= 0)
     {
@@ -92,9 +96,8 @@ void Entity::takeDamage(int damage)
         if(this == game_->player())
         {
             glyph() = wsl::Glyph('%', wsl::Color::Black, wsl::Color::DkRed);
-            // std::cout << game_->player()->name() << " has perished!\n";
             game_->addMessage(game_->player()->name() + " has perished!");
-            game_->playerDied();
+            game_->changeState(GameState::GAME_OVER);
         }
         else
         {
