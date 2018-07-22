@@ -182,46 +182,54 @@ void Entity::makeInventory()
     inventory_ = std::make_shared< std::vector<Entity> >();
 }
 
-void Entity::pickup(Entity * entity)
+void Entity::pickup(Entity * itemEntity)
 {
-    if(!isItem())
+    std::cout << "pickup called\n";
+    if(!itemEntity->isItem())
     {
+        std::cout << "itemEntity.name(): " << itemEntity->name() << " is not an item!\n";
         return;
     }
     // Add Item to inventory
-    if(!entity->hasInventory())
+    if(!hasInventory())
     {
+        std::cout << name_ << " does not have an inventory!\n";
         return;
     }
-    item_->carried = true;
-    if(item_->stackable)
+    itemEntity->item_->carried = true;
+    if(itemEntity->item_->stackable)
     {
-        for(size_t i = 0; i < entity->inventory_->size(); ++i)
+        //if inventory has an item of the same name (?) increase quantity and return 
+        for(size_t i = 0; i < inventory_->size(); ++i)
         {
-            //if inventory has an item of the same name (?) increase quantity and return 
-            Entity & listEntity = entity->inventory_->at(i);
-            if(listEntity.name() == name())
+            Entity & listEntity = inventory_->at(i);
+            if(listEntity.name() == itemEntity->name())
             {
                 listEntity.item_->quantity += 1;
                 break;
             }
         }
     }
-    
+    else // !itemEntity->item_->stackable
+    {
+        inventory_->push_back(*itemEntity);
+    } 
     // Remove item from game entityList
     wsl::DLNode<Entity> * current = game_->entityList()->head();
-    // for(wsl::DLNode<Entity> * temp = game_->entityList()->head(); temp != NULL; temp = temp->next)
     while(current != NULL)
     {
         Entity * curEntity = &current->data;
-        if(curEntity->isItem() && (curEntity->pos() == this->pos()) && (curEntity->name() == this->name()))
+        if(curEntity->isItem() && (curEntity->pos() == itemEntity->pos()) && (curEntity->name() == itemEntity->name()))
         {
-            entity->inventory_->push_back(*curEntity);
             break;
         }
         current = current->next;
     }
     game_->entityList()->remove(current);
+    for(size_t i = 0; i < inventory_->size(); ++i)
+    {
+        std::cout << i << ": " << inventory_->at(i).name() << std::endl;
+    }
 }
 
 void Entity::drop()

@@ -46,10 +46,11 @@ class GameMap
         Tile & tileAt(wsl::Vector2i pos);
         Entity * entityAt(wsl::Vector2i pos);
         Entity * entityAt(int x, int y);
-        // Entity * entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList);
-        // Entity * entityAt(int x, int y, std::vector<Entity> * entityList);
+        Entity * itemAt(wsl::Vector2i pos);
+        Entity * itemAt(int x, int y);
         
-        void placeEntities(int maxPerRoom);
+        void placeActors(int maxPerRoom);
+        void placeItems(int max);
         
         std::vector<wsl::Vector2i> neighbors(wsl::Vector2i start);
 

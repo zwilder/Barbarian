@@ -87,6 +87,29 @@ Entity * GameMap::entityAt(int x, int y)
     return entityAt(wsl::Vector2i(x,y));
 }
 
+Entity * GameMap::itemAt(wsl::Vector2i pos)
+{
+    Entity * result = NULL;
+    wsl::DLList<Entity> * entityList = owner_->entityList();
+
+    for(wsl::DLNode<Entity> * temp = entityList->head(); temp != NULL; temp = temp->next)
+    {
+        Entity * entity = &temp->data;
+        if(entity->isItem() && (entity->pos() == pos))
+        {
+            result = entity;
+            break;
+        }
+    }
+
+    return result;
+}
+
+Entity * GameMap::itemAt(int x, int y)
+{
+    return itemAt(wsl::Vector2i(x,y));
+}
+
 void GameMap::initTiles_()
 {
     Tile wallTile = Tile::Wall;
@@ -207,11 +230,11 @@ bool GameMap::isBlocked(int x, int y)
     return success;
 }
 
-void GameMap::placeEntities(int maxPerRoom)
+void GameMap::placeActors(int maxPerRoom)
 {
     // std::vector<Entity> * entityList = owner_->entityList();
     wsl::DLList<Entity> * entityList = owner_->entityList();
-    entityList->clear();
+    // entityList->clear(); // This needs to go in the next level code in engine, not here.
     for(size_t i = 1; i < rooms.size(); ++i)
     {
         wsl::Rect & room = rooms[i];
@@ -241,6 +264,34 @@ void GameMap::placeEntities(int maxPerRoom)
                     entityList->head()->data.engage(Entity::Flags::AI);
                 }
             }
+        }
+    }
+}
+
+void GameMap::placeItems(int max)
+{
+    wsl::DLList<Entity> * entityList = owner_->entityList();
+    // int numItems = wsl::randomInt(0,max);
+    int numItems = max;
+    int placedItems = 0;
+    for(size_t i = 1; i < rooms.size(); ++i)
+    {
+        if(placedItems >= numItems)
+        {
+            break;
+        }
+        wsl::Rect & room = rooms[i];
+        int x = wsl::randomInt(room.x1 + 1,room.x2 - 1);
+        int y = wsl::randomInt(room.y1 + 1, room.y2 - 1);
+        if(!entityAt(x,y))
+        {
+            // if(wsl::randomBool(0.2))
+            // {
+                //place item
+                entityList->push(Entity(owner_, wsl::Vector2i(x,y), wsl::Glyph('!', wsl::Color::LtRed), "healing potion"));
+                entityList->head()->data.makeItem(Item(Item::UseFunction::Heal, 1));
+                placedItems += 1;
+            // }
         }
     }
 }

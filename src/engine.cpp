@@ -123,11 +123,14 @@ bool Engine::init()
         // which would facilitate a character creation option in the future. 
         player_ = new Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
         player_->makeActor(Actor(50,4)); // speed, vision
+        player_->makeInventory();
         player_->setPos(gameMap_->rooms[0].center());
         fov::visible(visible_.get(), gameMap_.get(), player_);
 
         // Tell gamemap to place some enemies
-        gameMap_->placeEntities(2);
+        entityList_.clear();
+        gameMap_->placeActors(2);
+        gameMap_->placeItems(5);
     }
     return success;
 }
@@ -232,13 +235,29 @@ void Engine::handleEvents()
             // gameState_ = GameState::ENEMY_TURN;
             // player_->actor()->setNextAction(Action::Type::Attack, input.dir());
         }
+        if(input.get())
+        {
+            Entity * itemEntity = gameMap_->itemAt(player_->pos());
+            if(itemEntity == NULL)
+            {
+                addMessage("You see no item here.");
+            }
+            else
+            {
+                player_->pickup(itemEntity);
+                addMessage("You pickup the " + itemEntity->name() + ".");
+            }
+            changeState(GameState::ENEMY_TURN);
+        }
         if(input.nextLevel())
         {
             *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
             player_->setPos(gameMap_->rooms[0].center());
             fov::visible(visible_.get(), gameMap_.get(), player_);
             // Tell gamemap to place some enemies
-            gameMap_->placeEntities(2);
+            entityList_.clear();
+            gameMap_->placeActors(2);
+            gameMap_->placeItems(5);
         }
     }
     // else if(gameState_ == GameState::MSG_WAIT && input.enter())
@@ -516,17 +535,21 @@ void Engine::revertState()
 
 void Engine::newGame()
 {
+    // This code is a mess and should be replaced eventually with something cleaner, less specific, and reusable.
     *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
     // Add the player entity - Should be a separate function,
     // which would facilitate a character creation option in the future. 
     *player_ = Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
     player_->makeActor(Actor(50,4)); // speed, vision
+    player_->makeInventory();
     player_->setPos(gameMap_->rooms[0].center());
     fov::visible(visible_.get(), gameMap_.get(), player_);
 
     // Tell gamemap to place some enemies
-    gameMap_->placeEntities(2);
+    entityList_.clear();
+    gameMap_->placeActors(2);
+    gameMap_->placeItems(5);
     gameState_ = GameState::PLAYERS_TURN;
     prevGameState_ = gameState_;
     msgList_.clear();

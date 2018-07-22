@@ -25,7 +25,7 @@
 
 #include "vector.hpp"
 
-// Bit flags are overkill and possibly not the best way to do this... 
+// Bit flags are possibly not the best way to do this...
 enum Cmd : int
 {
     NONE = 0,
@@ -33,7 +33,8 @@ enum Cmd : int
     QUIT = 0x004,
     FULLSCREEN = 0x008,
     NEXT_LEVEL = 0x010,
-    ENTER = 0x020
+    ENTER = 0x020,
+    GET = 0x040
 };
         
 
@@ -48,6 +49,7 @@ class Input
         bool fullscreen() { return((cmdMask_ & Cmd::FULLSCREEN) == Cmd::FULLSCREEN); }
         bool nextLevel() { return((cmdMask_ & Cmd::NEXT_LEVEL) == Cmd::NEXT_LEVEL); }
         bool enter() { return((cmdMask_ & Cmd::ENTER) == Cmd::ENTER); }
+        bool get() { return((cmdMask_ & Cmd::GET) == Cmd::GET); }
 
         wsl::Vector2i dir() { return dir_; }
     private:
