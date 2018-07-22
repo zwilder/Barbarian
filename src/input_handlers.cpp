@@ -81,6 +81,12 @@ Input handleKeys(int key)
         {
             return Input(Cmd::MOVE, wsl::Vector2i(-1,1));
         }
+        case SDLK_KP_5:
+        case SDLK_KP_PERIOD:
+        case SDLK_PERIOD:
+        {
+            return Input(Cmd::MOVE, wsl::Vector2i(0,0));
+        };
         case SDLK_q:
         case SDLK_ESCAPE:
         {

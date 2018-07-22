@@ -29,6 +29,14 @@ Actor::Actor(int s, int v, int mH, int d, int p) : speed(s), vision(v), maxHP(mH
     energy = 0;
 }
 
+Item::Item(int use, int qty)
+{
+    useFunction = UseFunction(use);
+    quantity = qty;
+    carried = false;
+    stackable = false;
+}
+
 Entity::Entity()
 {
     game_ = nullptr;
@@ -37,12 +45,15 @@ Entity::Entity()
     name_ = "";
     mask_ = Flags::NONE;
     actor_ = nullptr;
+    item_ = nullptr;
+    inventory_ = nullptr;
 }
 
 Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph), name_(name)
 {
     mask_ = Flags::POS | Flags::GLYPH;
     actor_ = nullptr;
+    item_ = nullptr;
 } 
 
 void Entity::move(wsl::Vector2i delta)
@@ -70,7 +81,6 @@ void Entity::makeActor(Actor actor)
     engage(Flags::VISION);
     engage(Flags::ACTOR);
     engage(Flags::BLOCKS);
-    // actor_ = new Actor();
     actor_ = std::make_shared<Actor>();
     *actor_ = actor;
 }
@@ -124,7 +134,8 @@ bool Entity::update()
     else // if(fov::contains(game_->visible(), pos_)) // Right now the entities only move when they see the player
     {
         //Enemy update
-        // Almost all of this could be moved into a separate AI component...
+        // All of this will be moved to separate functions depending on the type of AI.
+        // The AI component will also have a state (Hunting, exploring, fleeing, etc)
         std::vector<wsl::Vector2i> visible;
         fov::visible(&visible, game_->gameMap(), this);
         if(fov::contains(&visible, game_->player()->pos()))
@@ -156,4 +167,81 @@ bool Entity::update()
         success = true;
     }
     return success;
+}
+
+void Entity::makeItem(Item item)
+{
+    engage(Flags::ITEM);
+    item_ = std::make_shared<Item>();
+    *item_ = item;
+}
+
+void Entity::makeInventory()
+{
+    engage(Flags::INVENTORY);
+    inventory_ = std::make_shared< std::vector<Entity> >();
+}
+
+void Entity::pickup(Entity * entity)
+{
+    if(!isItem())
+    {
+        return;
+    }
+    // Add Item to inventory
+    if(!entity->hasInventory())
+    {
+        return;
+    }
+    item_->carried = true;
+    if(item_->stackable)
+    {
+        for(size_t i = 0; i < entity->inventory_->size(); ++i)
+        {
+            //if inventory has an item of the same name (?) increase quantity and return 
+            Entity & listEntity = entity->inventory_->at(i);
+            if(listEntity.name() == name())
+            {
+                listEntity.item_->quantity += 1;
+                break;
+            }
+        }
+    }
+    
+    // Remove item from game entityList
+    wsl::DLNode<Entity> * current = game_->entityList()->head();
+    // for(wsl::DLNode<Entity> * temp = game_->entityList()->head(); temp != NULL; temp = temp->next)
+    while(current != NULL)
+    {
+        Entity * curEntity = &current->data;
+        if(curEntity->isItem() && (curEntity->pos() == this->pos()) && (curEntity->name() == this->name()))
+        {
+            entity->inventory_->push_back(*curEntity);
+            break;
+        }
+        current = current->next;
+    }
+    game_->entityList()->remove(current);
+}
+
+void Entity::drop()
+{
+    if(!isItem())
+    {
+        return;
+    }
+    // item_->carried = false;
+    // Remove item from inventory
+    // set position to player position
+}
+
+void Entity::use()
+{
+    if(!isItem())
+    {
+        return;
+    }
+    // Reduce quantity
+    // --if qty <= 0, remove from inventory
+    // Check use function
 }

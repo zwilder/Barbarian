@@ -210,10 +210,12 @@ void Engine::handleEvents()
                         addMessage("You attack the " + entity->name() + " for " + std::to_string(player_->power() - entity->defense()) + " damage!");
                         entity->takeDamage(player_->power() - entity->defense());
                     }
-                    //else if(entity->isItem())
-                    //{
-                        //move and get
-                    //}
+                    else if(entity->isItem())
+                    {
+                        // move and get
+                        move = true;
+                        addMessage("You see a " + entity->name() + " here.");
+                    }
                     else
                     {
                         move = true;
