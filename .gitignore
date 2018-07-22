@@ -1,4 +1,5 @@
 *.un~
+*.d
 *.o
 *.bak
 Scratch*

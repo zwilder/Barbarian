@@ -18,7 +18,6 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #pragma once
 #ifndef ENGINE_HPP
 #define ENGINE_HPP

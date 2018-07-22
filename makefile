@@ -1,28 +1,33 @@
 CXX = g++
-# -g For debugging flags, -O2 for optimization
-OPTS = -std=c++17 -O2
-# OPTS = -std=c++17 -Og -g -Wall
-LIBS = -lSDL2 -lSDL2_image
+# OPTS = -std=c++17 -O2
+OPTS = -std=c++17 -Og -g -Wall
 
-FILES := color texture sprite random console input_handlers entity tile game_map pathfinding fov engine 
+LIBS = -lSDL2 -lSDL2_image
+OBJ_NAME = Barbarian
+FILES := color texture sprite random console input_handlers entity tile game_map pathfinding fov engine main
 OBJS := $(FILES:=.o)
 SRC := $(OBJS:.o=.cpp)
+DEP := $(FILES:=.d)
+
 VPATH = ./src:./include
 
-OBJ_NAME = Barbarian
-
-.PHONY: clean main
+.PHONY: clean
 
 all: $(OBJ_NAME)
 
-$(OBJ_NAME): $(OBJS) main.o
-	$(CXX) $(OPTS) -o $(OBJ_NAME) $(OBJS) main.o $(LIBS)
+$(OBJ_NAME): $(OBJS)
+	$(CXX) $(OPTS) -o $(OBJ_NAME) $(OBJS) $(LIBS)
 
-$(OBJS): %.o: %.cpp %.hpp
+$(OBJS): %.o: %.cpp %.d
 	$(CXX) $(OPTS) -c $< -o $@
 
-main: main.o
-	$(CXX) $(OPTS) -c src/main.cpp -o main.o
+%.d: %.cpp
+	@set -e; rm -f $@; \
+	$(CXX) -M $(OPTS) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+
+-include $(DEP)
 
 clean:
-	rm *.o
+	rm *.o *.d
