@@ -87,6 +87,8 @@ Entity * GameMap::entityAt(int x, int y)
     return entityAt(wsl::Vector2i(x,y));
 }
 
+// itemAt, actorAt, and entityAt are all basically the same function - should possibly be combined and then call a separate function
+// with the "entity->isXXXX" as a passed in boolean argument
 Entity * GameMap::itemAt(wsl::Vector2i pos)
 {
     Entity * result = NULL;
@@ -108,6 +110,28 @@ Entity * GameMap::itemAt(wsl::Vector2i pos)
 Entity * GameMap::itemAt(int x, int y)
 {
     return itemAt(wsl::Vector2i(x,y));
+}
+
+Entity * GameMap::actorAt(wsl::Vector2i pos)
+{
+    Entity * result = NULL;
+    wsl::DLList<Entity> * entityList = owner_->entityList();
+    for(wsl::DLNode<Entity> * temp = entityList->head(); temp != NULL; temp = temp->next)
+    {
+        Entity * entity = &temp->data;
+        if(entity->isActor() && (entity->pos() == pos))
+        {
+            result = entity;
+            break;
+        }
+    }
+
+    return result;
+}
+
+Entity * GameMap::actorAt(int x, int y)
+{
+    return actorAt(wsl::Vector2i(x,y));
 }
 
 void GameMap::initTiles_()
@@ -278,7 +302,7 @@ void GameMap::placeItems(int max)
     {
         if(placedItems >= numItems)
         {
-            break;
+            // break;
         }
         wsl::Rect & room = rooms[i];
         int x = wsl::randomInt(room.x1 + 1,room.x2 - 1);
@@ -289,7 +313,7 @@ void GameMap::placeItems(int max)
             // {
                 //place item
                 entityList->push(Entity(owner_, wsl::Vector2i(x,y), wsl::Glyph('!', wsl::Color::LtRed), "healing potion"));
-                entityList->head()->data.makeItem(Item(Item::UseFunction::Heal, 1));
+                entityList->head()->data.makeItem(Item(Item::UseFunction::Heal, 1, true));
                 placedItems += 1;
             // }
         }

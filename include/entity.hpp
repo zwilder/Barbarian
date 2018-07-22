@@ -53,7 +53,7 @@ class Actor
 class Item
 {
     public:
-        Item(int use = 0, int qty= 0);
+        Item(int u = 0, int q = 0, bool s = false);
         enum UseFunction : uint8_t
         {
             None,

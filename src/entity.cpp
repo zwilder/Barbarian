@@ -29,12 +29,12 @@ Actor::Actor(int s, int v, int mH, int d, int p) : speed(s), vision(v), maxHP(mH
     energy = 0;
 }
 
-Item::Item(int use, int qty)
+Item::Item(int u, int q, bool s)
 {
-    useFunction = UseFunction(use);
-    quantity = qty;
+    useFunction = UseFunction(u);
+    quantity = q;
     carried = false;
-    stackable = false;
+    stackable = s;
 }
 
 Entity::Entity()
@@ -141,7 +141,7 @@ bool Entity::update()
         if(fov::contains(&visible, game_->player()->pos()))
         {
             wsl::Vector2i next = path::bfsStep(game_->gameMap(), pos_, game_->player()->pos());
-            Entity * entity = game_->gameMap()->entityAt(next);
+            Entity * entity = game_->gameMap()->actorAt(next);
             if(entity != NULL)
             {
                 if(entity->isActor())
@@ -187,27 +187,39 @@ void Entity::pickup(Entity * itemEntity)
     std::cout << "pickup called\n";
     if(!itemEntity->isItem())
     {
-        std::cout << "itemEntity.name(): " << itemEntity->name() << " is not an item!\n";
+        // std::cout << "itemEntity.name(): " << itemEntity->name() << " is not an item!\n";
         return;
     }
     // Add Item to inventory
     if(!hasInventory())
     {
-        std::cout << name_ << " does not have an inventory!\n";
+        // std::cout << name_ << " does not have an inventory!\n";
         return;
     }
     itemEntity->item_->carried = true;
     if(itemEntity->item_->stackable)
     {
-        //if inventory has an item of the same name (?) increase quantity and return 
+        // Check if inventory has an item of the same name (?) 
+        // bool invContains = false;
+        Entity * invItem = NULL;
         for(size_t i = 0; i < inventory_->size(); ++i)
         {
-            Entity & listEntity = inventory_->at(i);
-            if(listEntity.name() == itemEntity->name())
+            Entity * listEntity = &inventory_->at(i);
+            if(listEntity->name() == itemEntity->name())
             {
-                listEntity.item_->quantity += 1;
+                // listEntity.item_->quantity += 1;
+                // invContains = true;
+                invItem = listEntity;
                 break;
             }
+        }
+        if(invItem != NULL)
+        {
+            invItem->item_->quantity += 1;
+        }
+        else // invItem == NULL
+        {
+            inventory_->push_back(*itemEntity);
         }
     }
     else // !itemEntity->item_->stackable
@@ -228,7 +240,7 @@ void Entity::pickup(Entity * itemEntity)
     game_->entityList()->remove(current);
     for(size_t i = 0; i < inventory_->size(); ++i)
     {
-        std::cout << i << ": " << inventory_->at(i).name() << std::endl;
+        std::cout << i << ": " << inventory_->at(i).name() << " x " << inventory_->at(i).item_->quantity << std::endl;
     }
 }
 
