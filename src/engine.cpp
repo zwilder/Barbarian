@@ -282,11 +282,16 @@ void Engine::handleEvents()
     // }
     else if (gameState_ == GameState::INVENTORY)
     {
-        // Inventory menu needs to correlate keypress with item
-        if(input.alpha() != 0)
+        if(input.alpha() >= 'a' && input.alpha() <= 'z')
         {
-            // changeState(prevGameState_);
-            std::cout << input.alpha() << std::endl;
+            int index = int(input.alpha() - 97);
+            wsl::DLNode<Entity> * itemNode = player_->inventory()->at(index);
+            if(itemNode)
+            {
+                player_->use(index);
+                addMessage("You use the " + itemNode->data.name() + "!");
+                changeState(GameState::ENEMY_TURN);
+            }
         }
     }
     else if (gameState_ == GameState::EQUIP)
@@ -454,15 +459,17 @@ void Engine::draw()
     {
         console_->print(0,1, "Inventory");
         console_->print(0,2, "---------");
-        if(player_->inventory()->size() == 0)
+        // if(player_->inventory()->size() == 0)
+        if(player_->inventory()->isEmpty())
         {
-            console_->print(0,3, "You have no items yet.");
+            console_->print(0,3, "Your inventory is empty.");
         }
         else
         {
-            for(size_t i = 0; i < player_->inventory()->size(); ++i)
+            int i = 0;
+            for(wsl::DLNode<Entity> * temp = player_->inventory()->head(); temp != NULL; temp = temp->next)
             {
-                Entity & item = player_->inventory()->at(i);
+                Entity & item = temp->data;
                 std::string name = item.name();
                 name[0] = toupper(name[0]);
                 int nameSize = int(name.size());
@@ -473,10 +480,43 @@ void Engine::draw()
                 {
                     console_->print(nameSize + 4, int(i) + 3, "x " + std::to_string(item.quantity()));
                 }
+                ++i;
             }
         }
 
         console_->print(0, console_->height() - 1, "Press [a-z] to select, [Esc] to exit");
+    }
+    else if(gameState_ == GameState::DROP)
+    {
+        console_->print(0,1, "Select the item you wish to drop");
+        console_->print(0,2, "---------");
+        // if(player_->inventory()->size() == 0)
+        if(player_->inventory()->isEmpty())
+        {
+            console_->print(0,3, "Your inventory is empty.");
+        }
+        else
+        {
+            int i = 0;
+            for(wsl::DLNode<Entity> * temp = player_->inventory()->head(); temp != NULL; temp = temp->next)
+            {
+                Entity & item = temp->data;
+                std::string name = item.name();
+                name[0] = toupper(name[0]);
+                int nameSize = int(name.size());
+                
+                console_->print(0, int(i) + 3, std::string(1, char(i+97)));
+                console_->print(1, int(i) + 3, ": " + name); 
+                if(item.stackable())
+                {
+                    console_->print(nameSize + 4, int(i) + 3, "x " + std::to_string(item.quantity()));
+                }
+                ++i;
+            }
+        }
+
+        console_->print(0, console_->height() - 1, "Press [a-z] to select, [Esc] to exit");
+
     }
 
     // Clear the SDL window

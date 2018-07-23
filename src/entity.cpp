@@ -179,12 +179,13 @@ void Entity::makeItem(Item item)
 void Entity::makeInventory()
 {
     engage(Flags::INVENTORY);
-    inventory_ = std::make_shared< std::vector<Entity> >();
+    // inventory_ = std::make_shared< std::vector<Entity> >();
+    inventory_ = std::make_shared< wsl::DLList<Entity> >();
 }
 
 void Entity::pickup(Entity * itemEntity)
 {
-    std::cout << "pickup called\n";
+    // std::cout << "pickup called\n";
     if(!itemEntity->isItem())
     {
         // std::cout << "itemEntity.name(): " << itemEntity->name() << " is not an item!\n";
@@ -202,9 +203,12 @@ void Entity::pickup(Entity * itemEntity)
         // Check if inventory has an item of the same name (?) 
         // bool invContains = false;
         Entity * invItem = NULL;
-        for(size_t i = 0; i < inventory_->size(); ++i)
+        for(wsl::DLNode<Entity> * temp = inventory_->head(); temp != NULL; temp = temp->next)
         {
-            Entity * listEntity = &inventory_->at(i);
+            Entity * listEntity = &temp->data;
+        // for(size_t i = 0; i < inventory_->size(); ++i)
+        // {
+        //     Entity * listEntity = &inventory_->at(i);
             if(listEntity->name() == itemEntity->name())
             {
                 // listEntity.item_->quantity += 1;
@@ -219,12 +223,14 @@ void Entity::pickup(Entity * itemEntity)
         }
         else // invItem == NULL
         {
-            inventory_->push_back(*itemEntity);
+            // inventory_->push_back(*itemEntity);
+            inventory_->push(*itemEntity);
         }
     }
     else // !itemEntity->item_->stackable
     {
-        inventory_->push_back(*itemEntity);
+        // inventory_->push_back(*itemEntity);
+        inventory_->push(*itemEntity);
     } 
     // Remove item from game entityList
     wsl::DLNode<Entity> * current = game_->entityList()->head();
@@ -238,30 +244,62 @@ void Entity::pickup(Entity * itemEntity)
         current = current->next;
     }
     game_->entityList()->remove(current);
-    for(size_t i = 0; i < inventory_->size(); ++i)
-    {
-        std::cout << i << ": " << inventory_->at(i).name() << " x " << inventory_->at(i).item_->quantity << std::endl;
-    }
+    // for(size_t i = 0; i < inventory_->size(); ++i)
+    // {
+    //     std::cout << i << ": " << inventory_->at(i).name() << " x " << inventory_->at(i).item_->quantity << std::endl;
+    // }
 }
 
-void Entity::drop()
+void Entity::drop(int index)
 {
-    if(!isItem())
+    wsl::DLNode<Entity> * itemNode = inventory_->at(index);
+    if(!itemNode)
     {
         return;
     }
-    // item_->carried = false;
-    // Remove item from inventory
-    // set position to player position
+    Entity itemEntity = itemNode->data;
+    itemEntity.item_->carried = false;
+    itemEntity.pos = pos_;
+    game_->entityList().push(itemEntity);
+    inventory_->remove(itemNode);
 }
 
-void Entity::use()
+void Entity::use(int index)
 {
-    if(!isItem())
+    wsl::DLNode<Entity> * itemNode = inventory_->at(index);
+    if(!itemNode)
     {
         return;
+    }
+    Entity & itemEntity = itemNode->data;
+    // Check use function
+    switch(itemEntity.item_->useFunction)
+    {
+        case Item::UseFunction::Heal:
+        {
+            use_heal_();
+            break;
+        }
+        default: break;
     }
     // Reduce quantity
-    // --if qty <= 0, remove from inventory
-    // Check use function
+    itemEntity.item_->quantity -= 1;
+    if(itemEntity.item_->quantity <= 0)
+    {
+        // --if qty <= 0, remove from inventory
+        inventory_->remove(itemNode);
+    }
+}
+
+void Entity::use_heal_()
+{
+    if(!isActor())
+    {
+        return;
+    }
+    actor_->HP += int(actor_->maxHP / 3);
+    if(actor_->HP > actor_->maxHP)
+    {
+        actor_->HP = actor_->maxHP;
+    }
 }

@@ -22,6 +22,8 @@
 #ifndef DLLIST_HPP
 #define DLLIST_HPP
 
+#include <iostream>
+#include <cassert>
 /*
  * A lot of this is adapted from https://www.geeksforgeeks.org/data-structures/linked-list/#doublyLinkedList
  * I made it a fancy template class, since there is a lot of different things I could use this structure for - such as
@@ -62,6 +64,7 @@ class DLList
 
         T popFront();
         T popBack();
+        DLNode<T> * at(int index);
 
         bool isEmpty() { return (head_ == NULL); }
 
@@ -238,6 +241,26 @@ T DLList<T>::popBack()
     T result = tail()->data;
     remove(tail());
     return result;
+}
+
+template <typename T>
+DLNode<T> * DLList<T>::at(int index)
+{
+    DLNode<T> * resultNode = head_;
+    int count = 0;
+    while(resultNode != NULL)
+    {
+        if(count == index)
+        {
+            break;
+        }
+        ++count;
+        resultNode = resultNode->next;
+    }
+    
+    // std::cout << "Looking for node in DLList out of bounds!\n";
+    // assert(0);
+    return resultNode;
 }
 
 template <typename T>

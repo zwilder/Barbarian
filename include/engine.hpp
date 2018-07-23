@@ -44,7 +44,8 @@ enum class GameState : uint8_t
     GAME_OVER,
     MSG_WAIT,
     INVENTORY,
-    EQUIP
+    EQUIP,
+    DROP
 };
 
 class Engine

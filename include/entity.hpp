@@ -25,6 +25,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include "dllist.hpp"
 #include "vector.hpp"
 #include "console.hpp"
 
@@ -128,10 +129,11 @@ class Entity
         void makeItem(Item item);
         void makeInventory();
         bool carried() { return item_->carried; }
-        void pickup(Entity * entity);
-        void drop();
-        void use();
-        std::vector<Entity> * inventory() { return inventory_.get(); }
+        void pickup(Entity * itemEntity);
+        void drop(int index);
+        void use(int index);
+        // std::vector<Entity> * inventory() { return inventory_.get(); }
+        wsl::DLList<Entity> * inventory() { return inventory_.get(); }
         int & quantity() { return item_->quantity; }
         bool stackable() { return item_->stackable; }
 
@@ -147,7 +149,11 @@ class Entity
         std::string name_;
         std::shared_ptr<Actor> actor_;
         std::shared_ptr<Item> item_;
-        std::shared_ptr< std::vector<Entity> > inventory_;
+        // std::shared_ptr< std::vector<Entity> > inventory_;
+        std::shared_ptr< wsl::DLList<Entity> > inventory_;
+
+        // Use Functions
+        void use_heal_();
 };
 
 #endif //ENTITY_HPP
