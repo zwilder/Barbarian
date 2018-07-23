@@ -34,7 +34,8 @@ enum Cmd : int
     FULLSCREEN = 0x008,
     NEXT_LEVEL = 0x010,
     ENTER = 0x020,
-    GET = 0x040
+    GET = 0x040,
+    OPEN_INV = 0x080
 };
         
 
@@ -42,7 +43,7 @@ class Input
 {
     public:
         Input(int cmd = Cmd::NONE);
-        Input(int cmd, wsl::Vector2i delta);
+        Input(int cmd, wsl::Vector2i delta, char alpha = 0);
 
         bool move() { return((cmdMask_ & Cmd::MOVE) == Cmd::MOVE); }
         bool quit() { return((cmdMask_ & Cmd::QUIT) == Cmd::QUIT); }
@@ -50,11 +51,14 @@ class Input
         bool nextLevel() { return((cmdMask_ & Cmd::NEXT_LEVEL) == Cmd::NEXT_LEVEL); }
         bool enter() { return((cmdMask_ & Cmd::ENTER) == Cmd::ENTER); }
         bool get() { return((cmdMask_ & Cmd::GET) == Cmd::GET); }
+        bool openInv() { return((cmdMask_ & Cmd::OPEN_INV) == Cmd::OPEN_INV); }
 
         wsl::Vector2i dir() { return dir_; }
+        char alpha() { return alpha_; }
     private:
         int cmdMask_;
         wsl::Vector2i dir_; 
+        char alpha_;
  };
 
 Input handleKeys(int key);

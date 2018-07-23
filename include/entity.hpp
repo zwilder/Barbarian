@@ -131,6 +131,9 @@ class Entity
         void pickup(Entity * entity);
         void drop();
         void use();
+        std::vector<Entity> * inventory() { return inventory_.get(); }
+        int & quantity() { return item_->quantity; }
+        bool stackable() { return item_->stackable; }
 
         Engine * game() { return game_; }
 

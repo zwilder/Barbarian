@@ -61,6 +61,7 @@ namespace wsl
             inline int index(int x, int y) { return (x + (y * width_)); }           
             void flush();
             void print(int x, int y, std::string msg);
+            void printf(int x, int y, std::string msg, Color fg = Color::White, Color bg = Color::Black);
         private:
             int width_;
             int height_;

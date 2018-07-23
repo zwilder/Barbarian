@@ -120,6 +120,50 @@ void Console::print(int x, int y, std::string msg)
     }
 }
 
+void Console::printf(int x, int y, std::string msg, Color fg, Color bg)
+{
+    // This is a separate function from Console::print for no reason right now - eventually I want to have in string formatting
+    // so I can do things like:
+    //  msg = "Hello {{Color::Green}}World!{{/}}" 
+    // or something. Don't know how to do that, yet.
+    std::istringstream iss(msg);
+    std::vector<std::string> results((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+    int curX = x;
+    int curY = y;
+    for(size_t i = 0; i < results.size(); ++i)
+    {
+        // Each results[i] is a word to be printed
+        // So we need the length of the word
+        std::string & word = results[i];
+        size_t wordLength = word.size();
+        // We then check to see if there is enough room to print the word
+        bool enoughRoom = (curX + int(wordLength)) < width_;
+        // If there is enough room print, the word. Otherwise advance the curY, reset the curX to x, and print the word.
+        if(enoughRoom)
+        {
+            for(size_t j = 0; j < wordLength; ++j)
+            {
+                screen_[curX + (curY * width_)] = Glyph(word[j], fg, bg);
+                curX++;
+            }
+            screen_[curX + (curY * width_)] = Glyph(' ', fg, bg); 
+            curX++;
+        }
+        else //!enoughRoom
+        {
+            curY++;
+            curX = x;
+            for(size_t j = 0; j < wordLength; ++j)
+            {
+                screen_[curX + (curY * width_)] = Glyph(word[j], fg, bg);
+                curX++;
+            }
+            screen_[curX + (curY * width_)] = Glyph(' ', fg, bg); 
+            curX++;
+        }
+    }
+}
+
 void Console::flush()
 {
     for(size_t i = 0; i < screen_.size(); ++i)

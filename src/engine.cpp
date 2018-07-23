@@ -166,7 +166,14 @@ void Engine::handleEvents()
     // Evaluate the input to see if the engine needs to do anything.
     if(input.quit())
     {
-        running_ = false;
+        if(gameState_ == GameState::INVENTORY)
+        {
+            changeState(prevGameState_);
+        }
+        else
+        {
+            running_ = false;
+        }
     }
     if(input.fullscreen())
     {
@@ -202,38 +209,31 @@ void Engine::handleEvents()
             wsl::Vector2i dPos = player_->pos() + input.dir();
             if(!gameMap_->tileAt(dPos).blocksMovement())
             {
-                Entity * entity = gameMap_->entityAt(dPos);
+                Entity * actor = gameMap_->actorAt(dPos);
+                Entity * item = gameMap_->itemAt(dPos);
                 bool move = false;
-                if(entity)
+                if(actor)
                 {
-                    if(entity->isActor())
-                    {
-                        //attack
-                        // std::cout << "You attack the " << entity->name() << " for " << player_->power() - entity->defense() << " damage!\n";
-                        addMessage("You attack the " + entity->name() + " for " + std::to_string(player_->power() - entity->defense()) + " damage!");
-                        entity->takeDamage(player_->power() - entity->defense());
-                    }
-                    else if(entity->isItem())
-                    {
-                        // move and get
-                        move = true;
-                        addMessage("You see a " + entity->name() + " here.");
-                    }
-                    else
-                    {
-                        move = true;
-                    }
+                    addMessage("You attack the " + actor->name() + " for " + std::to_string(player_->power() - actor->defense()) + " damage!");
+                    actor->takeDamage(player_->power() - actor->defense());
                 }
-                if(!entity || move == true)
+                else if(item)
+                {
+                    move = true;
+                    addMessage("You see a " + item->name() + " here.");
+                }
+                else
+                {
+                    move = true;
+                }
+
+                if(move)
                 {
                     player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
                     fov::visible(visible_.get(), gameMap_.get(), player_);
                 }
             }
             changeState(GameState::ENEMY_TURN);
-            // prevGameState_ = gameState_;
-            // gameState_ = GameState::ENEMY_TURN;
-            // player_->actor()->setNextAction(Action::Type::Attack, input.dir());
         }
         if(input.get())
         {
@@ -248,6 +248,10 @@ void Engine::handleEvents()
                 addMessage("You pickup the " + itemEntity->name() + ".");
             }
             changeState(GameState::ENEMY_TURN);
+        }
+        if(input.openInv())
+        {
+            changeState(GameState::INVENTORY);
         }
         if(input.nextLevel())
         {
@@ -279,6 +283,11 @@ void Engine::handleEvents()
     else if (gameState_ == GameState::INVENTORY)
     {
         // Inventory menu needs to correlate keypress with item
+        if(input.alpha() != 0)
+        {
+            // changeState(prevGameState_);
+            std::cout << input.alpha() << std::endl;
+        }
     }
     else if (gameState_ == GameState::EQUIP)
     {
@@ -391,53 +400,84 @@ void Engine::draw()
     console_->flush();
 
     // Render tiles first, this loops through the entirety of the console_ width/height, since Tiles remain visible after being explored.
-    for(int x = 0; x < console_->width(); ++x)
+    if(gameState_ == GameState::ENEMY_TURN || gameState_ == GameState::PLAYERS_TURN || gameState_ == GameState::GAME_OVER)
     {
-        for(int y = 0; y < console_->height(); ++y)
+        for(int x = 0; x < console_->width(); ++x)
         {
-            int index = console_->index(x,y);
-            wsl::Glyph glyph = gameMap_->tiles[index].glyph();
-            if(fov::contains(visible_.get(), wsl::Vector2i(x,y)))
-            { 
-                console_->put(x,y,glyph);
-                gameMap_->tiles[index].engage(Tile::Flags::EXPLORED);
-            }
-            else if(gameMap_->tiles[index].explored())
+            for(int y = 0; y < console_->height(); ++y)
             {
-                if(glyph.symbol() != '#')
-                {
-                    glyph.setColor(wsl::Color::Black);
+                int index = console_->index(x,y);
+                wsl::Glyph glyph = gameMap_->tiles[index].glyph();
+                if(fov::contains(visible_.get(), wsl::Vector2i(x,y)))
+                { 
+                    console_->put(x,y,glyph);
+                    gameMap_->tiles[index].engage(Tile::Flags::EXPLORED);
                 }
-                else
+                else if(gameMap_->tiles[index].explored())
                 {
-                    glyph.setColor(wsl::Color::DkGrey);
+                    if(glyph.symbol() != '#')
+                    {
+                        glyph.setColor(wsl::Color::Black);
+                    }
+                    else
+                    {
+                        glyph.setColor(wsl::Color::DkGrey);
+                    }
+                    glyph.setBgColor(wsl::Color::Black);
+                    console_->put(x,y,glyph);
                 }
-                glyph.setBgColor(wsl::Color::Black);
-                console_->put(x,y,glyph);
             }
         }
-    }
 
-    // Loop through entities here, rendering items if they've been seen (explored)
+        // Loop through entities here, rendering items if they've been seen (explored)
 
-    // Loop through entities again, rendering entities IF they are in the visible_ coordinates.
-    for(wsl::DLNode<Entity> * temp = entityList_.head(); temp != NULL; temp = temp->next)
-    {
-        Entity & entity = temp->data;
-        wsl::Vector2i entityPos = entity.pos();
-        wsl::Glyph entityGlyph = entity.glyph();
-        if(fov::contains(visible_.get(), entityPos))
+        // Loop through entities again, rendering entities IF they are in the visible_ coordinates.
+        for(wsl::DLNode<Entity> * temp = entityList_.head(); temp != NULL; temp = temp->next)
         {
-            console_->put(entityPos.x,entityPos.y,entityGlyph);
+            Entity & entity = temp->data;
+            wsl::Vector2i entityPos = entity.pos();
+            wsl::Glyph entityGlyph = entity.glyph();
+            if(fov::contains(visible_.get(), entityPos))
+            {
+                console_->put(entityPos.x,entityPos.y,entityGlyph);
+            }
         }
+
+        console_->put(player_->pos().x, player_->pos().y, player_->glyph());
+
+        // UI
+        console_->print(0,0, currentMsg_);
+        console_->print(0,console_->height() - 2, player_->name());
+        console_->print(0,console_->height() - 1, "HP: " + std::to_string(player_->hp()) + "(" + std::to_string(player_->maxHP()) + ")");
     }
+    else if(gameState_ == GameState::INVENTORY)
+    {
+        console_->print(0,1, "Inventory");
+        console_->print(0,2, "---------");
+        if(player_->inventory()->size() == 0)
+        {
+            console_->print(0,3, "You have no items yet.");
+        }
+        else
+        {
+            for(size_t i = 0; i < player_->inventory()->size(); ++i)
+            {
+                Entity & item = player_->inventory()->at(i);
+                std::string name = item.name();
+                name[0] = toupper(name[0]);
+                int nameSize = int(name.size());
+                
+                console_->print(0, int(i) + 3, std::string(1, char(i+97)));
+                console_->print(1, int(i) + 3, ": " + name); 
+                if(item.stackable())
+                {
+                    console_->print(nameSize + 4, int(i) + 3, "x " + std::to_string(item.quantity()));
+                }
+            }
+        }
 
-    // Temporarily just rendering the player.
-    console_->put(player_->pos().x, player_->pos().y, player_->glyph());
-
-    console_->print(0,0, currentMsg_);
-    console_->print(0,console_->height() - 2, player_->name());
-    console_->print(0,console_->height() - 1, "HP: " + std::to_string(player_->hp()) + "(" + std::to_string(player_->maxHP()) + ")");
+        console_->print(0, console_->height() - 1, "Press [a-z] to select, [Esc] to exit");
+    }
 
     // Clear the SDL window
     SDL_SetRenderDrawColor(renderer_, 0x00, 0x00, 0x00, 0x00);
