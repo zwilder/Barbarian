@@ -179,40 +179,30 @@ void Entity::makeItem(Item item)
 void Entity::makeInventory()
 {
     engage(Flags::INVENTORY);
-    // inventory_ = std::make_shared< std::vector<Entity> >();
     inventory_ = std::make_shared< wsl::DLList<Entity> >();
 }
 
 void Entity::pickup(Entity * itemEntity)
 {
-    // std::cout << "pickup called\n";
     if(!itemEntity->isItem())
     {
-        // std::cout << "itemEntity.name(): " << itemEntity->name() << " is not an item!\n";
         return;
     }
     // Add Item to inventory
     if(!hasInventory())
     {
-        // std::cout << name_ << " does not have an inventory!\n";
         return;
     }
     itemEntity->item_->carried = true;
     if(itemEntity->item_->stackable)
     {
         // Check if inventory has an item of the same name (?) 
-        // bool invContains = false;
         Entity * invItem = NULL;
         for(wsl::DLNode<Entity> * temp = inventory_->head(); temp != NULL; temp = temp->next)
         {
             Entity * listEntity = &temp->data;
-        // for(size_t i = 0; i < inventory_->size(); ++i)
-        // {
-        //     Entity * listEntity = &inventory_->at(i);
             if(listEntity->name() == itemEntity->name())
             {
-                // listEntity.item_->quantity += 1;
-                // invContains = true;
                 invItem = listEntity;
                 break;
             }
@@ -223,13 +213,11 @@ void Entity::pickup(Entity * itemEntity)
         }
         else // invItem == NULL
         {
-            // inventory_->push_back(*itemEntity);
             inventory_->push(*itemEntity);
         }
     }
     else // !itemEntity->item_->stackable
     {
-        // inventory_->push_back(*itemEntity);
         inventory_->push(*itemEntity);
     } 
     // Remove item from game entityList
@@ -244,10 +232,6 @@ void Entity::pickup(Entity * itemEntity)
         current = current->next;
     }
     game_->entityList()->remove(current);
-    // for(size_t i = 0; i < inventory_->size(); ++i)
-    // {
-    //     std::cout << i << ": " << inventory_->at(i).name() << " x " << inventory_->at(i).item_->quantity << std::endl;
-    // }
 }
 
 void Entity::drop(int index)
@@ -259,8 +243,8 @@ void Entity::drop(int index)
     }
     Entity itemEntity = itemNode->data;
     itemEntity.item_->carried = false;
-    itemEntity.pos = pos_;
-    game_->entityList().push(itemEntity);
+    itemEntity.setPos(pos_);
+    game_->entityList()->push(itemEntity);
     inventory_->remove(itemNode);
 }
 

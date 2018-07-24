@@ -35,7 +35,8 @@ enum Cmd : int
     NEXT_LEVEL = 0x010,
     ENTER = 0x020,
     GET = 0x040,
-    OPEN_INV = 0x080
+    OPEN_INV = 0x080,
+    OPEN_DROP = 0x100
 };
         
 
@@ -52,6 +53,7 @@ class Input
         bool enter() { return((cmdMask_ & Cmd::ENTER) == Cmd::ENTER); }
         bool get() { return((cmdMask_ & Cmd::GET) == Cmd::GET); }
         bool openInv() { return((cmdMask_ & Cmd::OPEN_INV) == Cmd::OPEN_INV); }
+        bool openDrop() { return((cmdMask_ & Cmd::OPEN_DROP) == Cmd::OPEN_DROP); }
 
         wsl::Vector2i dir() { return dir_; }
         char alpha() { return alpha_; }

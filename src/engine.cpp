@@ -166,7 +166,7 @@ void Engine::handleEvents()
     // Evaluate the input to see if the engine needs to do anything.
     if(input.quit())
     {
-        if(gameState_ == GameState::INVENTORY)
+        if(gameState_ == GameState::INVENTORY || gameState_ == GameState::DROP)
         {
             changeState(prevGameState_);
         }
@@ -220,7 +220,14 @@ void Engine::handleEvents()
                 else if(item)
                 {
                     move = true;
-                    addMessage("You see a " + item->name() + " here.");
+                    if(item->quantity() > 1)
+                    {
+                        addMessage("You see " + std::to_string(item->quantity()) + " " + item->name() + "s here.");
+                    }
+                    else
+                    {
+                        addMessage("You see a " + item->name() + " here.");
+                    }
                 }
                 else
                 {
@@ -245,13 +252,24 @@ void Engine::handleEvents()
             else
             {
                 player_->pickup(itemEntity);
-                addMessage("You pickup the " + itemEntity->name() + ".");
+                if(itemEntity->quantity() > 1)
+                {
+                    addMessage("You pickup the " + itemEntity->name() + "s.");
+                }
+                else
+                {
+                    addMessage("You pickup the " + itemEntity->name() + ".");
+                }
             }
             changeState(GameState::ENEMY_TURN);
         }
         if(input.openInv())
         {
             changeState(GameState::INVENTORY);
+        }
+        if(input.openDrop())
+        {
+            changeState(GameState::DROP);
         }
         if(input.nextLevel())
         {
@@ -290,6 +308,27 @@ void Engine::handleEvents()
             {
                 player_->use(index);
                 addMessage("You use the " + itemNode->data.name() + "!");
+                changeState(GameState::ENEMY_TURN);
+            }
+        }
+    }
+    else if (gameState_ == GameState::DROP)
+    {
+        if(input.alpha() >= 'a' && input.alpha() <= 'z')
+        {
+            int index = int(input.alpha() - 97);
+            wsl::DLNode<Entity> * itemNode = player_->inventory()->at(index);
+            if(itemNode)
+            {
+                player_->drop(index);
+                if(itemNode->data.quantity() > 1 )
+                {
+                    addMessage("You drop the " + itemNode->data.name() + "s.");
+                }
+                else
+                {
+                    addMessage("You drop the " + itemNode->data.name() + ".");
+                }
                 changeState(GameState::ENEMY_TURN);
             }
         }
@@ -488,7 +527,7 @@ void Engine::draw()
     }
     else if(gameState_ == GameState::DROP)
     {
-        console_->print(0,1, "Select the item you wish to drop");
+        console_->print(0,1, "Select the item you wish to drop:");
         console_->print(0,2, "---------");
         // if(player_->inventory()->size() == 0)
         if(player_->inventory()->isEmpty())

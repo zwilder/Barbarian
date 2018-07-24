@@ -48,7 +48,12 @@ Input handleKeys(int key)
         }
         
         case SDLK_c: return Input(Cmd::NONE, wsl::Vector2i(), 'c');
-        case SDLK_d: return Input(Cmd::NONE, wsl::Vector2i(), 'd');
+
+        case SDLK_d:
+        {
+            return Input(Cmd::OPEN_DROP, wsl::Vector2i(), 'd');
+        }
+
         case SDLK_e: return Input(Cmd::NONE, wsl::Vector2i(), 'e');
         case SDLK_f: return Input(Cmd::NONE, wsl::Vector2i(), 'f');
 
