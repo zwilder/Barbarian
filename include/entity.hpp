@@ -28,6 +28,7 @@
 #include "dllist.hpp"
 #include "vector.hpp"
 #include "console.hpp"
+#include "bitflag.hpp"
 
 class Actor
 {
@@ -67,7 +68,7 @@ class Item
 };
 
 class Engine;
-class Entity
+class Entity : public wsl::BitFlag
 {
     public:
         Entity();
@@ -88,13 +89,6 @@ class Entity
             INVENTORY = 0x0200
         };
         
-        // Flag Utilities
-        int mask() { return mask_; }
-        inline bool check(int flag) { return((mask_ & flag) == flag); }
-        inline void toggle(int flag) { mask_ ^= flag; } // Toggles a flag on or off
-        inline void remove(int flag) { mask_ &= ~flag; } // Removes a flag (turns it off)
-        inline void engage(int flag) { mask_ |= flag; } // Adds a flag (turns it on)
-
         // Component checks
         bool hasPos() { return check(Flags::POS); }
         bool hasGlyph() { return check(Flags::GLYPH); }
@@ -132,7 +126,6 @@ class Entity
         void pickup(Entity * itemEntity);
         void drop(int index);
         void use(int index);
-        // std::vector<Entity> * inventory() { return inventory_.get(); }
         wsl::DLList<Entity> * inventory() { return inventory_.get(); }
         int & quantity() { return item_->quantity; }
         bool stackable() { return item_->stackable; }
@@ -141,7 +134,6 @@ class Entity
 
     private:
         Engine * game_;
-        int mask_;
 
         // Components
         wsl::Vector2i pos_; 
@@ -149,7 +141,6 @@ class Entity
         std::string name_;
         std::shared_ptr<Actor> actor_;
         std::shared_ptr<Item> item_;
-        // std::shared_ptr< std::vector<Entity> > inventory_;
         std::shared_ptr< wsl::DLList<Entity> > inventory_;
 
         // Use Functions

@@ -18,7 +18,6 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <iostream>
 #include <iterator>
 #include <sstream>

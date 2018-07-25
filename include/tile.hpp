@@ -24,11 +24,12 @@
 #define TILE_HPP
 
 #include "console.hpp"
+#include "bitflag.hpp"
 
-class Tile
+class Tile : public wsl::BitFlag
 {
     public:
-        Tile(int mask = 0, wsl::Glyph glyph = wsl::Glyph(' ')): mask_(mask), glyph_(glyph) { }
+        Tile(int mask = 0, wsl::Glyph glyph = wsl::Glyph(' ')): glyph_(glyph) { set(mask); }
         
         // uint16_t goes to 0x8000 - 0001,0002,0004,0008,0010,0020,0040,0080,0100,0200,0400,0800,1000,2000,4000,8000
         // uint8_t goes to 0x100 - 001,002,004,008,010,020,040,080,100
@@ -44,13 +45,6 @@ class Tile
         static const Tile Floor;
         static const Tile Wall;
         
-        int mask() { return mask_; }
-        bool check(int flag) { return((mask_ & flag) == flag); }
-        // void toggle(int flag) { (mask_ & flag) == flag ? mask_ &= ~flag : mask_ &= flag; } // Turns a flag on or off
-        void toggle(int flag) { mask_ ^= flag; } // Turns a flag on or off
-        void remove(int flag) { mask_ *= ~flag; }
-        void engage(int flag) { mask_ |= flag; }
-
         bool blocksMovement() { return(check(Flags::BLOCKS_MOVEMENT)); }
         bool blocksLight() { return(check(Flags::BLOCKS_LIGHT)); }
         bool visible() { return(check(Flags::VISIBLE)); }
@@ -61,7 +55,7 @@ class Tile
         bool operator ==(const Tile & other) { return(mask_ == other.mask_); }
 
     private:
-        int mask_;
+        // int mask_;
         wsl::Glyph glyph_;
 };
 
