@@ -75,6 +75,10 @@ class Engine
         std::vector<wsl::Vector2i> * visible() { return visible_.get(); }
 
     private:
+        void handleEvents_player_(Input input);
+        void handleEvents_inventory_(Input input);
+        void draw_inventory_();
+        void draw_game_();
         bool running_;
 
         // Console/Graphics
