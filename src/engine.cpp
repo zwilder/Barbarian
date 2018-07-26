@@ -225,3 +225,23 @@ void Engine::newGame()
     msgList_.clear();
     currentMsg_ = "";
 }
+
+wsl::Vector2i Engine::cursor()
+{
+    return cursorPos_;
+}
+
+void Engine::target()
+{
+    // This function is called by other functions to have the player set the cursor to a desired location,
+    // select that location with [enter], and then the other function has access to the cursorPos via Engine::cursor();
+    changeState(GameState::TARGET);
+    targetSelected_ = false;
+    cursorPos_ = player_->pos(); // Need to add logic in GameMap to selectClosestEntity(pos)
+    while(!targetSelected_)
+    {
+        handleEvents(); // moving the cursor, waiting for [enter] to set targetSelected_ to true
+        draw(); // Drawing the path from the player to the cursor
+    } 
+    changeState(prevGameState_);
+}

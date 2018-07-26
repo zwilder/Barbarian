@@ -105,4 +105,10 @@ if(input.nextLevel())
     gameMap_->placeItems(5);
 }
 
+if(input.alpha() == 't')
+{
+    target();
+    std::cout << cursorPos_ << std::endl;
+}
+
 }

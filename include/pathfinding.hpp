@@ -37,9 +37,13 @@ bool bfsContains(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i
 wsl::Vector2i bfsIndex(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i id);
 float bfsHeuristic(wsl::Vector2i a, wsl::Vector2i b);
 
-// wsl::DLList<wsl::Vector2i> bfsPath(std::vector< wsl::Vector2<wsl::Vector2i> > * vec, wsl::Vector2i start, wsl::Vector2i goal);
 wsl::DLList<wsl::Vector2i> bfsPath(GameMap * map, wsl::Vector2i start, wsl::Vector2i goal);
 wsl::Vector2i bfsStep(GameMap * map, wsl::Vector2i start, wsl::Vector2i goal);
+
+void bhline(wsl::Vector2i start, wsl::Vector2i finish, std::vector<wsl::Vector2i> * results);
+void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results);
+void add(std::vector<wsl::Vector2i> * vector, wsl::Vector2i element);
+bool contains(std::vector<wsl::Vector2i> * vector, wsl::Vector2i element);
 } // namespace wsl
 
 #endif // PATHFINDING_HPP

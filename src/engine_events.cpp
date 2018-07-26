@@ -103,4 +103,8 @@ void Engine::handleEvents()
     {
         newGame();
     }
+    else if(gameState_ == GameState::TARGET)
+    {
+        handleEvents_target_(input);
+    }
 }

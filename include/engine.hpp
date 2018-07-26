@@ -45,7 +45,8 @@ enum class GameState : uint8_t
     MSG_WAIT,
     INVENTORY,
     EQUIP,
-    DROP
+    DROP,
+    TARGET
 };
 
 class Engine
@@ -68,6 +69,8 @@ class Engine
         void revertState();
         void addMessage(std::string msg);
         void newGame();
+        wsl::Vector2i cursor();
+        void target();
 
         GameMap * gameMap() { return gameMap_.get(); }
         wsl::DLList<Entity> * entityList() { return &entityList_; }
@@ -77,8 +80,10 @@ class Engine
     private:
         void handleEvents_player_(Input input);
         void handleEvents_inventory_(Input input);
+        void handleEvents_target_(Input input);
         void draw_inventory_();
         void draw_game_();
+        void draw_target_();
         bool running_;
 
         // Console/Graphics
@@ -125,6 +130,10 @@ class Engine
         // GUI
         wsl::DLList<std::string> msgList_;
         std::string currentMsg_;
+
+        // Targeting
+        bool targetSelected_;
+        wsl::Vector2i cursorPos_;
 };
 
 #endif //ENGINE_HPP

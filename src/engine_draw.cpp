@@ -38,6 +38,10 @@ void Engine::draw()
     {
         draw_inventory_();
     }
+    else if(gameState_ == GameState::TARGET)
+    {
+        draw_target_();
+    }
 
     // Clear the SDL window
     SDL_SetRenderDrawColor(renderer_, 0x00, 0x00, 0x00, 0x00);
