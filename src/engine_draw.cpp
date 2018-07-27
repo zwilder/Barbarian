@@ -38,7 +38,7 @@ void Engine::draw()
     {
         draw_inventory_();
     }
-    else if(gameState_ == GameState::TARGET)
+    else if(gameState_ == GameState::TARGET || gameState_ == GameState::LOOK)
     {
         draw_target_();
     }

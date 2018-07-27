@@ -25,14 +25,105 @@ void Engine::handleEvents_target_(Input input)
 {
     if(input.move())
     {
-        // Need to add logic here to make sure the cursor stays within certain distance of the player.
-        cursorPos_ += input.dir();
+        wsl::Vector2i newPos = cursorPos_ + input.dir();
+        if(fov::contains(visible_.get(), newPos))
+        {
+            cursorPos_ = newPos;
+            Entity * actor = gameMap_->actorAt(cursorPos_);
+            Entity * item = gameMap_->itemAt(cursorPos_);
+            
+            if(actor)
+            {
+                addMessage("A " + actor->name() + ".");
+            }
+            else if(item)
+            {
+                if(item->quantity() > 1)
+                {
+                    addMessage("Some " + item->name() + "s.");
+                }
+                else
+                {
+                    addMessage("A " + item->name() + ".");
+                }
+            }
+            advanceMsg_();
+        }
     }
-    if(input.enter() || input.quit())
+    if(input.enter() || input.escape())
     {
         // Target DOES NOT change game state - at the end of the targeting loop, the game returns to the function that called target
         targetSelected_ = true;
-        std::cout << "Target selected.\n";
+    }
+    //Other target commands will go here, IE +/- for next/prev auto target (entity)
+}
+
+void Engine::handleEvents_look_(Input input)
+{
+    if(input.move())
+    {
+        wsl::Vector2i newPos = cursorPos_ + input.dir();
+        if(newPos.x > console_->width())
+        {
+            newPos.x = console_->width();
+        }
+        if(newPos.x < 0)
+        {
+            newPos.x = 0;
+        }
+        if(newPos.y > console_->height())
+        {
+            newPos.y = console_->height();
+        }
+        if(newPos.y < 0)
+        {
+            newPos.y = 0;
+        }
+        cursorPos_ = newPos;
+        Entity * actor = gameMap_->actorAt(cursorPos_);
+        Entity * item = gameMap_->itemAt(cursorPos_);
+        Tile & tile = gameMap_->tileAt(cursorPos_);
+        
+        if(tile.visible() || tile.explored())
+        {
+            if(actor)
+            {
+                addMessage("You see a " + actor->name() + ".");
+            }
+            else if(item)
+            {
+                if(item->quantity() > 1)
+                {
+                    addMessage("You see some " + item->name() + "s.");
+                }
+                else
+                {
+                    addMessage("You see a " + item->name() + ".");
+                }
+            }
+            else
+            {
+                if(tile.isWall())
+                {
+                    addMessage("You see an old, crumbling brick wall.");
+                }
+                else if(tile.isFloor())
+                {
+                    addMessage("You see the dirty, bloodstained ground.");
+                }
+            }
+            advanceMsg_();
+        }
+        else
+        {
+            addMessage("You see nothing, except the oppressive darkness.");
+            advanceMsg_();
+        }
+    }
+    if(input.enter() || input.escape())
+    {
+        // Target DOES NOT change game state - at the end of the targeting loop, the game returns to the function that called target
+        targetSelected_ = true;
     }
     //Other target commands will go here, IE +/- for next/prev auto target (entity)
 }

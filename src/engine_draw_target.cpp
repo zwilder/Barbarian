@@ -33,7 +33,6 @@ void Engine::draw_target_()
             if(fov::contains(visible_.get(), wsl::Vector2i(x,y)))
             { 
                 console_->put(x,y,glyph);
-                // gameMap_->tiles[index].engage(Tile::Flags::EXPLORED);
             }
             else if(gameMap_->tiles[index].explored())
             {
@@ -67,27 +66,29 @@ void Engine::draw_target_()
 
     console_->put(player_->pos().x, player_->pos().y, player_->glyph());
 
-    // Draw cursor and path to cursor
-    // wsl::DLList<wsl::Vector2i> cursorPath = path::bfsPath(gameMap(), player_->pos(), cursorPos_);
-    // while(!cursorPath.isEmpty())
-    // {
-    //     wsl::Vector2i cursorStep = cursorPath.popFront();
-    //     console_->put(cursorStep.x, cursorStep.y, wsl::Glyph('*', wsl::Color::Orange, wsl::Color::Black));
-    // }
-    std::vector<wsl::Vector2i> cursorPath;
-    path::bhline(player_->pos(), cursorPos_, &cursorPath);
-    for(size_t i = 0; i < cursorPath.size(); ++i)
+    // Draw cursor and path if GameState::TARGET
+    if(gameState_ == GameState::TARGET)
     {
-        if(cursorPath[i] == player_->pos() || cursorPath[i] == cursorPos_)
+        std::vector<wsl::Vector2i> cursorPath;
+        path::bhline(player_->pos(), cursorPos_, &cursorPath);
+        for(size_t i = 0; i < cursorPath.size(); ++i)
         {
-            continue;
+            if(cursorPath[i] == player_->pos() || cursorPath[i] == cursorPos_)
+            {
+                continue;
+            }
+            console_->put(cursorPath[i].x, cursorPath[i].y, wsl::Glyph('*', wsl::Color::Orange, wsl::Color::Black));
         }
-        console_->put(cursorPath[i].x, cursorPath[i].y, wsl::Glyph('*', wsl::Color::Orange, wsl::Color::Black));
-    }
 
-    console_->put(cursorPos_.x, cursorPos_.y, wsl::Glyph('X', wsl::Color::Orange, wsl::Color::Black));
+        console_->put(cursorPos_.x, cursorPos_.y, wsl::Glyph('X', wsl::Color::Orange, wsl::Color::Black));
+    }
+    else if(gameState_ == GameState::LOOK)
+    {
+        console_->put(cursorPos_.x, cursorPos_.y, wsl::Glyph('X', wsl::Color::Black, wsl::Color::Yellow));
+    }
     // UI
     console_->print(0,0, "Move the cursor and press [Enter] to select a target:");
+    console_->print(0,1, currentMsg_);
     console_->print(0,console_->height() - 2, player_->name());
     console_->print(0,console_->height() - 1, "HP: " + std::to_string(player_->hp()) + "(" + std::to_string(player_->maxHP()) + ")");
 }

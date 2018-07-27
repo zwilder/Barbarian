@@ -21,6 +21,8 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <chrono>
+#include <thread>
 #include "../include/engine.hpp"
 
 Engine::Engine()
@@ -192,6 +194,18 @@ void Engine::addMessage(std::string msg)
     // }
 }
 
+void Engine::advanceMsg_()
+{
+    if(!msgList_.isEmpty())
+    {
+        currentMsg_ = msgList_.popFront();
+    }
+    else
+    {
+        currentMsg_ = "";
+    }
+}
+
 void Engine::changeState(GameState newState)
 {
     prevGameState_ = gameState_;
@@ -231,17 +245,40 @@ wsl::Vector2i Engine::cursor()
     return cursorPos_;
 }
 
-void Engine::target()
+void Engine::target(bool look)
 {
     // This function is called by other functions to have the player set the cursor to a desired location,
     // select that location with [enter], and then the other function has access to the cursorPos via Engine::cursor();
-    changeState(GameState::TARGET);
     targetSelected_ = false;
     cursorPos_ = player_->pos(); // Need to add logic in GameMap to selectClosestEntity(pos)
+
+    // Target has it's own message thing
+    std::string prevMsg = currentMsg_;
+    advanceMsg_();
+
+    // Target is a mini-main loop - so this limits it's speed a bit
+    using namespace std::chrono;
+    const milliseconds MS_PER_FRAME = std::chrono::milliseconds(16); // 16ms = ~60fps, 33ms = ~30fps
+
+    // Target does not change state explicitly - that is up to the calling function.
+    // For instance, a canceled look command would not take a turn - but actually looking will.
+    GameState prevState = gameState_;
+    if(look)
+    {
+        changeState(GameState::LOOK);
+    }
+    else
+    {
+        changeState(GameState::TARGET);
+    }
     while(!targetSelected_)
     {
+        milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
         handleEvents(); // moving the cursor, waiting for [enter] to set targetSelected_ to true
         draw(); // Drawing the path from the player to the cursor
+        std::this_thread::sleep_for(milliseconds(start + MS_PER_FRAME - duration_cast<milliseconds>(system_clock::now().time_since_epoch())));
     } 
-    changeState(prevGameState_);
+    changeState(prevState);
+    addMessage(prevMsg);
+    advanceMsg_();
 }

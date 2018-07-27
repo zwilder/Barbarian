@@ -36,7 +36,9 @@ enum Cmd : int
     ENTER = 0x020,
     GET = 0x040,
     OPEN_INV = 0x080,
-    OPEN_DROP = 0x100
+    OPEN_DROP = 0x100,
+    LOOK = 0x200,
+    ESCAPE = 0x400
 };
         
 
@@ -44,7 +46,7 @@ class Input
 {
     public:
         Input(int cmd = Cmd::NONE);
-        Input(int cmd, wsl::Vector2i delta, char alpha = 0);
+        Input(int cmd, wsl::Vector2i delta, char alpha = 0, int mod = 0);
 
         bool move() { return((cmdMask_ & Cmd::MOVE) == Cmd::MOVE); }
         bool quit() { return((cmdMask_ & Cmd::QUIT) == Cmd::QUIT); }
@@ -54,15 +56,19 @@ class Input
         bool get() { return((cmdMask_ & Cmd::GET) == Cmd::GET); }
         bool openInv() { return((cmdMask_ & Cmd::OPEN_INV) == Cmd::OPEN_INV); }
         bool openDrop() { return((cmdMask_ & Cmd::OPEN_DROP) == Cmd::OPEN_DROP); }
+        bool look() { return((cmdMask_ & Cmd::LOOK) == Cmd::LOOK); }
+        bool escape() { return((cmdMask_ & Cmd::ESCAPE) == Cmd::ESCAPE); }
 
         wsl::Vector2i dir() { return dir_; }
         char alpha() { return alpha_; }
+        int mod() { return mod_; }
     private:
-        int cmdMask_;
+        int mod_;
         wsl::Vector2i dir_; 
         char alpha_;
+        int cmdMask_;
  };
 
-Input handleKeys(int key);
+Input handleKeys(int key, int mod);
 
 #endif //INPUT_HANDLERS_HPP

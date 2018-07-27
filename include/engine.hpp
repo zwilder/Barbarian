@@ -46,7 +46,8 @@ enum class GameState : uint8_t
     INVENTORY,
     EQUIP,
     DROP,
-    TARGET
+    TARGET,
+    LOOK
 };
 
 class Engine
@@ -70,7 +71,8 @@ class Engine
         void addMessage(std::string msg);
         void newGame();
         wsl::Vector2i cursor();
-        void target();
+        void target(bool look = false);
+        void look() { target(true); }
 
         GameMap * gameMap() { return gameMap_.get(); }
         wsl::DLList<Entity> * entityList() { return &entityList_; }
@@ -78,12 +80,15 @@ class Engine
         std::vector<wsl::Vector2i> * visible() { return visible_.get(); }
 
     private:
-        void handleEvents_player_(Input input);
-        void handleEvents_inventory_(Input input);
-        void handleEvents_target_(Input input);
-        void draw_inventory_();
-        void draw_game_();
-        void draw_target_();
+        void handleEvents_player_(Input input); // engine_events_player.cpp
+        void handleEvents_inventory_(Input input); // engine_events_inventory.cpp
+        void handleEvents_target_(Input input); // engine_events_target.cpp
+        void handleEvents_look_(Input input); // engine_events_target.cpp
+        void draw_inventory_(); // engine_draw_inventory.cpp
+        void draw_game_(); // engine_draw_game.cpp
+        void draw_target_(); // engine_draw_target.cpp
+        void advanceMsg_();
+
         bool running_;
 
         // Console/Graphics

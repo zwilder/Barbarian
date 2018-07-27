@@ -90,14 +90,7 @@ void Engine::update()
             changeState(GameState::PLAYERS_TURN);
         }
 
-        if(!msgList_.isEmpty())
-        {
-            currentMsg_ = msgList_.popFront();
-        }
-        else
-        {
-            currentMsg_ = "";
-        }
+        advanceMsg_();
     }
     //Remove dead entities (and leave corpses!)
     wsl::DLNode<Entity> * current = entityList_.head();
