@@ -15,3 +15,23 @@ I'll be updating [the blog](https://wsl-blog.com) with my thoughts and rambles a
 - [Week 5a: Part 8](https://wsl-blog.com/posts/2018-07-24-the-roguelike-tutorial-week5a/): Items and inventory!
 
 **Stay tuned for next week!**
+
+## Building Barbarian! From Source
+So far, the build process has only been tested on Arch Linux. For most flavors of Linux, building should look like this:
+- Make sure you have the SDL2 libraries installed from your package manager
+- Open a terminal window, and navigate to your Downloads directory
+- `git clone https://github.com/zwilder/barbarian`
+- `cd Barbarian`
+- `make` -- Tip: add the `-j` flag with the number of threads you want to speed up compile time (ie `-j4`)
+- `make clean` -- This is optional, but will remove all the random build files cluttering the directory after make 
+
+Adding compile instructions for other operating systems will be the first thing I tackle after the 7 week challenge is over.
+
+## Playing the Game
+- Move the player with the VI keys, the number pad, or the arrow keys
+- `i` Inventory: Open your inventory, and then the letter corresponding to the item you wish to **use**
+- `d` Drop: Open your inventory, and then the letter corresponding to the item you wish to **drop**
+- `g` Get: Pickup an item
+- `L` Look: Use the movement keys to look around, `Enter` or `Escape` to exit look mode 
+- `F1` Fullscreen mode (may be wonky - again, haven't tested on anything other than Arch Linux)
+- `<shift>+q` Quit
