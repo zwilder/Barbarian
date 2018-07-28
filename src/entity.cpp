@@ -28,15 +28,16 @@ Entity::Entity()
     game_ = nullptr;
     pos_ = wsl::Vector2i();
     glyph_ = wsl::Glyph();
-    name_ = "";
+    name_ = std::make_shared<std::string>("");
     mask_ = Flags::NONE;
     actor_ = nullptr;
     item_ = nullptr;
     inventory_ = nullptr;
 }
 
-Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph), name_(name)
+Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph)
 {
+    name_ = std::make_shared<std::string>(name);
     mask_ = Flags::POS | Flags::GLYPH;
     actor_ = nullptr;
     item_ = nullptr;

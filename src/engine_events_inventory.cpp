@@ -36,7 +36,7 @@ void Engine::handleEvents_inventory_(Input input)
             // if(itemNode)
             // {
                 player_->use(index);
-                addMessage("You use the " + itemNode->data.name() + "!");
+                // addMessage("You use the " + itemNode->data.name() + "!");
                 changeState(GameState::ENEMY_TURN);
             // }
         }

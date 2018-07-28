@@ -25,7 +25,8 @@
 
 Item::Item(int u, int q, bool s)
 {
-    useFunction = UseFunction(u);
+    // useFunction = UseFunction(u);
+    set(u);
     quantity = q;
     carried = false;
     stackable = s;
@@ -118,16 +119,29 @@ void Entity::use(int index)
         return;
     }
     Entity & itemEntity = itemNode->data;
-    // Check use function
-    switch(itemEntity.item_->useFunction)
+
+    // Check use functions
+    if(itemEntity.item_->check(Item::Flags::SCROLL))
     {
-        case Item::UseFunction::Heal:
-        {
-            use_heal_();
-            break;
-        }
-        default: break;
+        game_->addMessage(name() + " reads the " + itemEntity.name() + "!");
     }
+    if(itemEntity.item_->check(Item::Flags::POTION))
+    {
+        game_->addMessage(name() + " drinks the " + itemEntity.name() + "!");
+    }
+    if(itemEntity.item_->check(Item::Flags::HEAL))
+    {
+        use_heal_();
+    }
+    if(itemEntity.item_->check(Item::Flags::CAST_LIGHTNING))
+    {
+        use_cast_lightning_();
+    }
+    if(itemEntity.item_->check(Item::Flags::CAST_FIREBOLT))
+    {
+        use_cast_firebolt_();
+    }
+
     // Reduce quantity
     itemEntity.item_->quantity -= 1;
     if(itemEntity.item_->quantity <= 0)
@@ -147,5 +161,69 @@ void Entity::use_heal_()
     if(actor_->HP > actor_->maxHP)
     {
         actor_->HP = actor_->maxHP;
+    }
+}
+
+void Entity::use_cast_lightning_()
+{
+    if(this == game_->player())
+    {
+        game_->addMessage("A bolt of lightning is summoned!");
+        Entity * target = game_->gameMap()->closestActorTo(pos_);
+        if(fov::contains(game_->visible(), target->pos()))
+        {
+            game_->addMessage("It arcs towards the " + target->name() + ".");
+            target->takeDamage(20); // This magic number needs to be changed
+        }
+        else
+        {
+            // Might be fun if the player takes damage instead... 
+            game_->addMessage("It fizzles out.");
+        }
+    }
+    // else
+    // {
+        // Other entities might use this function to cast lightning
+    // }
+}
+
+void Entity::use_cast_firebolt_()
+{
+    if(this == game_->player())
+    {
+        game_->target();
+        Entity * target = game_->gameMap()->entityAt(game_->cursor());
+        game_->addMessage("A bolt of fire explodes out of " + name() + "\'s hands!");
+        if(game_->cursor() == pos() || !game_->targetSelected())
+        {
+            game_->addMessage(name() + " catches fire!");
+            takeDamage(10);
+        }
+        else if(target)
+        {
+            if(target->isActor())
+            {
+                game_->addMessage("The " + target->name() + " erupts in flame!");
+                target->takeDamage(10);
+            }
+            else if(target->isItem())
+            {
+                game_->addMessage("An item on the ground bursts into flame and is destroyed!");
+                target->engage(Flags::DEAD);
+            }
+        }
+        else
+        {
+            Tile & tile = game_->gameMap()->tileAt(game_->cursor());
+            if(tile.check(Tile::Flags::FLOOR))
+            {
+                game_->addMessage("The ground is scorched!");
+            }
+            else if(tile.check(Tile::Flags::WALL))
+            {
+                game_->addMessage("The firebolt explodes against the dungeon wall!");
+            }
+            tile.glyph().setColor(wsl::Color::DkGrey);
+        }
     }
 }

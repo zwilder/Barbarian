@@ -50,10 +50,15 @@ void Engine::handleEvents_target_(Input input)
             advanceMsg_();
         }
     }
-    if(input.enter() || input.escape())
+    if(input.enter())
     {
         // Target DOES NOT change game state - at the end of the targeting loop, the game returns to the function that called target
         targetSelected_ = true;
+        targeting_ = false;
+    }
+    if(input.escape())
+    {
+        targeting_ = false;
     }
     //Other target commands will go here, IE +/- for next/prev auto target (entity)
 }
@@ -123,7 +128,8 @@ void Engine::handleEvents_look_(Input input)
     if(input.enter() || input.escape())
     {
         // Target DOES NOT change game state - at the end of the targeting loop, the game returns to the function that called target
-        targetSelected_ = true;
+        // targetSelected_ = false;
+        targeting_ = false;
     }
     //Other target commands will go here, IE +/- for next/prev auto target (entity)
 }

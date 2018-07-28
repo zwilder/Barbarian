@@ -50,6 +50,11 @@ class GameMap
         Entity * itemAt(int x, int y);
         Entity * actorAt(wsl::Vector2i pos);
         Entity * actorAt(int x, int y);
+
+        Entity * closestEntityTo(wsl::Vector2i pos);
+        Entity * closestEntityTo(int x, int y);
+        Entity * closestActorTo(wsl::Vector2i pos);
+        Entity * closestActorTo(int x, int y);
         
         void placeActors(int maxPerRoom);
         void placeItems(int max);

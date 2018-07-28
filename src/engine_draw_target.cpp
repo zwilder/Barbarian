@@ -69,6 +69,7 @@ void Engine::draw_target_()
     // Draw cursor and path if GameState::TARGET
     if(gameState_ == GameState::TARGET)
     {
+        console_->print(0,0, "Move the cursor and press [Enter] to select a target, or [Esc] to cancel:");
         std::vector<wsl::Vector2i> cursorPath;
         path::bhline(player_->pos(), cursorPos_, &cursorPath);
         for(size_t i = 0; i < cursorPath.size(); ++i)
@@ -84,10 +85,10 @@ void Engine::draw_target_()
     }
     else if(gameState_ == GameState::LOOK)
     {
+        console_->print(0,0, "Move the cursor to look around, press [Enter] or [Esc] to exit:");
         console_->put(cursorPos_.x, cursorPos_.y, wsl::Glyph('X', wsl::Color::Black, wsl::Color::Yellow));
     }
     // UI
-    console_->print(0,0, "Move the cursor and press [Enter] to select a target:");
     console_->print(0,1, currentMsg_);
     console_->print(0,console_->height() - 2, player_->name());
     console_->print(0,console_->height() - 1, "HP: " + std::to_string(player_->hp()) + "(" + std::to_string(player_->maxHP()) + ")");

@@ -247,31 +247,54 @@ wsl::Vector2i Engine::cursor()
 
 void Engine::target(bool look)
 {
-    // This function is called by other functions to have the player set the cursor to a desired location,
+    // This function is called by other functions to have the player move the cursor to a desired location,
     // select that location with [enter], and then the other function has access to the cursorPos via Engine::cursor();
     targetSelected_ = false;
-    cursorPos_ = player_->pos(); // Need to add logic in GameMap to selectClosestEntity(pos)
-
-    // Target has it's own message thing
+    targeting_ = true;
     std::string prevMsg = currentMsg_;
+    GameState prevState = gameState_;
     advanceMsg_();
+    if(look)
+    {
+        changeState(GameState::LOOK);
+        Entity * closestEntity = gameMap_->closestEntityTo(player_->pos());
+        if(closestEntity)
+        {
+            if(fov::contains(visible(), closestEntity->pos()))
+            {
+                cursorPos_ = closestEntity->pos(); // This is temporary, Look selects the closest Entity, Target selects the closest Actor
+                handleEvents_look_(Input(Input::Cmd::MOVE, wsl::Vector2i(0,0)));
+            }
+            else
+            {
+                cursorPos_ = player_->pos();
+                handleEvents_look_(Input(Input::Cmd::MOVE, wsl::Vector2i(0,0)));
+            }
+        }
+    }
+    else
+    {
+        changeState(GameState::TARGET);
+        Entity * target = gameMap_->closestActorTo(player_->pos());
+        if(target)
+        {
+            if(fov::contains(visible(), target->pos()))
+            {
+                cursorPos_ = target->pos();   
+                handleEvents_target_(Input(Input::Cmd::MOVE, wsl::Vector2i(0,0)));
+            }
+            else
+            {
+                cursorPos_ = player_->pos();
+            }
+        }
+    }
 
     // Target is a mini-main loop - so this limits it's speed a bit
     using namespace std::chrono;
     const milliseconds MS_PER_FRAME = std::chrono::milliseconds(16); // 16ms = ~60fps, 33ms = ~30fps
 
-    // Target does not change state explicitly - that is up to the calling function.
-    // For instance, a canceled look command would not take a turn - but actually looking will.
-    GameState prevState = gameState_;
-    if(look)
-    {
-        changeState(GameState::LOOK);
-    }
-    else
-    {
-        changeState(GameState::TARGET);
-    }
-    while(!targetSelected_)
+    while(targeting_)
     {
         milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
         handleEvents(); // moving the cursor, waiting for [enter] to set targetSelected_ to true

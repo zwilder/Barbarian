@@ -63,7 +63,7 @@ std::vector< wsl::Vector2<wsl::Vector2i> > breadthFirstSearch(GameMap * map, wsl
      * Both have early exit
      */
     // DLList<Vector2i> frontier(start);
-    wsl::PQList<wsl::Vector2i> frontier(start, 0);
+    wsl::PQList<wsl::Vector2i, float> frontier(start, 0.0f);
 
     std::vector< wsl::Vector2<wsl::Vector2i> > cameFrom;
     cameFrom.push_back( wsl::Vector2<wsl::Vector2i>(start, start) );

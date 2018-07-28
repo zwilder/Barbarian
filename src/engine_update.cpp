@@ -100,7 +100,10 @@ void Engine::update()
         {
             wsl::DLNode<Entity> * dead = current;
             current = current->next;
-            gameMap_->tileAt(dead->data.pos()).glyph() = wsl::Glyph(dead->data.glyph().symbol(), dead->data.glyph().color(), dead->data.glyph().bgColor());
+            if(dead->data.isActor())
+            {
+                gameMap_->tileAt(dead->data.pos()).glyph() = wsl::Glyph(dead->data.glyph().symbol(), dead->data.glyph().color(), dead->data.glyph().bgColor());
+            }
             entityList_.remove(dead);
         }
         else

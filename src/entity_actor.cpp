@@ -55,8 +55,8 @@ void Entity::takeDamage(int damage)
     actor_->HP -= damage;
     if(actor_->HP <= 0)
     {
-        remove(Flags::ACTOR);
-        remove(Flags::BLOCKS);
+        // remove(Flags::ACTOR);
+        // remove(Flags::BLOCKS);
         if(this == game_->player())
         {
             glyph() = wsl::Glyph('%', wsl::Color::Black, wsl::Color::DkRed);
@@ -67,7 +67,7 @@ void Entity::takeDamage(int damage)
         {
             wsl::Glyph oldGlyph = glyph();
             glyph() = wsl::Glyph('%', oldGlyph.color(), oldGlyph.bgColor());
-            game_->addMessage("The " + name_ + " collapses!");
+            game_->addMessage("The " + name() + " collapses!");
             engage(Flags::DEAD);
         }
     }
@@ -100,7 +100,7 @@ bool Entity::update()
             {
                 if(entity->isActor())
                 {
-                    game_->addMessage(name_ + " kicks the " + entity->name() + ", much to it's annoyance."); 
+                    game_->addMessage(name() + " kicks the " + entity->name() + ", much to it's annoyance."); 
                 }
                 else
                 {
@@ -109,7 +109,7 @@ bool Entity::update()
             }
             else if(next == game_->player()->pos())
             {
-                game_->addMessage("The " + name_ + " viciously claws at " + game_->player()->name() + "!"); 
+                game_->addMessage("The " + name() + " viciously claws at " + game_->player()->name() + "!"); 
                 game_->player()->takeDamage(power() - game_->player()->defense());
             }
             else
