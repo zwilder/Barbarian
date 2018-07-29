@@ -39,7 +39,9 @@ class Tile : public wsl::BitFlag
             BLOCKS_LIGHT = 0x001,
             BLOCKS_MOVEMENT = 0x002,
             VISIBLE = 0x004,
-            EXPLORED = 0x008
+            EXPLORED = 0x008,
+            FLOOR = 0x010,
+            WALL = 0x020
         };
         
         static const Tile Floor;
@@ -49,6 +51,8 @@ class Tile : public wsl::BitFlag
         bool blocksLight() { return(check(Flags::BLOCKS_LIGHT)); }
         bool visible() { return(check(Flags::VISIBLE)); }
         bool explored() { return(check(Flags::EXPLORED)); }
+        bool isWall() { return(check(Flags::WALL)); }
+        bool isFloor() { return(check(Flags::FLOOR)); }
 
         wsl::Glyph & glyph() { return glyph_; }
 

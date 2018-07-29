@@ -63,7 +63,7 @@ std::vector< wsl::Vector2<wsl::Vector2i> > breadthFirstSearch(GameMap * map, wsl
      * Both have early exit
      */
     // DLList<Vector2i> frontier(start);
-    wsl::PQList<wsl::Vector2i> frontier(start, 0);
+    wsl::PQList<wsl::Vector2i, float> frontier(start, 0.0f);
 
     std::vector< wsl::Vector2<wsl::Vector2i> > cameFrom;
     cameFrom.push_back( wsl::Vector2<wsl::Vector2i>(start, start) );
@@ -127,4 +127,134 @@ float bfsHeuristic(wsl::Vector2i a, wsl::Vector2i b)
     return result;
 }
 
+void bhline(wsl::Vector2i start, wsl::Vector2i finish, std::vector<wsl::Vector2i> * results)
+{
+    bhline(start.x, start.y, finish.x, finish.y, results);
+}
+
+void bhline(int xO, int yO, int xF, int yF, std::vector<wsl::Vector2i> * results)
+{
+    int dX = abs(xF - xO);
+    int dY = abs(yF - yO);
+
+    if(dX >= dY)
+    {
+        int e = dY - dX; // [e]rror
+        int j = yO;
+
+        if(xO < xF)
+        {
+            // Octants 1,2
+            for(int i = xO; i <= xF; ++i)
+            {
+                add(results, wsl::Vector2i(i,j));
+                if((e >= 0) && (yF >= yO))
+                {
+                    // 1
+                    j += 1;
+                    e -= dX;
+                }
+                else if((e >= 0) && (yF < yO))
+                {
+                    // 2
+                    j -= 1;
+                    e -= dX;
+                }
+                e += dY;
+            }
+        }
+        else if(xO > xF)
+        {
+            // Octants 5,6
+            for(int i = xO; i >= xF; --i)
+            {
+                add(results, wsl::Vector2i(i, j));
+                if((e >= 0) && (yF >= yO))
+                {
+                    // 6
+                    j += 1;
+                    e -= dX;
+                }
+                else if((e >= 0) && (yF < yO))
+                {
+                    // 5
+                    j -= 1;
+                    e -= dX;
+                }
+                e += dY;
+            }
+        }
+    }
+    else if (dX < dY)
+    {
+        int e = dX - dY; // [e]rror
+        int i = xO;
+        if(yO < yF)
+        {
+            // Octants 7,8
+            for(int j = yO; j <= yF; ++j)
+            {
+                add(results, wsl::Vector2i(i,j));
+                if((e >= 0) && (xF >= xO))
+                {
+                    // 8
+                    i += 1;
+                    e -= dY;
+                }
+                else if((e >= 0) && (xF < xO))
+                {
+                    // 7
+                    i -= 1;
+                    e -= dY;
+                }
+                e += dX;
+            }
+        }
+        else if(yO > yF)
+        {
+            // Octants 3,4
+            for(int j = yO; j >= yF; --j)
+            {
+                add(results, wsl::Vector2i(i,j));
+                if((e >= 0) && (xF >= xO))
+                {
+                    // 3
+                    i += 1;
+                    e -= dY;
+                }
+                else if((e >= 0) && (xF < xO))
+                {
+                    // 4
+                    i -= 1;
+                    e -= dY;
+                }
+                e += dX;
+            }
+        }
+    }
+}
+
+void add(std::vector<wsl::Vector2i> * vector, wsl::Vector2i element)
+{
+    // Helper function so I don't have to type this conditional repeatedly
+    if(!contains(vector, element))
+    {
+        vector->push_back(element);
+    }
+}
+
+bool contains(std::vector<wsl::Vector2i> * vector, wsl::Vector2i element)
+{
+    // Helper function so I don't have to... wait, I already typed this comment above.
+    bool success = false;
+    if(std::find(vector->begin(), vector->end(), element) != vector->end())
+    {
+        success = true;
+    }
+    else
+    {
+        success = false;
+    }
+    return success;
+}
 } //namespace wsl

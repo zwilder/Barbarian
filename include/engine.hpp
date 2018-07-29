@@ -45,7 +45,9 @@ enum class GameState : uint8_t
     MSG_WAIT,
     INVENTORY,
     EQUIP,
-    DROP
+    DROP,
+    TARGET,
+    LOOK
 };
 
 class Engine
@@ -53,32 +55,44 @@ class Engine
     public:
         Engine();
 
-        bool running() { return running_; }
+        // Engine main functions - the main loop is handleEvents() -> update() -> draw()
         bool init();
         void cleanup();
         void handleEvents();
         void update();
         void draw();
 
+        // Variable access functions
+        bool running() { return running_; }
         int windowWidth() { return windowWidth_; }
         int windowHeight() { return windowHeight_; }
-
-        // void playerDied() { gameState_ = GameState::GAME_OVER; }
-        void changeState(GameState newState);
-        void revertState();
-        void addMessage(std::string msg);
-        void newGame();
-
         GameMap * gameMap() { return gameMap_.get(); }
         wsl::DLList<Entity> * entityList() { return &entityList_; }
         Entity * player() { return player_; }
         std::vector<wsl::Vector2i> * visible() { return visible_.get(); }
+        wsl::Vector2i cursor();
+        bool targetSelected() { return targetSelected_; }
+
+        // Utility functions
+        void newGame();
+        void changeState(GameState newState); // Changes game state
+        void revertState(); // Reverts to previous state
+        void addMessage(std::string msg);
+        void target(bool look = false); // target() is a miniature main loop, calls handleEvents() and draw()
+        void look() { target(true); } // look() is just target, but with a different GameState
 
     private:
-        void handleEvents_player_(Input input);
-        void handleEvents_inventory_(Input input);
-        void draw_inventory_();
-        void draw_game_();
+        // handleEvents() and draw() were huge functions - so I split them into separate implementation files
+        void handleEvents_player_(Input input); // engine_events_player.cpp
+        void handleEvents_inventory_(Input input); // engine_events_inventory.cpp
+        void handleEvents_target_(Input input); // engine_events_target.cpp
+        void handleEvents_look_(Input input); // engine_events_target.cpp
+        void draw_inventory_(); // engine_draw_inventory.cpp
+        void draw_game_(); // engine_draw_game.cpp
+        void draw_target_(); // engine_draw_target.cpp
+
+        // Engine utility functions/variables
+        void advanceMsg_();
         bool running_;
 
         // Console/Graphics
@@ -108,9 +122,6 @@ class Engine
         // FoV
         std::unique_ptr< std::vector<wsl::Vector2i> > visible_; 
 
-        // Input Handling
-        void handleKeys_(int key);
-        
         // Entities
         int ACTION_COST;
         Entity * player_;
@@ -125,6 +136,11 @@ class Engine
         // GUI
         wsl::DLList<std::string> msgList_;
         std::string currentMsg_;
+
+        // Targeting
+        bool targetSelected_;
+        bool targeting_;
+        wsl::Vector2i cursorPos_;
 };
 
 #endif //ENGINE_HPP

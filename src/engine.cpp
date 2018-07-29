@@ -21,6 +21,8 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <chrono>
+#include <thread>
 #include "../include/engine.hpp"
 
 Engine::Engine()
@@ -192,10 +194,26 @@ void Engine::addMessage(std::string msg)
     // }
 }
 
+void Engine::advanceMsg_()
+{
+    if(!msgList_.isEmpty())
+    {
+        currentMsg_ = msgList_.popFront();
+    }
+    else
+    {
+        currentMsg_ = "";
+    }
+}
+
 void Engine::changeState(GameState newState)
 {
     prevGameState_ = gameState_;
     gameState_ = newState;
+    if(newState == GameState::GAME_OVER)
+    {
+        prevGameState_ = newState;
+    }
 }
 
 void Engine::revertState()
@@ -224,4 +242,70 @@ void Engine::newGame()
     prevGameState_ = gameState_;
     msgList_.clear();
     currentMsg_ = "";
+}
+
+wsl::Vector2i Engine::cursor()
+{
+    return cursorPos_;
+}
+
+void Engine::target(bool look)
+{
+    // This function is called by other functions to have the player move the cursor to a desired location,
+    // select that location with [enter], and then the other function has access to the cursorPos via Engine::cursor();
+    targetSelected_ = false;
+    targeting_ = true;
+    std::string prevMsg = currentMsg_;
+    GameState prevState = gameState_;
+    advanceMsg_();
+    if(look)
+    {
+        changeState(GameState::LOOK);
+        Entity * closestEntity = gameMap_->closestEntityTo(player_->pos());
+        if(closestEntity)
+        {
+            if(fov::contains(visible(), closestEntity->pos()))
+            {
+                cursorPos_ = closestEntity->pos(); // This is temporary, Look selects the closest Entity, Target selects the closest Actor
+                handleEvents_look_(Input(Input::Cmd::MOVE, wsl::Vector2i(0,0)));
+            }
+            else
+            {
+                cursorPos_ = player_->pos();
+                handleEvents_look_(Input(Input::Cmd::MOVE, wsl::Vector2i(0,0)));
+            }
+        }
+    }
+    else
+    {
+        changeState(GameState::TARGET);
+        Entity * target = gameMap_->closestActorTo(player_->pos());
+        if(target)
+        {
+            if(fov::contains(visible(), target->pos()))
+            {
+                cursorPos_ = target->pos();   
+                handleEvents_target_(Input(Input::Cmd::MOVE, wsl::Vector2i(0,0)));
+            }
+            else
+            {
+                cursorPos_ = player_->pos();
+            }
+        }
+    }
+
+    // Target is a mini-main loop - so this limits it's speed a bit
+    using namespace std::chrono;
+    const milliseconds MS_PER_FRAME = std::chrono::milliseconds(16); // 16ms = ~60fps, 33ms = ~30fps
+
+    while(targeting_)
+    {
+        milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+        handleEvents(); // moving the cursor, waiting for [enter] to set targetSelected_ to true
+        draw(); // Drawing the path from the player to the cursor
+        std::this_thread::sleep_for(milliseconds(start + MS_PER_FRAME - duration_cast<milliseconds>(system_clock::now().time_since_epoch())));
+    } 
+    changeState(prevState);
+    addMessage(prevMsg);
+    advanceMsg_();
 }

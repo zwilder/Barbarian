@@ -25,7 +25,8 @@
 
 Item::Item(int u, int q, bool s)
 {
-    useFunction = UseFunction(u);
+    // useFunction = UseFunction(u);
+    set(u);
     quantity = q;
     carried = false;
     stackable = s;
@@ -118,16 +119,33 @@ void Entity::use(int index)
         return;
     }
     Entity & itemEntity = itemNode->data;
-    // Check use function
-    switch(itemEntity.item_->useFunction)
+
+    // Check use functions
+    if(itemEntity.item_->check(Item::Flags::SCROLL))
     {
-        case Item::UseFunction::Heal:
-        {
-            use_heal_();
-            break;
-        }
-        default: break;
+        game_->addMessage(name() + " reads the " + itemEntity.name() + "!");
     }
+    if(itemEntity.item_->check(Item::Flags::POTION))
+    {
+        game_->addMessage(name() + " drinks the " + itemEntity.name() + "!");
+    }
+    if(itemEntity.item_->check(Item::Flags::HEAL))
+    {
+        use_heal_();
+    }
+    if(itemEntity.item_->check(Item::Flags::CAST_LIGHTNING))
+    {
+        use_cast_lightning_();
+    }
+    if(itemEntity.item_->check(Item::Flags::CAST_FIREBOLT))
+    {
+        use_cast_firebolt_();
+    }
+    if(itemEntity.item_->check(Item::Flags::CAST_FIREBALL))
+    {
+        use_cast_fireball_();
+    }
+
     // Reduce quantity
     itemEntity.item_->quantity -= 1;
     if(itemEntity.item_->quantity <= 0)
@@ -147,5 +165,133 @@ void Entity::use_heal_()
     if(actor_->HP > actor_->maxHP)
     {
         actor_->HP = actor_->maxHP;
+    }
+}
+
+void Entity::use_cast_lightning_()
+{
+    if(this == game_->player())
+    {
+        game_->addMessage("A bolt of lightning is summoned!");
+        Entity * target = game_->gameMap()->closestActorTo(pos_);
+        if(fov::contains(game_->visible(), target->pos()))
+        {
+            game_->addMessage("It arcs towards the " + target->name() + ".");
+            target->takeDamage(20); // This magic number needs to be changed
+        }
+        else
+        {
+            // Might be fun if the player takes damage instead... 
+            game_->addMessage("It fizzles out.");
+        }
+    }
+    // else
+    // {
+        // Other entities might use this function to cast lightning
+    // }
+}
+
+void Entity::use_cast_firebolt_()
+{
+    if(this == game_->player())
+    {
+        game_->target();
+        Entity * target = game_->gameMap()->entityAt(game_->cursor());
+        game_->addMessage("A bolt of fire shoots out of " + name() + "\'s hands!");
+        if(game_->cursor() == pos() || !game_->targetSelected())
+        {
+            game_->addMessage(name() + " catches fire!");
+            takeDamage(10);
+        }
+        else if(target)
+        {
+            if(target->isActor())
+            {
+                game_->addMessage("The " + target->name() + " erupts in flame!");
+                target->takeDamage(10);
+            }
+            else if(target->isItem())
+            {
+                game_->addMessage("An item on the ground bursts into flame and is destroyed!");
+                target->engage(Flags::DEAD);
+            }
+        }
+        else
+        {
+            Tile & tile = game_->gameMap()->tileAt(game_->cursor());
+            if(tile.check(Tile::Flags::FLOOR))
+            {
+                game_->addMessage("The ground is scorched!");
+            }
+            else if(tile.check(Tile::Flags::WALL))
+            {
+                game_->addMessage("The firebolt explodes against the dungeon wall!");
+            }
+            tile.glyph().setColor(wsl::Color::DkGrey);
+        }
+    }
+}
+
+void Entity::use_cast_fireball_()
+{
+    if(this == game_->player())
+    {
+        game_->target();
+        game_->addMessage("Fire explodes out of " + name() + "\'s hands!");
+
+        // Need all entities with a radius of the selected position
+        wsl::Vector2i targetPos;
+        if(!game_->targetSelected())
+        {
+            targetPos = pos();
+        }
+        else
+        {
+            targetPos = game_->cursor();
+        }
+
+        for(int x = targetPos.x - 2; x <= targetPos.x + 2; ++x)
+        {
+            for(int y = targetPos.y - 2; y <= targetPos.y + 2; ++y)
+            {
+                Entity * target = game_->gameMap()->entityAt(x,y);
+                if(target)
+                {
+                    if(target->isActor())
+                    {
+                        game_->addMessage("The " + target->name() + " is scorched!");
+                        target->takeDamage(5);
+                    }
+                    else if(target->isItem())
+                    {
+                        game_->addMessage("An item on the ground bursts into flame and is destroyed!");
+                        target->engage(Flags::DEAD);
+                    }
+                }
+                else
+                {
+                    if(pos() == wsl::Vector2i(x,y))
+                    {
+                        game_->addMessage(name() + " is caught in the explosion!");
+                        takeDamage(5);
+                    }
+                    else
+                    {
+
+                        Tile & tile = game_->gameMap()->tileAt(x,y);
+                        if(tile.check(Tile::Flags::FLOOR))
+                        {
+                            // game_->addMessage("The ground is scorched!");
+                            tile.glyph().setColor(wsl::Color::DkGrey);
+                        }
+                        else if(tile.check(Tile::Flags::WALL))
+                        {
+                            // game_->addMessage("The dungeon wall is charred black!");
+                            tile.glyph().setColor(wsl::Color::Black);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -37,44 +37,12 @@ void Engine::handleEvents()
         }
         else if(event.type == SDL_KEYDOWN)
         {
-            input = handleKeys(event.key.keysym.sym);
+            input = handleKeys(event.key.keysym.sym, event.key.keysym.mod);
             keyPressed = true;
         }
     }
 
     // Evaluate the input to see if the engine needs to do anything.
-    if(input.quit())
-    {
-        if(gameState_ == GameState::INVENTORY || gameState_ == GameState::DROP)
-        {
-            changeState(prevGameState_);
-        }
-        else
-        {
-            running_ = false;
-        }
-    }
-    if(input.fullscreen())
-    {
-        if(fullscreen_)
-        {
-            windowWidth_ = 800;
-            windowHeight_ = 600;
-            SDL_SetWindowSize(window_, windowWidth_, windowHeight_);
-            SDL_SetWindowPosition(window_, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-            fullscreen_ = false;
-        }
-        else
-        {
-            SDL_DisplayMode dm;
-            SDL_GetDesktopDisplayMode(0, &dm);
-            windowWidth_ = dm.w;
-            windowHeight_ = dm.h;
-            SDL_SetWindowSize(window_, windowWidth_ + 10, windowHeight_ + 10);
-            SDL_SetWindowPosition(window_, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-            fullscreen_ = true;
-        }
-    }
     if(gameState_ == GameState::PLAYERS_TURN)
     {
         handleEvents_player_(input);
@@ -102,5 +70,45 @@ void Engine::handleEvents()
     else if(gameState_ == GameState::GAME_OVER && keyPressed)
     {
         newGame();
+    }
+    else if(gameState_ == GameState::TARGET)
+    {
+        handleEvents_target_(input);
+    }
+    else if(gameState_ == GameState::LOOK)
+    {
+        handleEvents_look_(input);
+    }
+    if(input.escape())
+    {
+        if(gameState_ == GameState::INVENTORY || gameState_ == GameState::DROP)
+        {
+            changeState(prevGameState_);
+        }
+    }
+    if(input.quit())
+    {
+        running_ = false;
+    }
+    if(input.fullscreen())
+    {
+        if(fullscreen_)
+        {
+            windowWidth_ = 800;
+            windowHeight_ = 600;
+            SDL_SetWindowSize(window_, windowWidth_, windowHeight_);
+            SDL_SetWindowPosition(window_, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+            fullscreen_ = false;
+        }
+        else
+        {
+            SDL_DisplayMode dm;
+            SDL_GetDesktopDisplayMode(0, &dm);
+            windowWidth_ = dm.w;
+            windowHeight_ = dm.h;
+            SDL_SetWindowSize(window_, windowWidth_ + 10, windowHeight_ + 10);
+            SDL_SetWindowPosition(window_, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+            fullscreen_ = true;
+        }
     }
 }

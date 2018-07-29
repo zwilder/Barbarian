@@ -90,14 +90,7 @@ void Engine::update()
             changeState(GameState::PLAYERS_TURN);
         }
 
-        if(!msgList_.isEmpty())
-        {
-            currentMsg_ = msgList_.popFront();
-        }
-        else
-        {
-            currentMsg_ = "";
-        }
+        advanceMsg_();
     }
     //Remove dead entities (and leave corpses!)
     wsl::DLNode<Entity> * current = entityList_.head();
@@ -107,7 +100,10 @@ void Engine::update()
         {
             wsl::DLNode<Entity> * dead = current;
             current = current->next;
-            gameMap_->tileAt(dead->data.pos()).glyph() = wsl::Glyph(dead->data.glyph().symbol(), dead->data.glyph().color(), dead->data.glyph().bgColor());
+            if(dead->data.isActor())
+            {
+                gameMap_->tileAt(dead->data.pos()).glyph() = wsl::Glyph(dead->data.glyph().symbol(), dead->data.glyph().color(), dead->data.glyph().bgColor());
+            }
             entityList_.remove(dead);
         }
         else

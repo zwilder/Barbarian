@@ -25,58 +25,58 @@
 namespace wsl
 {
 
-template<typename T>
+template<typename T, typename S>
 class PQNode
 {
     public:
-        PQNode(T a, float p) : data(a), priority(p) { next = NULL; }
+        PQNode(T a, S p) : data(a), priority(p) { next = NULL; }
 
         T data;
-        float priority;
-        PQNode<T> * next;
+        S priority;
+        PQNode<T,S> * next;
 };
 
-template<typename T>
+template<typename T, typename S>
 class PQList
 {
     public:
         PQList();
-        PQList(T data, float priority);
+        PQList(T data, S priority);
         ~PQList();
         
-        PQNode<T> * head() { return head_; }
-        PQNode<T> * tail() { return tail_; }
+        PQNode<T,S> * head() { return head_; }
+        PQNode<T,S> * tail() { return tail_; }
 
-        void push(T data, float priority);
+        void push(T data, S priority);
         T pop();
         T peek();
 
         bool isEmpty() { return head_ == NULL; }
     private:
-        PQNode<T> * head_;
-        PQNode<T> * tail_;
+        PQNode<T,S> * head_;
+        PQNode<T,S> * tail_;
 };
 
-template<typename T>
-PQList<T>::PQList()
+template<typename T, typename S>
+PQList<T,S>::PQList()
 {
     head_ = NULL;
     tail_ = NULL;
 }
 
-template<typename T>
-PQList<T>::PQList(T data, float priority)
+template<typename T, typename S>
+PQList<T,S>::PQList(T data, S priority)
 {
     head_ = NULL;
     tail_ = NULL;
     push(data, priority);
 }
 
-template<typename T>
-PQList<T>::~PQList()
+template<typename T, typename S>
+PQList<T,S>::~PQList()
 {
-    PQNode<T> * current = head_;
-    PQNode<T> * next;
+    PQNode<T,S> * current = head_;
+    PQNode<T,S> * next;
 
     while(current != NULL)
     {
@@ -86,10 +86,10 @@ PQList<T>::~PQList()
     }
 }
 
-template<typename T>
-void PQList<T>::push(T data, float priority)
+template<typename T, typename S>
+void PQList<T,S>::push(T data, S priority)
 {
-    PQNode<T> * newNode = new PQNode<T>(data, priority);
+    PQNode<T,S> * newNode = new PQNode<T,S>(data, priority);
     if(head_ == NULL)
     {
         head_ = newNode;
@@ -101,7 +101,7 @@ void PQList<T>::push(T data, float priority)
     }
     else
     {
-       PQNode<T> * temp = head_;
+       PQNode<T,S> * temp = head_;
        while((temp->next != NULL) && (temp->next->priority < priority))
        {
            temp = temp->next;
@@ -111,8 +111,8 @@ void PQList<T>::push(T data, float priority)
     }
 }
 
-template<typename T>
-T PQList<T>::peek()
+template<typename T, typename S>
+T PQList<T,S>::peek()
 {
     T result;
     if(head_ == NULL)
@@ -126,15 +126,15 @@ T PQList<T>::peek()
     return result;
 }
 
-template<typename T>
-T PQList<T>::pop()
+template<typename T, typename S>
+T PQList<T,S>::pop()
 {
     if(head_ == NULL)
     {
         return T();
     }
     T result = head_->data;
-    PQNode<T> * temp = head_;
+    PQNode<T,S> * temp = head_;
     head_ = head_->next;
     delete(temp);
     return result;

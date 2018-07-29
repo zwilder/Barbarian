@@ -23,86 +23,90 @@
 
 void Engine::handleEvents_player_(Input input)
 {
-if(input.move())
-{
-    wsl::Vector2i dPos = player_->pos() + input.dir();
-    if(!gameMap_->tileAt(dPos).blocksMovement())
+    if(input.move())
     {
-        Entity * actor = gameMap_->actorAt(dPos);
-        Entity * item = gameMap_->itemAt(dPos);
-        bool move = false;
-        if(actor)
+        wsl::Vector2i dPos = player_->pos() + input.dir();
+        if(!gameMap_->tileAt(dPos).blocksMovement())
         {
-            addMessage("You attack the " + actor->name() + " for " + std::to_string(player_->power() - actor->defense()) + " damage!");
-            actor->takeDamage(player_->power() - actor->defense());
-        }
-        else if(item)
-        {
-            move = true;
-            if(item->quantity() > 1)
+            Entity * actor = gameMap_->actorAt(dPos);
+            Entity * item = gameMap_->itemAt(dPos);
+            bool move = false;
+            if(actor)
             {
-                addMessage("You see " + std::to_string(item->quantity()) + " " + item->name() + "s here.");
+                addMessage("You attack the " + actor->name() + " for " + std::to_string(player_->power() - actor->defense()) + " damage!");
+                actor->takeDamage(player_->power() - actor->defense());
+            }
+            else if(item)
+            {
+                move = true;
+                if(item->quantity() > 1)
+                {
+                    addMessage("You see " + std::to_string(item->quantity()) + " " + item->name() + "s here.");
+                }
+                else
+                {
+                    addMessage("You see a " + item->name() + " here.");
+                }
             }
             else
             {
-                addMessage("You see a " + item->name() + " here.");
+                move = true;
+            }
+
+            if(move)
+            {
+                player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
+                fov::visible(visible_.get(), gameMap_.get(), player_);
             }
         }
-        else
-        {
-            move = true;
-        }
-
-        if(move)
-        {
-            player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
-            fov::visible(visible_.get(), gameMap_.get(), player_);
-        }
+        changeState(GameState::ENEMY_TURN);
     }
-    changeState(GameState::ENEMY_TURN);
-}
 
-if(input.get())
-{
-    Entity * itemEntity = gameMap_->itemAt(player_->pos());
-    if(itemEntity == NULL)
+    if(input.get())
     {
-        addMessage("You see no item here.");
-    }
-    else
-    {
-        player_->pickup(itemEntity);
-        if(itemEntity->quantity() > 1)
+        Entity * itemEntity = gameMap_->itemAt(player_->pos());
+        if(itemEntity == NULL)
         {
-            addMessage("You pickup the " + itemEntity->name() + "s.");
+            addMessage("You see no item here.");
         }
         else
         {
-            addMessage("You pickup the " + itemEntity->name() + ".");
+            player_->pickup(itemEntity);
+            if(itemEntity->quantity() > 1)
+            {
+                addMessage("You pickup the " + itemEntity->name() + "s.");
+            }
+            else
+            {
+                addMessage("You pickup the " + itemEntity->name() + ".");
+            }
         }
+        changeState(GameState::ENEMY_TURN);
     }
-    changeState(GameState::ENEMY_TURN);
-}
 
-if(input.openInv())
-{
-    changeState(GameState::INVENTORY);
-}
+    if(input.openInv())
+    {
+        changeState(GameState::INVENTORY);
+    }
 
-if(input.openDrop())
-{
-    changeState(GameState::DROP);
-}
+    if(input.openDrop())
+    {
+        changeState(GameState::DROP);
+    }
 
-if(input.nextLevel())
-{
-    *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
-    player_->setPos(gameMap_->rooms[0].center());
-    fov::visible(visible_.get(), gameMap_.get(), player_);
-    // Tell gamemap to place some enemies
-    entityList_.clear();
-    gameMap_->placeActors(2);
-    gameMap_->placeItems(5);
-}
+    if(input.nextLevel())
+    {
+        *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
+        player_->setPos(gameMap_->rooms[0].center());
+        fov::visible(visible_.get(), gameMap_.get(), player_);
+        // Tell gamemap to place some enemies
+        entityList_.clear();
+        gameMap_->placeActors(2);
+        gameMap_->placeItems(5);
+    }
 
+    if(input.look())
+    {
+        look();
+    }
 }

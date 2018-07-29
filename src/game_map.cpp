@@ -22,6 +22,7 @@
 #include "../include/random.hpp"
 #include "../include/game_map.hpp"
 #include "../include/engine.hpp"
+#include "../include/pqlist.hpp"
 
 GameMap::GameMap(Engine * owner, int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax) : owner_(owner), width_(w), height_(h), roomSizeMax_(roomSizeMax),
     roomSizeMin_(roomSizeMin), numRoomsMax_(numRoomsMax)
@@ -58,20 +59,16 @@ Tile & GameMap::tileAt(wsl::Vector2i pos)
     return (tileAt(pos.x,pos.y));
 }
 
-// Entity * GameMap::entityAt(wsl::Vector2i pos, std::vector<Entity> * entityList)
 Entity * GameMap::entityAt(wsl::Vector2i pos)
 {
     Entity * result = NULL;
     wsl::DLList<Entity> * entityList = owner_->entityList();
 
-    // for(int i = 0; i < entityList->size(); ++i)
     for(wsl::DLNode<Entity> * temp = entityList->head(); temp != NULL; temp = temp->next)
     {
-        // if(entityList->at(i).pos() == pos)
         Entity * entity = &temp->data;
         if(entity->pos() == pos)
         {
-            // result = &entityList->at(i);
             result = entity;
             break;
         }
@@ -80,15 +77,11 @@ Entity * GameMap::entityAt(wsl::Vector2i pos)
     return result;
 }
 
-// Entity * GameMap::entityAt(int x, int y, std::vector<Entity> * entityList)
 Entity * GameMap::entityAt(int x, int y)
 {
-    // return entityAt(wsl::Vector2i(x,y), entityList);
     return entityAt(wsl::Vector2i(x,y));
 }
 
-// itemAt, actorAt, and entityAt are all basically the same function - should possibly be combined and then call a separate function
-// with the "entity->isXXXX" as a passed in boolean argument
 Entity * GameMap::itemAt(wsl::Vector2i pos)
 {
     Entity * result = NULL;
@@ -134,6 +127,58 @@ Entity * GameMap::actorAt(int x, int y)
     return actorAt(wsl::Vector2i(x,y));
 }
 
+Entity * GameMap::closestEntityTo(int x, int y)
+{
+    return closestEntityTo(wsl::Vector2i(x,y));
+}
+
+Entity * GameMap::closestEntityTo(wsl::Vector2i pos)
+{
+    Entity * result = NULL;
+    // This is a job for wsl::PQList! The priority in this case will be the distance of the entity to the pos
+    wsl::PQList<Entity *, int> distanceList;
+    wsl::DLList<Entity> * entityList = owner_->entityList();
+
+    for(wsl::DLNode<Entity> * temp = entityList->head(); temp != NULL; temp = temp->next)
+    {
+        Entity * entity = &temp->data;
+        distanceList.push(entity, entity->pos().distanceTo(pos));
+    }
+    
+    if(!distanceList.isEmpty())
+    {
+        result = distanceList.pop();
+    }
+    return result;
+}
+
+Entity * GameMap::closestActorTo(int x, int y)
+{
+    return closestEntityTo(wsl::Vector2i(x,y));
+}
+
+Entity * GameMap::closestActorTo(wsl::Vector2i pos)
+{
+    Entity * result = NULL;
+    // This is a job for wsl::PQList! The priority in this case will be the distance of the entity to the pos
+    wsl::PQList<Entity *, int> distanceList;
+    wsl::DLList<Entity> * entityList = owner_->entityList();
+
+    for(wsl::DLNode<Entity> * temp = entityList->head(); temp != NULL; temp = temp->next)
+    {
+        Entity * entity = &temp->data;
+        if(entity->isActor())
+        {
+            distanceList.push(entity, entity->pos().distanceTo(pos));
+        }
+    }
+    
+    if(!distanceList.isEmpty())
+    {
+        result = distanceList.pop();
+    }
+    return result;
+}
 void GameMap::initTiles_()
 {
     Tile wallTile = Tile::Wall;
@@ -309,13 +354,51 @@ void GameMap::placeItems(int max)
         int y = wsl::randomInt(room.y1 + 1, room.y2 - 1);
         if(!entityAt(x,y))
         {
-            // if(wsl::randomBool(0.2))
-            // {
-                //place item
+            if(wsl::randomBool(0.15))
+            {
                 entityList->push(Entity(owner_, wsl::Vector2i(x,y), wsl::Glyph('!', wsl::Color::LtRed), "healing potion"));
-                entityList->head()->data.makeItem(Item(Item::UseFunction::Heal, 1, true));
+                entityList->head()->data.makeItem(Item(Item::Flags::HEAL | Item::Flags::POTION, 1, true));
                 placedItems += 1;
-            // }
+            }
+            else
+            {
+                int scrollSelect = wsl::randomInt(1,3);
+                Item itemComponent(Item::Flags::SCROLL, 1, true);
+                std::string scrollName = "";
+                // scrollSelect = 2;
+                switch(scrollSelect)
+                {
+                    case 1:
+                    {
+                        //Fireball
+                        itemComponent.engage(Item::Flags::CAST_FIREBALL);
+                        scrollName = "scroll of fireball";
+                        break;
+                    }
+                    case 2:
+                    {
+                        //Firebolt
+                        itemComponent.engage(Item::Flags::CAST_FIREBOLT);
+                        scrollName = "scroll of firebolt";
+                        break;
+                    }
+                    case 3:
+                    {
+                        //Lightning
+                        itemComponent.engage(Item::Flags::CAST_LIGHTNING);
+                        scrollName = "scroll of lightning";
+                        break;
+                    }
+                    default:
+                    {
+                        break;
+                    }
+                }
+                Entity itemEntity(owner_, wsl::Vector2i(x,y), wsl::Glyph('?', wsl::Color::LtYellow), scrollName);
+                itemEntity.makeItem(itemComponent);
+                entityList->push(itemEntity);
+                placedItems += 1;
+            }
         }
     }
 }

@@ -52,19 +52,24 @@ class Actor
         int power;
 };
 
-class Item
+class Item : public wsl::BitFlag
 {
     public:
         Item(int u = 0, int q = 0, bool s = false);
-        enum UseFunction : uint8_t
+        enum Flags : uint8_t
         {
-            None,
-            Heal
+            NONE = 0,
+            HEAL = 0x002,
+            CAST_LIGHTNING = 0x004,
+            POTION = 0x008,
+            SCROLL = 0x010,
+            CAST_FIREBALL = 0x020,
+            CAST_FIREBOLT = 0x040
         };
         bool carried;
         bool stackable;
         int quantity;
-        UseFunction useFunction;
+        // UseFunction useFunction;
 };
 
 class Engine;
@@ -103,7 +108,7 @@ class Entity : public wsl::BitFlag
         wsl::Vector2i pos();
         void setPos(wsl::Vector2i pos);
         wsl::Glyph & glyph();
-        std::string name() { return name_; }
+        std::string name() { return *name_; }
         
         // Actor functions
         void makeActor(Actor actor);
@@ -138,13 +143,16 @@ class Entity : public wsl::BitFlag
         // Components
         wsl::Vector2i pos_; 
         wsl::Glyph glyph_; 
-        std::string name_;
+        std::shared_ptr<std::string> name_;
         std::shared_ptr<Actor> actor_;
         std::shared_ptr<Item> item_;
         std::shared_ptr< wsl::DLList<Entity> > inventory_;
 
         // Use Functions
         void use_heal_();
+        void use_cast_lightning_();
+        void use_cast_firebolt_();
+        void use_cast_fireball_();
 };
 
 #endif //ENTITY_HPP
