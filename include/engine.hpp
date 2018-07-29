@@ -157,14 +157,15 @@ void Engine::serialize(Archive & ar)
     // GameMap
     ar(gameMap_);
     // EntityList
-    ar(entityList_);
+    // ar(entityList_);
     // Player
     ar(player_);
     // GameState
     ar(gameState_);
     ar(prevGameState_);
     // MsgList/currentMsg
-    ar(msgList_);
+    // ar(msgList_);
     ar(currentMsg_);
 }
 
+#endif // ENGINE_HPP

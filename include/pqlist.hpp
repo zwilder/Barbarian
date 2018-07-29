@@ -50,6 +50,7 @@ class PQList
         void push(T data, S priority);
         T pop();
         T peek();
+        int size();
 
         bool isEmpty() { return head_ == NULL; }
     private:
@@ -137,6 +138,19 @@ T PQList<T,S>::pop()
     PQNode<T,S> * temp = head_;
     head_ = head_->next;
     delete(temp);
+    return result;
+}
+
+template <typename T, typename S>
+int PQList<T,S>::size()
+{
+    PQNode<T,S> * sentinal = head_;
+    int result = 0;
+    while(sentinal != NULL)
+    {
+        ++result;
+        sentinal = sentinal->next;
+    }
     return result;
 }
 } //namespace wsl

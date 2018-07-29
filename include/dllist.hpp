@@ -64,12 +64,13 @@ class DLList
         T popFront();
         T popBack();
         DLNode<T> * at(int index);
+        int size();
 
         bool isEmpty() { return (head_ == NULL); }
 
         DLNode<T> * tail();
         void print();
-        
+
     private:
         DLNode<T> * head_;
         
@@ -276,6 +277,19 @@ DLNode<T> * DLList<T>::tail()
         tail = tail->next;
     }
     return tail;
+}
+
+template <typename T>
+int DLList<T>::size()
+{
+    DLNode<T> * sentinal = head_;
+    int result = 0;
+    while(sentinal != NULL)
+    {
+        ++result;
+        sentinal = sentinal->next;
+    }
+    return result;
 }
 
 template <typename T>

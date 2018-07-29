@@ -26,19 +26,126 @@
 #ifndef WSL_CEREAL_HPP
 #define WSL_CEREAL_HPP
 
+#include "vector.hpp"
 #include "dllist.hpp"
 #include "pqlist.hpp"
-#include "vector.hpp"
 
 namespace wsl
 {
 
+template<typename T>
+class CerealDLList
+{
+    public:
+        
+        void convert(DLList<T> * list);
+        DLList<T> extract();
+
+        std::vector<T> data;
+
+        template<class Archive>
+        void serialize(Archive & ar)
+        {
+            ar(data);
+        }
+
+};
+
+template<typename T>
+void CerealDLList<T>::convert(DLList<T> * list)
+{
+    for(DLNode<T> * node = list->head(); node != NULL; node = node->next)
+    {
+        T listData = node->data;
+        data.push_back(listData);
+    }
+}
+
+template<typename T>
+DLList<T> CerealDLList<T>::extract()
+{
+    DLList<T> result;
+    for(size_t i = 0; i < data.size(); ++i)
+    {
+        result.push(data[i]);
+    }
+
+    return result;
+}
+
+template<typename T, typename S>
+class CerealPQList
+{
+    public:
+        void convert(PQList<T,S> * list);
+        PQList<T,S> extract();
+
+        std::vector<T> data;
+        std::vector<S> priorities;
+
+        template<class Archive>
+        void serialize(Archive & ar)
+        {
+            ar(data);
+            ar(priorities);
+        }
+};
+
+template<typename T, typename S>
+void CerealPQList<T,S>::convert(PQList<T,S> * list)
+{
+    for(PQNode<T,S> * node = list->head(); node != NULL; node = node->next)
+    {
+        data.push_back(node->data);
+        priorities.push_back(node->priority);
+    }
+}
+
+template<typename T, typename S>
+PQList<T,S> CerealPQList<T,S>::extract()
+{
+    PQList<T,S> result;
+    for(size_t i = 0; i < data.size(); ++i)
+    {
+        result.push(data[i], priorities[i]);
+    }
+    return result;
+}
+
 template <class Archive, typename T>
-void serialize(Archive & ar, Vector2<T> vec)
+void serialize(Archive & ar, Vector2<T> & vec)
 {
     ar(vec.x, vec.y);
 }
 
+// template <class Archive, typename T, typename S>
+// void save(Archive & ar, PQList<T,S> & list)
+// {
+//     ar(list.size());
+//     for(int i = 0; i < list.size(); ++i)
+//     {
+//         PQNode<T,S> * node = list.head();
+//         ar(node->data);
+//         ar(node->priority);
+//         list.pop();
+//     }
+// }
+//
+// template <class Archive, typename T, typename S>
+// void load(Archive & ar, PQList<T,S> & list)
+// {
+//     int size;
+//     ar(size);
+//     for(int i = 0; i < size; ++i)
+//     {
+//         T data;
+//         S priority;
+//         ar(data);
+//         ar(priority);
+//         list.push(data, priority);
+//     }
+// }
+//
 } //namespace wsl
 
 #endif //WSL_CEREAL_HPP
