@@ -27,8 +27,11 @@
 GameMap::GameMap(Engine * owner, int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax) : owner_(owner), width_(w), height_(h), roomSizeMax_(roomSizeMax),
     roomSizeMin_(roomSizeMin), numRoomsMax_(numRoomsMax)
 {
-    initTiles_();
-    makeMap_();
+    if(owner)
+    {
+        initTiles_();
+        makeMap_();
+    }
 }
 
 std::array<wsl::Vector2i, 8> GameMap::DIRS = {

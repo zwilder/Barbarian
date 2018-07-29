@@ -30,6 +30,10 @@ int main(int argc, char * argv [])
     const milliseconds MS_PER_FRAME = std::chrono::milliseconds(16); // 16ms = ~60fps, 33ms = ~30fps
 
     std::unique_ptr<Engine> engine = std::make_unique<Engine>();
+    if(engine->loadGame())
+    {
+        engine->addMessage("Saved game loaded!");
+    }
     while(engine->running())
     {
         milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
@@ -40,6 +44,7 @@ int main(int argc, char * argv [])
         
         std::this_thread::sleep_for(milliseconds(start + MS_PER_FRAME - duration_cast<milliseconds>(system_clock::now().time_since_epoch())));
     }
+    engine->saveGame();
     engine->cleanup();
 
     return 0;

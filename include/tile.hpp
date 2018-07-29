@@ -58,8 +58,14 @@ class Tile : public wsl::BitFlag
 
         bool operator ==(const Tile & other) { return(mask_ == other.mask_); }
 
+        template<class Archive>
+        void serialize(Archive & ar)
+        {
+            ar(mask_); 
+            ar(glyph_);
+        }
+
     private:
-        // int mask_;
         wsl::Glyph glyph_;
 };
 

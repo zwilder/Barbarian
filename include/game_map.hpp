@@ -32,7 +32,7 @@ class Engine;
 class GameMap
 {
     public:
-        GameMap(Engine * owner, int w, int h, int roomSizeMax = 10, int roomSizeMin = 6, int numRoomsMax = 30);
+        GameMap(Engine * owner = NULL, int w = 80, int h = 40, int roomSizeMax = 10, int roomSizeMin = 6, int numRoomsMax = 30);
         // static std::array<wsl::Vector2i, 4> DIRS;
         static std::array<wsl::Vector2i, 8> DIRS;
         int width() { return width_; }
@@ -63,6 +63,20 @@ class GameMap
 
         std::vector<Tile> tiles;
         std::vector<wsl::Rect> rooms;
+
+        template<class Archive>
+        void serialize(Archive & ar)
+        {
+            ar(width_);
+            ar(height_);
+            ar(roomSizeMax_);
+            ar(roomSizeMin_);
+            ar(numRoomsMax_);
+            ar(tiles);
+            ar(rooms);
+        }
+
+        void setOwner(Engine * owner) { owner_ = owner; }
         
     private:
         Engine * owner_;

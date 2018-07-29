@@ -77,7 +77,7 @@ class Engine
 
         // Utility functions
         void newGame();
-        void loadGame();
+        bool loadGame();
         void saveGame();
         void changeState(GameState newState); // Changes game state
         void revertState(); // Reverts to previous state
@@ -98,10 +98,6 @@ class Engine
         // Engine utility functions/variables
         void advanceMsg_();
         bool running_;
-
-        // File IO
-        template <class Archive>
-        void serialize(Archive & ar);
 
         // Console/Graphics
         wsl::Vector2i spriteSize_;
@@ -150,22 +146,5 @@ class Engine
         bool targeting_;
         wsl::Vector2i cursorPos_;
 };
-
-template <class Archive>
-void Engine::serialize(Archive & ar)
-{
-    // GameMap
-    ar(gameMap_);
-    // EntityList
-    // ar(entityList_);
-    // Player
-    ar(player_);
-    // GameState
-    ar(gameState_);
-    ar(prevGameState_);
-    // MsgList/currentMsg
-    // ar(msgList_);
-    ar(currentMsg_);
-}
 
 #endif // ENGINE_HPP

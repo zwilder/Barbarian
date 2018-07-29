@@ -50,6 +50,18 @@ class Actor
         int HP;
         int defense;
         int power;
+
+        template<class Archive>
+        void serialize(Archive & ar)
+        {
+            ar(speed);
+            ar(vision);
+            ar(energy);
+            ar(maxHP);
+            ar(HP);
+            ar(defense);
+            ar(power);
+        }
 };
 
 class Item : public wsl::BitFlag
@@ -70,7 +82,26 @@ class Item : public wsl::BitFlag
         bool stackable;
         int quantity;
         // UseFunction useFunction;
+        template<class Archive>
+        void serialize(Archive & ar)
+        {
+            ar(mask_);
+            ar(carried);
+            ar(stackable);
+            ar(quantity);
+        }
 };
+
+// class Entity;
+// class Inventory
+// {
+//     public:
+//         Inventory();
+//
+//         uint8_t maxCapacity;
+//         uint8_t capacity;
+//         wsl::DLList<Entity> items;
+// };
 
 class Engine;
 class Entity : public wsl::BitFlag
@@ -112,6 +143,7 @@ class Entity : public wsl::BitFlag
         
         // Actor functions
         void makeActor(Actor actor);
+        Actor actor() { return *(actor_.get()); }
         // void grantEnergy();
         // int & energy() { return energy_; }
         // int & speed() { return speed_; }
@@ -126,6 +158,7 @@ class Entity : public wsl::BitFlag
 
         // Item/Inventory Functions
         void makeItem(Item item);
+        Item item() { return *(item_.get()); }
         void makeInventory();
         bool carried() { return item_->carried; }
         void pickup(Entity * itemEntity);
@@ -136,7 +169,7 @@ class Entity : public wsl::BitFlag
         bool stackable() { return item_->stackable; }
 
         Engine * game() { return game_; }
-
+        void setGame(Engine * game) { game_ = game; }
     private:
         Engine * game_;
 

@@ -2,5 +2,6 @@
 *.d
 *.o
 *.bak
+gamedata.*
 Scratch*
 Barbarian

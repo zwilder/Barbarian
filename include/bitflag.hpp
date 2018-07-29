@@ -35,8 +35,11 @@ class BitFlag
         inline void remove(int flag) { mask_ &= ~flag; } // Removes a flag (turns it off)
         inline void engage(int flag) { mask_ |= flag; } // Adds a flag (turns it on)
         void set(int mask) { mask_ = mask; } // Sets the mask
-    protected:
+
         int mask_;
+         // mask_ WAS a private variable - but then serialization kinda screwed that. It makes more sense to
+         // set it public now. Kept the naming convention (appending the underscore) just to make sure I don't
+         // try and access it later on through another class. "BPBD" 
 };
 
 } //namespace wsl

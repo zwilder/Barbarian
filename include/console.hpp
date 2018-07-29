@@ -45,7 +45,7 @@ namespace wsl
             template<class Archive>
             void serialize(Archive & ar)
             {
-                ar(symbol);
+                ar(symbol_);
                 ar(color_);
                 ar(bgColor_);
             }

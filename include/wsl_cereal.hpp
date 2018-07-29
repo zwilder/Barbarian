@@ -26,6 +26,7 @@
 #ifndef WSL_CEREAL_HPP
 #define WSL_CEREAL_HPP
 
+#include "rect.hpp"
 #include "vector.hpp"
 #include "dllist.hpp"
 #include "pqlist.hpp"
@@ -118,34 +119,12 @@ void serialize(Archive & ar, Vector2<T> & vec)
     ar(vec.x, vec.y);
 }
 
-// template <class Archive, typename T, typename S>
-// void save(Archive & ar, PQList<T,S> & list)
-// {
-//     ar(list.size());
-//     for(int i = 0; i < list.size(); ++i)
-//     {
-//         PQNode<T,S> * node = list.head();
-//         ar(node->data);
-//         ar(node->priority);
-//         list.pop();
-//     }
-// }
-//
-// template <class Archive, typename T, typename S>
-// void load(Archive & ar, PQList<T,S> & list)
-// {
-//     int size;
-//     ar(size);
-//     for(int i = 0; i < size; ++i)
-//     {
-//         T data;
-//         S priority;
-//         ar(data);
-//         ar(priority);
-//         list.push(data, priority);
-//     }
-// }
-//
+template <class Archive, typename T>
+void serialize(Archive & ar, Rectangle<T> & rect)
+{
+    ar(rect.x1, rect.y1, rect.x2, rect.y2, rect.w, rect.h);
+}
+
 } //namespace wsl
 
 #endif //WSL_CEREAL_HPP
