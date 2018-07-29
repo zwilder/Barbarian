@@ -210,6 +210,10 @@ void Engine::changeState(GameState newState)
 {
     prevGameState_ = gameState_;
     gameState_ = newState;
+    if(newState == GameState::GAME_OVER)
+    {
+        prevGameState_ = newState;
+    }
 }
 
 void Engine::revertState()

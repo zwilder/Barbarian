@@ -33,28 +33,30 @@ void Engine::handleEvents_inventory_(Input input)
         }
         if(gameState_ == GameState::INVENTORY)
         {
-            // if(itemNode)
-            // {
-                player_->use(index);
-                // addMessage("You use the " + itemNode->data.name() + "!");
+            player_->use(index);
+            if(gameState_ != GameState::GAME_OVER)
+            {
+                // Without this conditional, if the player accidentally kills themselves, their corpse could
+                // go on roaming the dungeon as if nothing happened!
                 changeState(GameState::ENEMY_TURN);
-            // }
+            }
+            else
+            {
+                advanceMsg_();
+            }
         }
         else if (gameState_ == GameState::DROP)
         {
-            // if(itemNode)
-            // {
-                player_->drop(index);
-                if(itemNode->data.quantity() > 1 )
-                {
-                    addMessage("You drop the " + itemNode->data.name() + "s.");
-                }
-                else
-                {
-                    addMessage("You drop the " + itemNode->data.name() + ".");
-                }
-                changeState(GameState::ENEMY_TURN);
-            // }
+            player_->drop(index);
+            if(itemNode->data.quantity() > 1 )
+            {
+                addMessage("You drop the " + itemNode->data.name() + "s.");
+            }
+            else
+            {
+                addMessage("You drop the " + itemNode->data.name() + ".");
+            }
+            changeState(GameState::ENEMY_TURN);
         }
         else if (gameState_ == GameState::EQUIP)
         {

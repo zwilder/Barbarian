@@ -152,6 +152,7 @@ class Entity : public wsl::BitFlag
         void use_heal_();
         void use_cast_lightning_();
         void use_cast_firebolt_();
+        void use_cast_fireball_();
 };
 
 #endif //ENTITY_HPP

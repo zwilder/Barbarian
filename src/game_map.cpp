@@ -354,7 +354,7 @@ void GameMap::placeItems(int max)
         int y = wsl::randomInt(room.y1 + 1, room.y2 - 1);
         if(!entityAt(x,y))
         {
-            if(wsl::randomBool(0.5))
+            if(wsl::randomBool(0.15))
             {
                 entityList->push(Entity(owner_, wsl::Vector2i(x,y), wsl::Glyph('!', wsl::Color::LtRed), "healing potion"));
                 entityList->head()->data.makeItem(Item(Item::Flags::HEAL | Item::Flags::POTION, 1, true));
@@ -362,18 +362,42 @@ void GameMap::placeItems(int max)
             }
             else
             {
-                if(wsl::randomBool(0.5))
+                int scrollSelect = wsl::randomInt(1,3);
+                Item itemComponent(Item::Flags::SCROLL, 1, true);
+                std::string scrollName = "";
+                // scrollSelect = 2;
+                switch(scrollSelect)
                 {
-                    entityList->push(Entity(owner_, wsl::Vector2i(x,y), wsl::Glyph('?', wsl::Color::LtYellow), "scroll of firebolt"));
-                    entityList->head()->data.makeItem(Item(Item::Flags::CAST_FIREBOLT | Item::Flags::SCROLL, 1, true));
-                    placedItems += 1;
+                    case 1:
+                    {
+                        //Fireball
+                        itemComponent.engage(Item::Flags::CAST_FIREBALL);
+                        scrollName = "scroll of fireball";
+                        break;
+                    }
+                    case 2:
+                    {
+                        //Firebolt
+                        itemComponent.engage(Item::Flags::CAST_FIREBOLT);
+                        scrollName = "scroll of firebolt";
+                        break;
+                    }
+                    case 3:
+                    {
+                        //Lightning
+                        itemComponent.engage(Item::Flags::CAST_LIGHTNING);
+                        scrollName = "scroll of lightning";
+                        break;
+                    }
+                    default:
+                    {
+                        break;
+                    }
                 }
-                else
-                {
-                    entityList->push(Entity(owner_, wsl::Vector2i(x,y), wsl::Glyph('?', wsl::Color::LtYellow), "scroll of lightning"));
-                    entityList->head()->data.makeItem(Item(Item::Flags::CAST_LIGHTNING | Item::Flags::SCROLL, 1, true));
-                    placedItems += 1;
-                }
+                Entity itemEntity(owner_, wsl::Vector2i(x,y), wsl::Glyph('?', wsl::Color::LtYellow), scrollName);
+                itemEntity.makeItem(itemComponent);
+                entityList->push(itemEntity);
+                placedItems += 1;
             }
         }
     }
