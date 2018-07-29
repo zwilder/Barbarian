@@ -23,7 +23,6 @@
 #define DLLIST_HPP
 
 #include <iostream>
-#include <cassert>
 /*
  * A lot of this is adapted from https://www.geeksforgeeks.org/data-structures/linked-list/#doublyLinkedList
  * I made it a fancy template class, since there is a lot of different things I could use this structure for - such as

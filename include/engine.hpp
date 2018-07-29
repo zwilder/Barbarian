@@ -25,8 +25,10 @@
 #include <memory>
 #include <string>
 #include <array>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <cereal/types/memory.hpp>
 
 #include "console.hpp"
 #include "input_handlers.hpp"
@@ -75,6 +77,8 @@ class Engine
 
         // Utility functions
         void newGame();
+        void loadGame();
+        void saveGame();
         void changeState(GameState newState); // Changes game state
         void revertState(); // Reverts to previous state
         void addMessage(std::string msg);
@@ -94,6 +98,10 @@ class Engine
         // Engine utility functions/variables
         void advanceMsg_();
         bool running_;
+
+        // File IO
+        template <class Archive>
+        void serialize(Archive & ar);
 
         // Console/Graphics
         wsl::Vector2i spriteSize_;
@@ -143,4 +151,20 @@ class Engine
         wsl::Vector2i cursorPos_;
 };
 
-#endif //ENGINE_HPP
+template <class Archive>
+void Engine::serialize(Archive & ar)
+{
+    // GameMap
+    ar(gameMap_);
+    // EntityList
+    ar(entityList_);
+    // Player
+    ar(player_);
+    // GameState
+    ar(gameState_);
+    ar(prevGameState_);
+    // MsgList/currentMsg
+    ar(msgList_);
+    ar(currentMsg_);
+}
+

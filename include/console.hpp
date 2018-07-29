@@ -42,6 +42,14 @@ namespace wsl
             void setColor(Color color);
             void setBgColor(Color color);
 
+            template<class Archive>
+            void serialize(Archive & ar)
+            {
+                ar(symbol);
+                ar(color_);
+                ar(bgColor_);
+            }
+
         private:
             uint8_t symbol_;
             Color color_;
@@ -62,6 +70,13 @@ namespace wsl
             void flush();
             void print(int x, int y, std::string msg);
             void printf(int x, int y, std::string msg, Color fg = Color::White, Color bg = Color::Black);
+
+            template<class Archive>
+            void serialize(Archive & ar)
+            {
+                ar(width_, height_);
+                ar(screen_);
+            }
         private:
             int width_;
             int height_;
