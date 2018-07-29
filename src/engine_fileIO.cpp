@@ -31,6 +31,8 @@
 #include "../include/engine.hpp"
 #include "../include/wsl_cereal.hpp"
 
+// CerealEntity is defined and implemented here because NOTHING should ever use this except
+// for this file.
 class CerealEntity
 {
     public:
@@ -164,31 +166,18 @@ bool Engine::loadGame()
         // std::ifstream inputFile("assets/gamedata.xml", std::ios::binary);
         if(inputFile.good())
         {
-            // std::cout << "Input file good!\n";
             cereal::BinaryInputArchive ar(inputFile);
             // cereal::XMLInputArchive ar(inputFile);
             ar(map);
-            // std::cout << "Game Map loaded. ";
             ar(entityListCereal);
-            // std::cout << "Cerealized entity list loaded. ";
             ar(player);
-            // std::cout << "Cerealized player loaded. ";
             ar(gameState_);
-            // std::cout << "gameState loaded. ";
             ar(prevGameState_);
-            // std::cout << "prevGameState loaded. ";
             ar(msgListCereal);
-            // std::cout << "Cerealized msg list loaded. ";
             ar(currentMsg_);
-            // std::cout << "Current Message loaded. ";
-            // std::cout << "Loaded saved objects..\n";
 
-            // create game map and set owner
             map.setOwner(this);
-            // std::cout << "Set map owner, ";
             *gameMap_ = map;
-            // std::cout << "Recreated map...";
-            //create normal entity list from entityListCereal
             entityList_.clear();
             for(size_t i = 0; i < entityListCereal.size(); ++i)
             {
@@ -196,21 +185,18 @@ bool Engine::loadGame()
                 entity.setGame(this);
                 entityList_.push(entity);
             }
-            // std::cout << "Recreated entity list...";
-            //create normal entity player from player
             Entity playerEntity = player.extract();
             playerEntity.setGame(this);
             *player_= playerEntity;
-            // std::cout << "Recreated player entity...";
-            //create normal message list from msgListCereal
             // msgList_ = msgListCereal.extract();
-            // std::cout << "Recreated message list...";
+            fov::visible(visible_.get(), gameMap_.get(), player_);
+            addMessage("Saved game loaded!");
+            advanceMsg_();
         }
         else
         {
             success = false;
         }
     }
-    // std::cout << "Finished!\n";
     return success;
 }

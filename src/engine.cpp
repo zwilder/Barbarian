@@ -46,9 +46,10 @@ Engine::Engine()
     ACTION_COST = 100;
     gameState_ = GameState::PLAYERS_TURN;
     prevGameState_ = gameState_;
-    running_ = init();
 
     currentMsg_ = "";
+
+    running_ = init();
 }
 
 bool Engine::init()
@@ -117,21 +118,23 @@ bool Engine::init()
             }
         }
         
-        // Setup the game map width/height - should be a different function, with the next three arguments passed in.
-        gameMap_ = std::make_unique<GameMap>(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
-
-        // Add the player entity - Should be a separate function,
-        // which would facilitate a character creation option in the future. 
-        player_ = new Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
-        player_->makeActor(Actor(50,4)); // speed, vision
-        player_->makeInventory();
-        player_->setPos(gameMap_->rooms[0].center());
-        fov::visible(visible_.get(), gameMap_.get(), player_);
-
-        // Tell gamemap to place some enemies
-        entityList_.clear();
-        gameMap_->placeActors(2);
-        gameMap_->placeItems(5);
+        gameMap_ = std::make_unique<GameMap>();
+        player_ = new Entity();
+        // // Setup the game map width/height - should be a different function, with the next three arguments passed in.
+        // gameMap_ = std::make_unique<GameMap>(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
+        //
+        // // Add the player entity - Should be a separate function,
+        // // which would facilitate a character creation option in the future. 
+        // player_ = new Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
+        // player_->makeActor(Actor(50,4)); // speed, vision
+        // player_->makeInventory();
+        // player_->setPos(gameMap_->rooms[0].center());
+        // fov::visible(visible_.get(), gameMap_.get(), player_);
+        //
+        // // Tell gamemap to place some enemies
+        // entityList_.clear();
+        // gameMap_->placeActors(2);
+        // gameMap_->placeItems(5);
     }
     return success;
 }
@@ -241,7 +244,7 @@ void Engine::newGame()
     gameState_ = GameState::PLAYERS_TURN;
     prevGameState_ = gameState_;
     msgList_.clear();
-    currentMsg_ = "";
+    currentMsg_ = "Your torch flickers briefly as you descend into the dungeon...";
 }
 
 wsl::Vector2i Engine::cursor()
