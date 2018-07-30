@@ -32,10 +32,10 @@ int main(int argc, char * argv [])
     std::unique_ptr<Engine> engine = std::make_unique<Engine>();
 
     // Obviously save/load/new game will be a part of the main menu - when that's implemented!
-    if(!engine->loadGame())
-    {
-        engine->newGame();
-    }
+    // if(!engine->loadGame())
+    // {
+    //     engine->newGame();
+    // }
 
     while(engine->running())
     {

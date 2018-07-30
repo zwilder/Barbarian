@@ -30,7 +30,11 @@ void Engine::draw()
     console_->flush();
 
     // Render tiles first, this loops through the entirety of the console_ width/height, since Tiles remain visible after being explored.
-    if(gameState_ == GameState::ENEMY_TURN || gameState_ == GameState::PLAYERS_TURN || gameState_ == GameState::GAME_OVER)
+    if(gameState_ == GameState::TITLE)
+    {
+        draw_title_();
+    }
+    else if(gameState_ == GameState::ENEMY_TURN || gameState_ == GameState::PLAYERS_TURN || gameState_ == GameState::GAME_OVER)
     {
         draw_game_();
     }

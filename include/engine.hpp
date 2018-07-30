@@ -41,6 +41,7 @@
 
 enum class GameState : uint8_t
 {
+    TITLE,
     PLAYERS_TURN,
     ENEMY_TURN,
     GAME_OVER,
@@ -91,6 +92,8 @@ class Engine
         void handleEvents_inventory_(Input input); // engine_events_inventory.cpp
         void handleEvents_target_(Input input); // engine_events_target.cpp
         void handleEvents_look_(Input input); // engine_events_target.cpp
+        void handleEvents_title_(Input input);
+        void draw_title_(); // engine_draw_title.cpp
         void draw_inventory_(); // engine_draw_inventory.cpp
         void draw_game_(); // engine_draw_game.cpp
         void draw_target_(); // engine_draw_target.cpp

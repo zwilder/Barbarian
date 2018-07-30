@@ -8,8 +8,8 @@ FILES := color texture sprite random console input_handlers \
    	entity entity_actor entity_item \
 	tile game_map pathfinding fov \
     engine engine_events engine_update engine_draw \
-	engine_events_player engine_events_inventory engine_events_target \
-	engine_draw_game engine_draw_inventory engine_draw_target \
+	engine_events_player engine_events_inventory engine_events_target engine_events_title \
+	engine_draw_game engine_draw_inventory engine_draw_target engine_draw_title \
 	engine_fileIO \
 	main
 OBJS := $(FILES:=.o)

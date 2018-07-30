@@ -39,3 +39,4 @@ Adding compile instructions for other operating systems will be the first thing 
 - `L` Look: Use the movement keys to look around, `Enter` or `Escape` to exit look mode 
 - `F1` Fullscreen mode (may be wonky - again, haven't tested on anything other than Arch Linux)
 - `<shift>+q` or `<ctrl>+q` Quit
+- The game saves on quitting. Select `Load Game` from the main menu to continue!

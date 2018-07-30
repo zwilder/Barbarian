@@ -43,7 +43,11 @@ void Engine::handleEvents()
     }
 
     // Evaluate the input to see if the engine needs to do anything.
-    if(gameState_ == GameState::PLAYERS_TURN)
+    if(gameState_ == GameState::TITLE)
+    {
+        handleEvents_title_(input);
+    }
+    else if(gameState_ == GameState::PLAYERS_TURN)
     {
         handleEvents_player_(input);
     }
@@ -69,7 +73,8 @@ void Engine::handleEvents()
     }
     else if(gameState_ == GameState::GAME_OVER && keyPressed)
     {
-        newGame();
+        saveGame();
+        changeState(GameState::TITLE);
     }
     else if(gameState_ == GameState::TARGET)
     {
@@ -79,6 +84,7 @@ void Engine::handleEvents()
     {
         handleEvents_look_(input);
     }
+
     if(input.escape())
     {
         if(gameState_ == GameState::INVENTORY || gameState_ == GameState::DROP)
