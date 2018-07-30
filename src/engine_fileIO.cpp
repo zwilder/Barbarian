@@ -21,12 +21,10 @@
 #include <iostream>
 #include <fstream>
 
-#include <cereal/archives/binary.hpp>
-#include <cereal/types/vector.hpp>
-#include <cereal/types/memory.hpp>
-#include <cereal/types/string.hpp>
-#include <cereal/archives/xml.hpp>
-// #include <cereal/archives/json.hpp>
+#include "../include/cereal/archives/binary.hpp"
+#include "../include/cereal/types/vector.hpp"
+#include "../include/cereal/types/memory.hpp"
+#include "../include/cereal/types/string.hpp"
 
 #include "../include/engine.hpp"
 #include "../include/wsl_cereal.hpp"
