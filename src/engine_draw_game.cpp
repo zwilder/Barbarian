@@ -50,21 +50,7 @@ void Engine::draw_game_()
         }
     }
 
-    // Loop through entities here, rendering items if they've been seen (explored)
-
-    // Loop through entities again, rendering entities IF they are in the visible_ coordinates.
-    for(wsl::DLNode<Entity> * temp = entityList_.head(); temp != NULL; temp = temp->next)
-    {
-        Entity & entity = temp->data;
-        wsl::Vector2i entityPos = entity.pos();
-        wsl::Glyph entityGlyph = entity.glyph();
-        if(fov::contains(visible_.get(), entityPos))
-        {
-            console_->put(entityPos.x,entityPos.y,entityGlyph);
-        }
-    }
-
-    console_->put(player_->pos().x, player_->pos().y, player_->glyph());
+    draw_entities_(); // engine_draw.cpp
 
     // UI
     console_->print(0,0, currentMsg_);

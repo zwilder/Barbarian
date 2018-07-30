@@ -81,3 +81,41 @@ void Engine::draw()
     SDL_RenderPresent(renderer_);
 }
 
+void Engine::draw_entities_()
+{
+    // Loop through entities here, rendering items if they've been seen (explored)
+    // Since this is the first loop through entitylist, other entities are identified here and then pushed
+    // into their respective lists for the proper render order
+    wsl::DLList<Entity *> actorList;
+    for(wsl::DLNode<Entity> * temp = entityList_.head(); temp != NULL; temp = temp->next)
+    {
+        if(temp->data.isItem())
+        {
+            Entity & entity = temp->data;
+            wsl::Vector2i entityPos = entity.pos();
+            wsl::Glyph entityGlyph = entity.glyph();
+            if(gameMap_->tileAt(entityPos).explored() && !entity.carried())
+            {
+                console_->put(entityPos.x, entityPos.y, entityGlyph);
+            }
+        }
+        else if(temp->data.isActor())
+        {
+            actorList.push(&temp->data);
+        }
+    }
+    // Loop through entities again, rendering actor entities IF they are in the visible_ coordinates.
+    for(wsl::DLNode<Entity *> * temp = actorList.head(); temp != NULL; temp = temp->next)
+    {
+        Entity * entity = temp->data;
+        wsl::Vector2i entityPos = entity->pos();
+        wsl::Glyph entityGlyph = entity->glyph();
+        if(fov::contains(visible_.get(), entityPos))
+        // if(gameMap_->tileAt(entityPos).visible())
+        {
+            console_->put(entityPos.x,entityPos.y,entityGlyph);
+        }
+    }
+
+    console_->put(player_->pos().x, player_->pos().y, player_->glyph());
+}
