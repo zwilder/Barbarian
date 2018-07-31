@@ -3,7 +3,7 @@
 A ~~Rogue~~Barbarian-like - created as an attempt to follow the famous [Python3 Roguelike tutorial](http://rogueliketutorials.com/) using C++
 and SDL2 as part of the [r/roguelikedev 2018 Tutorial Tuesday Challenge](https://www.reddit.com/r/roguelikedev/wiki/python_tutorial_series).
 
-The master branch has the current ('stable') version of the game, which is currently on Part 10 of the tutorial, you can see the source for each
+The master branch has the current ('stable') version of the game, which is currently on Part 11 of the tutorial, you can see the source for each
 part by checking the tags under branches.
 
 I'll be updating [the blog](https://wsl-blog.com) with my thoughts and rambles about this project.
@@ -15,8 +15,8 @@ I'll be updating [the blog](https://wsl-blog.com) with my thoughts and rambles a
 - [Week 3b: Part 5](https://wsl-blog.com/posts/2018-07-10-the-roguelike-tutorial-week3b/): Adding entities, scheduling and pathfinding.
 - [Week 4: Part 6-7](https://wsl-blog.com/posts/2018-07-18-the-roguelike-tutorial-week4/): Combat and a (rough) UI!
 - [Week 5a: Part 8](https://wsl-blog.com/posts/2018-07-24-the-roguelike-tutorial-week5a/): Items and inventory!
-- Week 5b: Part 9: Targeting functions and spells (will be up on blog soon!)
-- Week 6: Part 10-11: Saving and player advancement (will be up blog soon!)
+- [Week 5b: Part 9](https://wsl-blog.com/posts/2018-07-31-the-roguelike-tutorial-week5b6/): Targeting functions and spells 
+- [Week 6: Part 10-11](https://wsl-blog.com/posts/2018-07-31-the-roguelike-tutorial-week5b6/): Saving and player advancement 
 
 **Stay tuned for next week!**
 
@@ -36,7 +36,7 @@ Adding compile instructions for other operating systems will be the first thing 
 - `i` Inventory: Open your inventory, and then the letter corresponding to the item you wish to **use**
 - `d` Drop: Open your inventory, and then the letter corresponding to the item you wish to **drop**
 - `g` Get: Pickup an item
-- `L` Look: Use the movement keys to look around, `Enter` or `Escape` to exit look mode 
+- `<shift>+ l` Look: Use the movement keys to look around, `Enter` or `Escape` to exit look mode 
 - `F1` Fullscreen mode (may be wonky - again, haven't tested on anything other than Arch Linux)
 - `<shift>+q` or `<ctrl>+q` Quit
 - The game saves on quitting. Select `Load Game` from the main menu to continue!
