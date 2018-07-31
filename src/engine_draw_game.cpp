@@ -56,4 +56,7 @@ void Engine::draw_game_()
     console_->print(0,0, currentMsg_);
     console_->print(0,console_->height() - 2, player_->name());
     console_->print(0,console_->height() - 1, "HP: " + std::to_string(player_->hp()) + "(" + std::to_string(player_->maxHP()) + ")");
+
+    std::string lvl = "Level: " + std::to_string(gameMap_->currentLevel());
+    console_->print(console_->width() - lvl.size(), console_->height() - 2, lvl);
 }

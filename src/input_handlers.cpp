@@ -151,6 +151,10 @@ Input handleKeys(int key, int mod)
         case SDLK_KP_PERIOD:
         case SDLK_PERIOD:
         {
+            if(mod & KMOD_SHIFT)
+            {
+                return Input(Input::Cmd::NEXT_LEVEL);
+            }
             return Input(Input::Cmd::MOVE, wsl::Vector2i(0,0), 0, mod);
         };
 

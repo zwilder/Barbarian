@@ -96,13 +96,18 @@ void Engine::handleEvents_player_(Input input)
 
     if(input.nextLevel())
     {
-        *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
-        player_->setPos(gameMap_->rooms[0].center());
-        fov::visible(visible_.get(), gameMap_.get(), player_);
-        // Tell gamemap to place some enemies
-        entityList_.clear();
-        gameMap_->placeActors(2);
-        gameMap_->placeItems(5);
+        if(gameMap_->tileAt(player_->pos()).isStairs())
+        {
+            addMessage("You descend deeper into the dungeon...");
+            gameMap_->nextLevel();
+            fov::visible(visible_.get(), gameMap_.get(), player_);
+            advanceMsg_();
+        }
+        else
+        {
+            addMessage("You search for a way to move downwards, but find nothing."); 
+            changeState(GameState::ENEMY_TURN);
+        }
     }
 
     if(input.look())
