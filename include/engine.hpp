@@ -28,7 +28,6 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <cereal/types/memory.hpp>
 
 #include "console.hpp"
 #include "input_handlers.hpp"
@@ -50,7 +49,8 @@ enum class GameState : uint8_t
     EQUIP,
     DROP,
     TARGET,
-    LOOK
+    LOOK,
+    LEVEL_UP
 };
 
 class Engine
@@ -93,11 +93,13 @@ class Engine
         void handleEvents_target_(Input input); // engine_events_target.cpp
         void handleEvents_look_(Input input); // engine_events_target.cpp
         void handleEvents_title_(Input input); // engine_events_title.cpp
+        void handleEvents_levelup_(Input input); // engine_events_levelup.cpp
         void draw_entities_(); // engine_draw.cpp
         void draw_title_(); // engine_draw_title.cpp
         void draw_inventory_(); // engine_draw_inventory.cpp
         void draw_game_(); // engine_draw_game.cpp
         void draw_target_(); // engine_draw_target.cpp
+        void draw_levelup_(); // engine_draw_levelup.cpp
 
         // Engine utility functions/variables
         void advanceMsg_();

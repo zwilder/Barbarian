@@ -43,6 +43,7 @@ class CerealEntity
         std::string name;
         Actor actor;
         Item item;
+        Level level;
         std::vector<CerealEntity> inventory;
 
         template<class Archive>
@@ -55,6 +56,7 @@ class CerealEntity
             ar(actor);
             ar(item);
             ar(inventory);
+            ar(level);
         }
 };
 
@@ -65,23 +67,9 @@ void CerealEntity::convert(Entity entity)
     glyph = entity.glyph();
     name = entity.name();
 
-    if(entity.isActor())
-    {
-        actor = entity.actor();
-    }
-    else
-    {
-        actor = Actor();
-    }
-
-    if(entity.isItem())
-    {
-        item = entity.item();
-    }
-    else
-    {
-        item = Item();
-    }
+    entity.isActor() ? actor = entity.actor() : actor = Actor();
+    entity.hasLevel() ? level = entity.level() : level = Level();    
+    entity.isItem() ? item = entity.item() : item = Item();
 
     if(entity.hasInventory())
     {
@@ -93,6 +81,7 @@ void CerealEntity::convert(Entity entity)
             inventory.push_back(itemEntity);
         }
     }
+
 }
 
 Entity CerealEntity::extract()
@@ -106,6 +95,10 @@ Entity CerealEntity::extract()
     if(resultEntity.isItem())
     {
         resultEntity.makeItem(item);
+    }
+    if(resultEntity.hasLevel())
+    {
+        resultEntity.makeLevel(level);
     }
     if(resultEntity.hasInventory())
     {

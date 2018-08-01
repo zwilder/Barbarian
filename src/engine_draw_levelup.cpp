@@ -18,9 +18,14 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../include/tile.hpp"
+#include "../include/engine.hpp"
 
-// const Tile Tile::Floor(Tile::Flags::NONE, wsl::Glyph(249, wsl::Color::White));
-const Tile Tile::Floor(Tile::Flags::FLOOR, wsl::Glyph('.', wsl::Color::White));
-const Tile Tile::Wall(Tile::Flags::BLOCKS_MOVEMENT | Tile::Flags::BLOCKS_LIGHT | Tile::Flags::WALL, wsl::Glyph('#', wsl::Color::Grey, wsl::Color::DkGrey));
-const Tile Tile::Stairs(Tile::Flags::STAIRS, wsl::Glyph('>', wsl::Color::White));
+void Engine::draw_levelup_()
+{
+    console_->print(0,0,"Your skill in battle increases! Welcome to level " + std::to_string(player_->currentLevel()));
+    console_->print(0,2, "---------");
+    console_->print(0,4,"Select a skill to increase");
+    console_->print(0,5, "a: Constitution (+20 HP, from " + std::to_string(player_->maxHP()) + ")");
+    console_->print(0,6, "b: Strength (+1 attack, from " + std::to_string(player_->power()) + ")");
+    console_->print(0,7, "c: Dexterity (+1 defense, from " + std::to_string(player_->defense()) + ")");
+}

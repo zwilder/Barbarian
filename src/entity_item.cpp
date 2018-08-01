@@ -177,7 +177,8 @@ void Entity::use_cast_lightning_()
         if(fov::contains(game_->visible(), target->pos()))
         {
             game_->addMessage("It arcs towards the " + target->name() + ".");
-            target->takeDamage(20); // This magic number needs to be changed
+            // target->takeDamage(20); // This magic number needs to be changed
+            dealDamage(target, 20);
         }
         else
         {
@@ -208,7 +209,8 @@ void Entity::use_cast_firebolt_()
             if(target->isActor())
             {
                 game_->addMessage("The " + target->name() + " erupts in flame!");
-                target->takeDamage(10);
+                // target->takeDamage(10);
+                dealDamage(target, 10);
             }
             else if(target->isItem())
             {
@@ -260,7 +262,8 @@ void Entity::use_cast_fireball_()
                     if(target->isActor())
                     {
                         game_->addMessage("The " + target->name() + " is scorched!");
-                        target->takeDamage(5);
+                        // target->takeDamage(5);
+                        dealDamage(target, 5);
                     }
                     else if(target->isItem())
                     {

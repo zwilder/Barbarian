@@ -84,6 +84,10 @@ void Engine::handleEvents()
     {
         handleEvents_look_(input);
     }
+    else if(gameState_ == GameState::LEVEL_UP)
+    {
+        handleEvents_levelup_(input);
+    }
 
     if(input.escape())
     {

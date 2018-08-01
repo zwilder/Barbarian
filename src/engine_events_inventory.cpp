@@ -34,7 +34,7 @@ void Engine::handleEvents_inventory_(Input input)
         if(gameState_ == GameState::INVENTORY)
         {
             player_->use(index);
-            if(gameState_ != GameState::GAME_OVER)
+            if(gameState_ != GameState::GAME_OVER && gameState_ != GameState::LEVEL_UP)
             {
                 // Without this conditional, if the player accidentally kills themselves, their corpse could
                 // go on roaming the dungeon as if nothing happened!

@@ -33,6 +33,7 @@ Entity::Entity()
     actor_ = nullptr;
     item_ = nullptr;
     inventory_ = nullptr;
+    level_ = nullptr;
 }
 
 Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph)
@@ -41,6 +42,7 @@ Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string n
     mask_ = Flags::POS | Flags::GLYPH;
     actor_ = nullptr;
     item_ = nullptr;
+    level_ = nullptr;
 } 
 
 void Entity::move(wsl::Vector2i delta)

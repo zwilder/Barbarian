@@ -36,7 +36,8 @@ void Engine::draw_game_()
             }
             else if(gameMap_->tiles[index].explored())
             {
-                if(glyph.symbol() != '#')
+                // if(glyph.symbol() != '#')
+                if(gameMap_->tileAt(x,y).isFloor())
                 {
                     glyph.setColor(wsl::Color::Black);
                 }
@@ -47,6 +48,7 @@ void Engine::draw_game_()
                 glyph.setBgColor(wsl::Color::Black);
                 console_->put(x,y,glyph);
             }
+
         }
     }
 
@@ -55,5 +57,10 @@ void Engine::draw_game_()
     // UI
     console_->print(0,0, currentMsg_);
     console_->print(0,console_->height() - 2, player_->name());
-    console_->print(0,console_->height() - 1, "HP: " + std::to_string(player_->hp()) + "(" + std::to_string(player_->maxHP()) + ")");
+    std::string status = "HP: " + std::to_string(player_->hp()) + "(" + std::to_string(player_->maxHP()) + ") | ";
+    status += "Lvl " + std::to_string(player_->currentLevel()) + ": " + std::to_string(player_->currentXP()) + "(" + std::to_string(player_->xpToNextLevel()) + ")";
+    console_->print(0,console_->height() - 1, status);
+
+    std::string lvl = "Level: " + std::to_string(gameMap_->currentLevel());
+    console_->print(console_->width() - lvl.size() - 1, console_->height() - 2, lvl);
 }

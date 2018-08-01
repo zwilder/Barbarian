@@ -60,7 +60,10 @@ class GameMap
         void placeItems(int max);
         
         std::vector<wsl::Vector2i> neighbors(wsl::Vector2i start);
+        void setOwner(Engine * owner) { owner_ = owner; }
 
+        void nextLevel();
+        int currentLevel() const { return currentLevel_; }
         std::vector<Tile> tiles;
         std::vector<wsl::Rect> rooms;
 
@@ -74,9 +77,8 @@ class GameMap
             ar(numRoomsMax_);
             ar(tiles);
             ar(rooms);
+            ar(currentLevel_);
         }
-
-        void setOwner(Engine * owner) { owner_ = owner; }
         
     private:
         Engine * owner_;
@@ -85,6 +87,7 @@ class GameMap
         int roomSizeMax_;
         int roomSizeMin_;
         int numRoomsMax_;
+        int currentLevel_;
 
         void initTiles_();
         void makeMap_();

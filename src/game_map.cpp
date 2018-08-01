@@ -24,16 +24,6 @@
 #include "../include/engine.hpp"
 #include "../include/pqlist.hpp"
 
-GameMap::GameMap(Engine * owner, int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax) : owner_(owner), width_(w), height_(h), roomSizeMax_(roomSizeMax),
-    roomSizeMin_(roomSizeMin), numRoomsMax_(numRoomsMax)
-{
-    if(owner)
-    {
-        initTiles_();
-        makeMap_();
-    }
-}
-
 std::array<wsl::Vector2i, 8> GameMap::DIRS = {
     wsl::Vector2i(-1,0),
     wsl::Vector2i(1,0),
@@ -44,6 +34,71 @@ std::array<wsl::Vector2i, 8> GameMap::DIRS = {
     wsl::Vector2i(-1,-1),
     wsl::Vector2i(1,-1)
 };
+
+GameMap::GameMap(Engine * owner, int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax) : owner_(owner), width_(w), height_(h), roomSizeMax_(roomSizeMax),
+    roomSizeMin_(roomSizeMin), numRoomsMax_(numRoomsMax)
+{
+    if(owner)
+    {
+        initTiles_();
+        makeMap_();
+    }
+    currentLevel_ = 1;
+}
+
+void GameMap::nextLevel()
+{
+    // Eventually these funcions will look up fun stuff in "loot tables"
+    // to generate more interesting dungeons
+    ++currentLevel_;
+
+    tiles.clear();
+    rooms.clear();
+    initTiles_();
+    makeMap_();
+
+    wsl::Vector2i playerPos = owner_->player()->pos();
+    wsl::DLList<Entity> followingEntities;
+    for(auto dir : DIRS)
+    {
+        if(actorAt(playerPos + dir))
+        {
+            Entity entity = *actorAt(playerPos + dir);
+            entity.setPos(rooms[0].center() + dir);
+            followingEntities.push(entity);
+        }
+    }
+    owner_->entityList()->clear();
+    if(followingEntities.isEmpty())
+    {
+        owner_->addMessage("After a brief rest, you feel ready to continue your journey.");
+        owner_->player()->hp() += (owner_->player()->maxHP() / 3);
+        if(owner_->player()->hp() > owner_->player()->maxHP())
+        {
+            owner_->player()->hp() = owner_->player()->maxHP();
+        }
+    }
+    else
+    {
+        while(!followingEntities.isEmpty())
+        {
+            Entity entity = followingEntities.popFront();
+            owner_->entityList()->push(entity);
+        }
+        if(followingEntities.size() > 1)
+        {
+            owner_->addMessage("Some monsters come crashing down the stairs behind you!");
+        }
+        else
+        {
+            owner_->addMessage("A monster comes crashing down the stairs behind you!");
+        }
+    }
+
+    owner_->player()->setPos(rooms[0].center());
+    placeActors(2); // Magic number - will eventually be determined based on level
+    placeItems(5); // Same - actually this doesnt even do anything now (every room has an item)
+}
 
 // std::array<wsl::Vector2i, 4> GameMap::DIRS = {
 //     wsl::Vector2i(-1,0),
@@ -277,7 +332,11 @@ void GameMap::makeMap_()
             numRooms += 1;
         }
     }
-  
+    
+    // Place stairs in center of last room
+    wsl::Vector2i stairPos = rooms[rooms.size() - 1].center(); 
+    // wsl::Vector2i stairPos = rooms[0].center();
+    tiles[index(stairPos.x,stairPos.y)] = Tile::Stairs;
 }
 
 bool GameMap::isBlocked(wsl::Vector2i pos)
@@ -326,13 +385,13 @@ void GameMap::placeActors(int maxPerRoom)
                 if(wsl::randomBool(0.8))
                 {
                     entityList->push(Entity(owner_, newPos, wsl::Glyph('s', wsl::Color::LtGrey, wsl::Color::Black), "skeleton"));
-                    entityList->head()->data.makeActor(Actor(25,4,10,0,3));
+                    entityList->head()->data.makeActor(Actor(25,8,10,0,3,35)); //s,v,mH,d,p,x
                     entityList->head()->data.engage(Entity::Flags::AI);
                 }
                 else
                 {
                     entityList->push(Entity(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse"));
-                    entityList->head()->data.makeActor(Actor(75,6,16,1,4));
+                    entityList->head()->data.makeActor(Actor(75,8,16,1,4,100)); //s,v,mH,d,p,x
                     entityList->head()->data.engage(Entity::Flags::AI);
                 }
             }
@@ -426,5 +485,3 @@ bool GameMap::inBounds_(wsl::Vector2i pos)
     return (0 <= pos.x) && (pos.x < width_) && (0 <= pos.y) && (pos.y < height_);
 }
 
-
-   

@@ -18,9 +18,35 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../include/tile.hpp"
+#include "../include/entity.hpp"
 
-// const Tile Tile::Floor(Tile::Flags::NONE, wsl::Glyph(249, wsl::Color::White));
-const Tile Tile::Floor(Tile::Flags::FLOOR, wsl::Glyph('.', wsl::Color::White));
-const Tile Tile::Wall(Tile::Flags::BLOCKS_MOVEMENT | Tile::Flags::BLOCKS_LIGHT | Tile::Flags::WALL, wsl::Glyph('#', wsl::Color::Grey, wsl::Color::DkGrey));
-const Tile Tile::Stairs(Tile::Flags::STAIRS, wsl::Glyph('>', wsl::Color::White));
+Level::Level(int cLvl, int cXP, int lvlUB, int lvlUF) : currentLevel(cLvl), currentXP(cXP), levelUpBase(lvlUB), levelUpFactor(lvlUF)
+{
+    //
+}
+
+void Entity::makeLevel(Level level)
+{
+    engage(Flags::LEVEL);
+    level_ = std::make_shared<Level>();
+    *level_ = level;
+}
+
+bool Entity::addXP(int xp)
+{
+    level_->currentXP += xp;
+    if(level_->currentXP > xpToNextLevel())
+    {
+        level_->currentXP -= xpToNextLevel();
+        level_->currentLevel += 1;
+
+        return true;
+    }
+    
+    return false;
+}
+
+int Entity::xpToNextLevel()
+{
+    return (level_->levelUpBase + (level_->currentLevel * level_->levelUpFactor));
+}
