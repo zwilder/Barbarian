@@ -233,8 +233,9 @@ void Engine::newGame()
     // Add the player entity - Should be a separate function,
     // which would facilitate a character creation option in the future. 
     *player_ = Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
-    player_->makeActor(Actor(50,4)); // speed, vision
+    player_->makeActor(Actor(50,5)); // speed, vision
     player_->makeInventory();
+    player_->makeLevel(Level());
     player_->setPos(gameMap_->rooms[0].center());
     fov::visible(visible_.get(), gameMap_.get(), player_);
 

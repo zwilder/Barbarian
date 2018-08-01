@@ -33,7 +33,7 @@
 class Actor
 {
     public:
-        Actor(int s = 50, int v = 4, int mH = 30, int d = 1, int p = 6);
+        Actor(int s = 50, int v = 4, int mH = 30, int d = 1, int p = 6, int x = 0);
         
         // enum Action
         // {
@@ -50,6 +50,7 @@ class Actor
         int HP;
         int defense;
         int power;
+        int xp;
 
         template<class Archive>
         void serialize(Archive & ar)
@@ -61,6 +62,7 @@ class Actor
             ar(HP);
             ar(defense);
             ar(power);
+            ar(xp);
         }
 };
 
@@ -89,6 +91,26 @@ class Item : public wsl::BitFlag
             ar(carried);
             ar(stackable);
             ar(quantity);
+        }
+};
+
+class Level
+{
+    public:
+        Level(int cLvl = 1, int cXP = 0, int lvlUB = 200, int lvlUF = 150);
+
+        int currentLevel; // Current level of entity
+        int currentXP; // Current experience of entity, resets on level up
+        int levelUpBase; // Base xp needed, used in level up formula 'levelUpBase + (currentLevel * levelUpFactor)'
+        int levelUpFactor; // see above
+
+        template<class Archive>
+        void serialize(Archive & ar)
+        {
+            ar(currentLevel);
+            ar(currentXP);
+            ar(levelUpBase);
+            ar(levelUpFactor);
         }
 };
 
@@ -122,7 +144,8 @@ class Entity : public wsl::BitFlag
             AI = 0x0040,
             DEAD = 0x0080,
             ITEM = 0x0100,
-            INVENTORY = 0x0200
+            INVENTORY = 0x0200,
+            LEVEL = 0x0400
         };
         
         // Component checks
@@ -133,6 +156,7 @@ class Entity : public wsl::BitFlag
         bool isActor() { return check(Flags::ACTOR); }
         bool isItem() { return check(Flags::ITEM); }
         bool hasInventory() { return check(Flags::INVENTORY); }
+        bool hasLevel() { return check(Flags::LEVEL); }
 
         // Generic Entity functions
         void move(wsl::Vector2i delta);
@@ -153,7 +177,9 @@ class Entity : public wsl::BitFlag
         int & defense() { return actor_->defense; }
         int & power() { return actor_->power; }
         int vision() { return actor_->vision; }
+        int xp() { return actor_->xp; }
         void takeDamage(int damage);
+        void dealDamage(Entity * target, int damage);
         bool update();
 
         // Item/Inventory Functions
@@ -168,6 +194,14 @@ class Entity : public wsl::BitFlag
         int & quantity() { return item_->quantity; }
         bool stackable() { return item_->stackable; }
 
+        // Level functions
+        void makeLevel(Level level);
+        Level level() { return *(level_.get()); }
+        int currentLevel() const { return level_->currentLevel; }
+        int currentXP() const { return level_->currentXP; }
+        bool addXP(int xp);
+        int xpToNextLevel(); 
+
         Engine * game() { return game_; }
         void setGame(Engine * game) { game_ = game; }
     private:
@@ -180,6 +214,7 @@ class Entity : public wsl::BitFlag
         std::shared_ptr<Actor> actor_;
         std::shared_ptr<Item> item_;
         std::shared_ptr< wsl::DLList<Entity> > inventory_;
+        std::shared_ptr<Level> level_;
 
         // Use Functions
         void use_heal_();

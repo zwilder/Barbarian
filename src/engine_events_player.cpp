@@ -34,7 +34,12 @@ void Engine::handleEvents_player_(Input input)
             if(actor)
             {
                 addMessage("You attack the " + actor->name() + " for " + std::to_string(player_->power() - actor->defense()) + " damage!");
-                actor->takeDamage(player_->power() - actor->defense());
+                // actor->takeDamage(player_->power() - actor->defense());
+                player_->dealDamage(actor, player_->power() - actor->defense());
+                if(gameState_ != GameState::LEVEL_UP)
+                {
+                    changeState(GameState::ENEMY_TURN);
+                }
             }
             else if(item)
             {
@@ -48,6 +53,11 @@ void Engine::handleEvents_player_(Input input)
                     addMessage("You see a " + item->name() + " here.");
                 }
             }
+            else if(gameMap_->tileAt(dPos).isStairs())
+            {
+                addMessage("You see a dark staircase winding downwards into the unknown.");
+                move = true;
+            }
             else
             {
                 move = true;
@@ -57,9 +67,9 @@ void Engine::handleEvents_player_(Input input)
             {
                 player_->move(input.dir()); // Need to move this to the player's "update" routine, so the player takes their turn in proper order.
                 fov::visible(visible_.get(), gameMap_.get(), player_);
+                changeState(GameState::ENEMY_TURN);
             }
         }
-        changeState(GameState::ENEMY_TURN);
     }
 
     if(input.get())
@@ -71,14 +81,15 @@ void Engine::handleEvents_player_(Input input)
         }
         else
         {
+            std::string itemName = itemEntity->name();
             player_->pickup(itemEntity);
             if(itemEntity->quantity() > 1)
             {
-                addMessage("You pickup the " + itemEntity->name() + "s.");
+                addMessage("You pickup the " + itemName + "s.");
             }
             else
             {
-                addMessage("You pickup the " + itemEntity->name() + ".");
+                addMessage("You pickup the " + itemName + ".");
             }
         }
         changeState(GameState::ENEMY_TURN);

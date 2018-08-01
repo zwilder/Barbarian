@@ -24,7 +24,7 @@
 #include "../include/engine.hpp"
 #include "../include/pathfinding.hpp"
 
-Actor::Actor(int s, int v, int mH, int d, int p) : speed(s), vision(v), maxHP(mH), defense(d), power(p)
+Actor::Actor(int s, int v, int mH, int d, int p, int x) : speed(s), vision(v), maxHP(mH), defense(d), power(p), xp(x)
 {
     HP = maxHP;
     energy = 0;
@@ -73,6 +73,23 @@ void Entity::takeDamage(int damage)
     }
 }
 
+void Entity::dealDamage(Entity * target, int damage)
+{
+    target->takeDamage(damage);
+    if(target->check(Flags::DEAD))
+    {
+        bool levelUp = false;
+        if(hasLevel())
+        {
+            levelUp = addXP(target->xp());
+        }
+        if(levelUp && (this == game_->player()))
+        {
+            game_->changeState(GameState::LEVEL_UP);
+        }
+    }
+}
+
 bool Entity::update()
 {
     bool success = false;
@@ -110,7 +127,8 @@ bool Entity::update()
             else if(next == game_->player()->pos())
             {
                 game_->addMessage("The " + name() + " viciously claws at " + game_->player()->name() + "!"); 
-                game_->player()->takeDamage(power() - game_->player()->defense());
+                // game_->player()->takeDamage(power() - game_->player()->defense());
+                dealDamage(game_->player(), power() -game_->player()->defense());
             }
             else
             {

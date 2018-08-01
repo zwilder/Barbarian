@@ -385,13 +385,13 @@ void GameMap::placeActors(int maxPerRoom)
                 if(wsl::randomBool(0.8))
                 {
                     entityList->push(Entity(owner_, newPos, wsl::Glyph('s', wsl::Color::LtGrey, wsl::Color::Black), "skeleton"));
-                    entityList->head()->data.makeActor(Actor(25,4,10,0,3));
+                    entityList->head()->data.makeActor(Actor(25,8,10,0,3,35)); //s,v,mH,d,p,x
                     entityList->head()->data.engage(Entity::Flags::AI);
                 }
                 else
                 {
                     entityList->push(Entity(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse"));
-                    entityList->head()->data.makeActor(Actor(75,6,16,1,4));
+                    entityList->head()->data.makeActor(Actor(75,8,16,1,4,100)); //s,v,mH,d,p,x
                     entityList->head()->data.engage(Entity::Flags::AI);
                 }
             }
