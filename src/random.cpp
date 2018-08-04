@@ -23,38 +23,56 @@
 
 namespace wsl
 {
-
-auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-std::mt19937 mt(seed);
-
-int randomInt(int exclusiveMax)
+uint32_t xor128(RNGState * rng)
 {
-    std::uniform_int_distribution<int> dist(0, exclusiveMax - 1);
-    return dist(mt);
+    uint32_t s = rng->w;
+    uint32_t t = rng->w;
+    t ^= t << 11;
+    t ^= t >> 8;
+    rng->w = rng->z;
+    rng->z = rng->y;
+    rng->y = rng->x;
+    s = rng->x;
+    t ^= s;
+    t ^= s >> 19;
+    rng->x = t;
+    return t;
 }
 
-int randomInt(int min, int max)
+int randomInt(int max, RNGState * rng)
 {
-    std::uniform_int_distribution<int> dist(0, max - min);
-    return dist(mt) + min;
+    int result = xor128(rng) % max + 1;
+    return result;
 }
 
-double randomDouble(double exclusiveMax)
+int randomInt(int min, int max, RNGState * rng)
 {
-	std::uniform_real_distribution<double> dist(0, exclusiveMax - 1.0);
-	return dist(mt);
+    if(min > max)
+    {
+        int tmp = min;
+        min = max;
+        max = tmp;
+    }
+    if(min == max)
+    {
+        return min;
+    }
+
+    int range = max - min;
+    int result = randomInt(range + 1, rng) - 1;
+    return (min + result);
 }
 
-double randomDouble(double min, double max)
+bool randomBool(RNGState * rng)
 {
-	std::uniform_real_distribution<double> dist(0, max - min);
-	return dist(mt);
-}
-
-bool randomBool(double probability)
-{
-    std::bernoulli_distribution dist(probability);
-    return dist(mt);
+    if(randomInt(2, rng) == 1)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
 }
 
 } // namespace wsl

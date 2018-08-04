@@ -23,11 +23,12 @@
 #define GAME_MAP_HPP
 
 #include <vector>
+#include <memory>
 #include "tile.hpp"
 #include "rect.hpp"
-#include "dllist.hpp"
-#include "entity.hpp"
+#include "random.hpp"
 
+class Entity;
 class Engine;
 class GameMap
 {
@@ -82,6 +83,8 @@ class GameMap
         
     private:
         Engine * owner_;
+        // std::shared_ptr<wsl::RNGState> rngState_;
+        wsl::RNGState rngState_;
         int width_;
         int height_;
         int roomSizeMax_;

@@ -19,10 +19,13 @@
 */
 
 #include <iostream>
+#include <chrono>
 #include "../include/random.hpp"
 #include "../include/game_map.hpp"
 #include "../include/engine.hpp"
 #include "../include/pqlist.hpp"
+#include "../include/dllist.hpp"
+#include "../include/entity.hpp"
 
 std::array<wsl::Vector2i, 8> GameMap::DIRS = {
     wsl::Vector2i(-1,0),
@@ -44,6 +47,11 @@ GameMap::GameMap(Engine * owner, int w, int h, int roomSizeMax, int roomSizeMin,
         makeMap_();
     }
     currentLevel_ = 1;
+
+    auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    wsl::RNGState rngState_(seed);
+    // rngState_ = std::make_shared<wsl::RNGState>(seed,362436069,521288629,88675123); // Random numbers
+    // rngState_ = new wsl::RNGState(seed, 362436069,521288629,88675123);
 }
 
 void GameMap::nextLevel()
@@ -288,17 +296,17 @@ void GameMap::makeMap_()
     int numRooms = 0;
     while(numRooms < numRoomsMax_)
     {
-        int w = wsl::randomInt(roomSizeMin_, roomSizeMax_);
-        int h = wsl::randomInt(roomSizeMin_, roomSizeMax_);
-        int x = wsl::randomInt(0, width_ - w - 1);
+        int w = wsl::randomInt(roomSizeMin_, roomSizeMax_, &rngState_);
+        int h = wsl::randomInt(roomSizeMin_, roomSizeMax_, &rngState_);
+        int x = wsl::randomInt(0, width_ - w - 1, &rngState_);
         while(x % 2 != 0)
         {
-            x = wsl::randomInt(0, width_ - w - 1);
+            x = wsl::randomInt(0, width_ - w - 1, &rngState_);
         }
-        int y = wsl::randomInt(0, height_ - h - 1);
+        int y = wsl::randomInt(0, height_ - h - 1, &rngState_);
         while(y % 2 != 0)
         {
-            y = wsl::randomInt(0, height_ - h - 1);
+            y = wsl::randomInt(0, height_ - h - 1, &rngState_);
         }
 
         wsl::Rect newRoom = wsl::Rect(x,y,w,h);
@@ -317,7 +325,7 @@ void GameMap::makeMap_()
             {
                 wsl::Vector2i previous(rooms[rooms.size() - 1].center());
                 wsl::Vector2i current(newRoom.center());
-                if(wsl::randomBool())
+                if(wsl::randomBool(&rngState_))
                 {
                     hTunnel_(previous.x, current.x, previous.y);
                     vTunnel_(previous.y, current.y, current.x);
@@ -369,12 +377,12 @@ void GameMap::placeActors(int maxPerRoom)
     for(size_t i = 1; i < rooms.size(); ++i)
     {
         wsl::Rect & room = rooms[i];
-        int numEntities = wsl::randomInt(0, maxPerRoom);
+        int numEntities = wsl::randomInt(0, maxPerRoom, &rngState_);
 
         for(int j = 0; j <= numEntities; ++j)
         {
-            int x = wsl::randomInt(room.x1 + 1,room.x2 - 1);
-            int y = wsl::randomInt(room.y1 + 1, room.y2 - 1);
+            int x = wsl::randomInt(room.x1 + 1,room.x2 - 1, &rngState_);
+            int y = wsl::randomInt(room.y1 + 1, room.y2 - 1, &rngState_);
             if(tileAt(x,y).blocksMovement())
             {
                 continue;
@@ -382,7 +390,7 @@ void GameMap::placeActors(int maxPerRoom)
             wsl::Vector2i newPos(x,y);
             if(!entityAt(newPos))
             {
-                if(wsl::randomBool(0.8))
+                if(wsl::randomInt(100, &rngState_) <= 80)
                 {
                     entityList->push(Entity(owner_, newPos, wsl::Glyph('s', wsl::Color::LtGrey, wsl::Color::Black), "skeleton"));
                     entityList->head()->data.makeActor(Actor(25,8,10,0,3,35)); //s,v,mH,d,p,x
@@ -412,11 +420,11 @@ void GameMap::placeItems(int max)
             // break;
         }
         wsl::Rect & room = rooms[i];
-        int x = wsl::randomInt(room.x1 + 1,room.x2 - 1);
-        int y = wsl::randomInt(room.y1 + 1, room.y2 - 1);
+        int x = wsl::randomInt(room.x1 + 1,room.x2 - 1, &rngState_);
+        int y = wsl::randomInt(room.y1 + 1, room.y2 - 1, &rngState_);
         if(!entityAt(x,y))
         {
-            if(wsl::randomBool(0.15))
+            if(wsl::randomInt(100, &rngState_) <= 15)
             {
                 entityList->push(Entity(owner_, wsl::Vector2i(x,y), wsl::Glyph('!', wsl::Color::LtRed), "healing potion"));
                 entityList->head()->data.makeItem(Item(Item::Flags::HEAL | Item::Flags::POTION, 1, true));
@@ -424,7 +432,7 @@ void GameMap::placeItems(int max)
             }
             else
             {
-                int scrollSelect = wsl::randomInt(1,3);
+                int scrollSelect = wsl::randomInt(1,3, &rngState_);
                 Item itemComponent(Item::Flags::SCROLL, 1, true);
                 std::string scrollName = "";
                 // scrollSelect = 2;
