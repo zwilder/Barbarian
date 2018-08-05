@@ -133,7 +133,20 @@ class Entity : public wsl::BitFlag
         Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
 
         Entity(const Entity & other); // Copy constructor
-        // Entity & operator=(const Entity & other); // Copy assignment
+        friend void swap(Entity & first, Entity & other) // Copy/Swap idiom?
+        {
+            using std::swap;
+            swap(first.game_, other.game_);
+            swap(first.pos_, other.pos_);
+            swap(first.glyph_, other.glyph_);
+            swap(first.name_, other.name_);
+            swap(first.mask_, other.mask_);
+            swap(first.actor_, other.actor_);
+            swap(first.item_, other.item_);
+            swap(first.inventory_, other.inventory_);
+            swap(first.level_, other.level_);
+        }
+        Entity & operator=(Entity other); // Copy assignment
         // Do I need a user defined destructor? memory is handled via unique/shared ptrs...
 
         // Component flags
@@ -164,7 +177,7 @@ class Entity : public wsl::BitFlag
 
         // Generic Entity functions
         void move(wsl::Vector2i delta);
-        const wsl::Vector2i & pos();
+        wsl::Vector2i & pos();
         void setPos(wsl::Vector2i pos);
         wsl::Glyph & glyph();
         std::string name() { return *name_; }
@@ -183,6 +196,7 @@ class Entity : public wsl::BitFlag
         int vision() { return actor_->vision; }
         int xp() { return actor_->xp; }
         void takeDamage(int damage);
+        void heal(int qty);
         void dealDamage(Entity * target, int damage);
         bool update();
 

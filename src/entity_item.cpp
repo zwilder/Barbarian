@@ -161,11 +161,12 @@ void Entity::use_heal_()
     {
         return;
     }
-    actor_->HP += int(actor_->maxHP / 3);
-    if(actor_->HP > actor_->maxHP)
-    {
-        actor_->HP = actor_->maxHP;
-    }
+    heal(actor_->maxHP / 3);
+    // actor_->HP += int(actor_->maxHP / 3);
+    // if(actor_->HP > actor_->maxHP)
+    // {
+    //     actor_->HP = actor_->maxHP;
+    // }
 }
 
 void Entity::use_cast_lightning_()

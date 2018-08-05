@@ -76,24 +76,19 @@ Entity::Entity(const Entity & other)
     }
 }
 
-// Entity & operator=(const Entity & other)
-// {
-//     Entity result;
-//     result.name_ = std::make_shared<std::string>(other.name());
-//     result.mask_ = other.mask();
-//     result.isActor() ? result.makeActor(other.actor()) : result.actor_ = nullptr;
-//     result.isItem() ? result.makeItem(other.item()) : result.item_ = nullptr;
-//     hasInventory() ? result.makeInventory(other.inventory()) : result.inventory_ = nullptr;
-//     hasLevel() ? result.makeLevel(other.level()) : result.level_ = nullptr;
-//     return result;
-// }
+
+Entity & Entity::operator=(Entity other)
+{
+    swap(*this, other);
+    return *this;
+}
 
 void Entity::move(wsl::Vector2i delta)
 {
     pos_ += delta;
 }
 
-const wsl::Vector2i & Entity::pos()
+wsl::Vector2i & Entity::pos()
 {
     return pos_;
 }

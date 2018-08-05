@@ -91,6 +91,19 @@ void Entity::dealDamage(Entity * target, int damage)
     }
 }
 
+void Entity::heal(int qty)
+{
+    if(!isActor())
+    {
+        return;
+    }
+    actor_->HP += qty;
+    if(actor_->HP > actor_->maxHP)
+    {
+        actor_->HP = actor_->maxHP;
+    }
+}
+
 bool Entity::update()
 {
     bool success = false;

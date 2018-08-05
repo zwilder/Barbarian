@@ -27,9 +27,12 @@
  * std::priority_queue and std::map didn't want to play nicely with my classes - I can't figure out why, but boy does it piss off the compiler!
  * At least this gave me an opportunity to use classes I've already written in new ways!
  *
- * std::map is replaced here by using a vector of Vector2<Vector2i> - each element looks like ((x,y),(x,y)). The bfsContains function looks through the 
+ * std::map is replaced here by using a std::vector< Vector2<Vector2i> >- each element looks like ((x,y),(x,y)). The bfsContains function looks through the 
  * vector of vectors and returns true if the id (left side pair) is in the vector. bfsIndex looks through the vector for an id (left side pair) and
  * returns the right side pair as the value.
+ *
+ * path::bhline() returns a vector of coordinates that draws a line from start to goal - it's exactly the same as the fov code, except it doesn't account
+ * for blocking tiles.
  */
 
 namespace path
@@ -37,21 +40,34 @@ namespace path
 wsl::DLList<wsl::Vector2i> bfsPath(GameMap * map, wsl::Vector2i start, wsl::Vector2i goal)
 {
     std::vector< wsl::Vector2<wsl::Vector2i> > vec = breadthFirstSearch(map, start, goal);
-    
-    wsl::Vector2i current = goal;
-    wsl::DLList<wsl::Vector2i> path(current);
-    current = bfsIndex(&vec, current);
-    while(current != start)
+    bool bfsContainsGoal = bfsContains(&vec, goal);
+    wsl::DLList<wsl::Vector2i> path;
+    if(!bfsContainsGoal)
     {
+        path.push(start);
+    }
+    else
+    {   
+        wsl::Vector2i current = goal;
         path.push(current);
         current = bfsIndex(&vec, current);
+        while(current != start)
+        {
+            path.push(current);
+            current = bfsIndex(&vec, current);
+        }
     }
     return path;
 }
 
 wsl::Vector2i bfsStep(GameMap * map, wsl::Vector2i start, wsl::Vector2i goal)
 {
-    wsl::Vector2i result = bfsPath(map, start, goal).popFront();
+    wsl::DLList<wsl::Vector2i> path = bfsPath(map, start, goal);
+    wsl::Vector2i result(0,0);
+    if(!path.isEmpty())
+    {
+       result = path.popFront();
+    }
     return result;
 }
 
