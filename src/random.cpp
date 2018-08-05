@@ -23,6 +23,7 @@
 
 namespace wsl
 {
+
 uint32_t xor128(RNGState * rng)
 {
     uint32_t s = rng->w;

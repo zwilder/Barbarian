@@ -24,12 +24,13 @@
 
 #include <cstdint>
 
+#include "dllist.hpp"
+
 namespace wsl
 {
 
 struct RNGState
 {
-//    362436069,521288629,88675123
     RNGState(uint32_t a = 0, uint32_t b = 362436069, uint32_t c = 521288629, uint32_t d = 88675123) : x(a), y(b), z(c), w(d) { }
     uint32_t x;
     uint32_t y;
@@ -37,16 +38,41 @@ struct RNGState
     uint32_t w;
 };
 
+template <typename T>
+class WeightedList
+{
+    public:
+        void add(T obj, int wt);
+        T pick(RNGState * rng);
+
+    private:
+        DLList<T> list_;
+};
+
+template <typename T>
+void WeightedList<T>::add(T obj, int wt)
+{
+    if(wt <=0)
+    {
+        return;
+    }
+    for(int i = 0; i < wt; ++i)
+    {
+        list_.push(obj);
+    }
+}
+
+template <typename T>
+T WeightedList<T>::pick(RNGState * rng)
+{
+    int index = randomInt(list_.size() - 1, rng);
+    return list_.at(index)->data;
+}
+
 uint32_t xor128(RNGState * rng);
 int randomInt(int min, int max, RNGState * rng);
 int randomInt(int max, RNGState * rng);
 bool randomBool(RNGState * rng);
-
-// int randomInt(int exclusiveMax);
-// int randomInt(int min, int max);
-// double randomDouble(double exclusiveMax);
-// double randomDouble(double min, double max);
-// bool randomBool(double probability = 0.5);
 
 } // namespace wsl
 

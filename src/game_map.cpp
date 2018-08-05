@@ -373,6 +373,18 @@ void GameMap::placeActors(int maxPerRoom)
 {
     // std::vector<Entity> * entityList = owner_->entityList();
     wsl::DLList<Entity> * entityList = owner_->entityList();
+    wsl::WeightedList<Entity> entityWeights;
+
+    Entity skeleton(owner_, wsl::Vector2i(0,0), wsl::Glyph('s', wsl::Color::LtGrey), "skeleton");
+    skeleton.makeActor(Actor(25,8,10,0,3,35)); //s,v,mH,d,p,x
+    skeleton.engage(Entity::Flags::AI);
+    entityWeights.add(skeleton, 8);
+    
+    Entity corpse(owner_, wsl::Vector2i(0,0), wsl::Glyph('Z', wsl::Color::DkRed), "shambling corpse");
+    corpse.makeActor(Actor(75,8,16,1,4,100)); //s,v,mH,d,p,x
+    corpse.engage(Entity::Flags::AI);
+    entityWeights.add(corpse, 2);
+
     // entityList->clear(); // This needs to go in the next level code in engine, not here.
     for(size_t i = 1; i < rooms.size(); ++i)
     {
@@ -390,18 +402,21 @@ void GameMap::placeActors(int maxPerRoom)
             wsl::Vector2i newPos(x,y);
             if(!entityAt(newPos))
             {
-                if(wsl::randomInt(100, &rngState_) <= 80)
-                {
-                    entityList->push(Entity(owner_, newPos, wsl::Glyph('s', wsl::Color::LtGrey, wsl::Color::Black), "skeleton"));
-                    entityList->head()->data.makeActor(Actor(25,8,10,0,3,35)); //s,v,mH,d,p,x
-                    entityList->head()->data.engage(Entity::Flags::AI);
-                }
-                else
-                {
-                    entityList->push(Entity(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse"));
-                    entityList->head()->data.makeActor(Actor(75,8,16,1,4,100)); //s,v,mH,d,p,x
-                    entityList->head()->data.engage(Entity::Flags::AI);
-                }
+                Entity entity = entityWeights.pick(&rngState_);
+                entity.setPos(newPos);
+                entityList->push(entity);
+                // if(wsl::randomInt(100, &rngState_) <= 80)
+                // {
+                //     entityList->push(Entity(owner_, newPos, wsl::Glyph('s', wsl::Color::LtGrey, wsl::Color::Black), "skeleton"));
+                //     entityList->head()->data.makeActor(Actor(25,8,10,0,3,35)); //s,v,mH,d,p,x
+                //     entityList->head()->data.engage(Entity::Flags::AI);
+                // }
+                // else
+                // {
+                //     entityList->push(Entity(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse"));
+                //     entityList->head()->data.makeActor(Actor(75,8,16,1,4,100)); //s,v,mH,d,p,x
+                //     entityList->head()->data.engage(Entity::Flags::AI);
+                // }
             }
         }
     }
