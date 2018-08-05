@@ -208,7 +208,8 @@ Entity * GameMap::closestEntityTo(wsl::Vector2i pos)
     for(wsl::DLNode<Entity> * temp = entityList->head(); temp != NULL; temp = temp->next)
     {
         Entity * entity = &temp->data;
-        distanceList.push(entity, entity->pos().distanceTo(pos));
+        wsl::Vector2i entityPos = entity->pos();
+        distanceList.push(entity, entityPos.distanceTo(pos));
     }
     
     if(!distanceList.isEmpty())
@@ -235,7 +236,8 @@ Entity * GameMap::closestActorTo(wsl::Vector2i pos)
         Entity * entity = &temp->data;
         if(entity->isActor())
         {
-            distanceList.push(entity, entity->pos().distanceTo(pos));
+            wsl::Vector2i entityPos = entity->pos();
+            distanceList.push(entity, entityPos.distanceTo(pos));
         }
     }
     

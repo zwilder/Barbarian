@@ -38,22 +38,22 @@ namespace wsl
 		T x;
 		T y;
 
-		Vector2<T> operator *(T a) { return Vector2<T>(x * a, y * a); }
-		Vector2<T> operator +(T a) { return Vector2<T>(x + a, y + a); }
-		Vector2<T> operator -(T a) { return Vector2<T>(x - a, y - a); }
-		Vector2<T> operator /(T a) { return Vector2<T>(x / a, y / a); }
+		Vector2<T> operator *(const T & a) { return Vector2<T>(x * a, y * a); }
+		Vector2<T> operator +(const T & a) { return Vector2<T>(x + a, y + a); }
+		Vector2<T> operator -(const T & a) { return Vector2<T>(x - a, y - a); }
+		Vector2<T> operator /(const T & a) { return Vector2<T>(x / a, y / a); }
 
-		Vector2<T> operator *(Vector2<T> a) { return Vector2<T>(x * a.x, y * a.y); }
-		Vector2<T> operator +(Vector2<T> a) { return Vector2<T>(x + a.x, y + a.y); }
-		Vector2<T> operator -(Vector2<T> a) { return Vector2<T>(x - a.x, y - a.y); }
-		Vector2<T> operator /(Vector2<T> a) { return Vector2<T>(x / a.x, y / a.y); }
+		Vector2<T> operator *(const Vector2<T> & a) { return Vector2<T>(x * a.x, y * a.y); }
+		Vector2<T> operator +(const Vector2<T> & a) { return Vector2<T>(x + a.x, y + a.y); }
+		Vector2<T> operator -(const Vector2<T> & a) { return Vector2<T>(x - a.x, y - a.y); }
+		Vector2<T> operator /(const Vector2<T> & a) { return Vector2<T>(x / a.x, y / a.y); }
 
-        Vector2<T> operator *=(Vector2<T> a) { return Vector2<T>(x *= a.x, y *= a.y); }
-        Vector2<T> operator +=(Vector2<T> a) { return Vector2<T>(x += a.x, y += a.y); }
-        Vector2<T> operator -=(Vector2<T> a) { return Vector2<T>(x -= a.x, y -= a.y); }
-        Vector2<T> operator /=(Vector2<T> a) { return Vector2<T>(x /= a.x, y /= a.y); }
+        Vector2<T> operator *=(const Vector2<T> & a) { return Vector2<T>(x *= a.x, y *= a.y); }
+        Vector2<T> operator +=(const Vector2<T> & a) { return Vector2<T>(x += a.x, y += a.y); }
+        Vector2<T> operator -=(const Vector2<T> & a) { return Vector2<T>(x -= a.x, y -= a.y); }
+        Vector2<T> operator /=(const Vector2<T> & a) { return Vector2<T>(x /= a.x, y /= a.y); }
 
-        inline T distanceTo(Vector2<T> a) { return (sqrt(pow(x - a.x,2) + pow(y - a.y,2))); }
+        inline T distanceTo(const Vector2<T> & a) { return (sqrt(pow(x - a.x,2) + pow(y - a.y,2))); }
 
 	};
 

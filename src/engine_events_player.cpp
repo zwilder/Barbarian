@@ -25,7 +25,8 @@ void Engine::handleEvents_player_(Input input)
 {
     if(input.move())
     {
-        wsl::Vector2i dPos = player_->pos() + input.dir();
+        wsl::Vector2i playerPos = player_->pos();
+        wsl::Vector2i dPos = playerPos + input.dir();
         if(!gameMap_->tileAt(dPos).blocksMovement())
         {
             Entity * actor = gameMap_->actorAt(dPos);

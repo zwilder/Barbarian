@@ -42,15 +42,58 @@ Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string n
     mask_ = Flags::POS | Flags::GLYPH;
     actor_ = nullptr;
     item_ = nullptr;
+    inventory_ = nullptr;
     level_ = nullptr;
 } 
+
+Entity::Entity(const Entity & other)
+{
+    game_ = other.game_;
+    pos_ = other.pos_;
+    glyph_ = other.glyph_;
+    name_ = std::make_shared<std::string>(*other.name_.get());
+    mask_ = other.mask_;
+    actor_ = nullptr;
+    item_ = nullptr;
+    inventory_ = nullptr;
+    level_ = nullptr;
+    
+    if(isActor())
+    {
+        makeActor(*(other.actor_.get()));
+    }
+    if(isItem())
+    {
+        makeItem(*(other.item_.get()));
+    }
+    if(hasInventory())
+    {
+        makeInventory();
+    }
+    if(hasLevel())
+    {
+        makeLevel(*(other.level_.get()));
+    }
+}
+
+// Entity & operator=(const Entity & other)
+// {
+//     Entity result;
+//     result.name_ = std::make_shared<std::string>(other.name());
+//     result.mask_ = other.mask();
+//     result.isActor() ? result.makeActor(other.actor()) : result.actor_ = nullptr;
+//     result.isItem() ? result.makeItem(other.item()) : result.item_ = nullptr;
+//     hasInventory() ? result.makeInventory(other.inventory()) : result.inventory_ = nullptr;
+//     hasLevel() ? result.makeLevel(other.level()) : result.level_ = nullptr;
+//     return result;
+// }
 
 void Entity::move(wsl::Vector2i delta)
 {
     pos_ += delta;
 }
 
-wsl::Vector2i Entity::pos()
+const wsl::Vector2i & Entity::pos()
 {
     return pos_;
 }

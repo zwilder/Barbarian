@@ -47,9 +47,9 @@ namespace wsl
             T h;
 
             inline wsl::Vector2<T> center() { return wsl::Vector2<T>((x1 + x2) / 2, (y1 + y2) / 2); }
-            inline bool intersect(Rectangle<T> a) { return((x1 <= a.x2) && (x2 >= a.x1) && (y1 <= a.y2) && (y2 >= a.y1)); }
+            inline bool intersect(const Rectangle<T> & a) { return((x1 <= a.x2) && (x2 >= a.x1) && (y1 <= a.y2) && (y2 >= a.y1)); }
 
-            T distanceTo(Rectangle<T> a);
+            T distanceTo(const Rectangle<T> & a);
     };
 
     template <typename T>
@@ -70,7 +70,7 @@ namespace wsl
     }
 
     template <typename T>
-    T Rectangle<T>::distanceTo(Rectangle<T> a)
+    T Rectangle<T>::distanceTo(const Rectangle<T> & a)
     {
         // Need to find the smallest distance of each corner to each other corner.
         // 4 corners with 4 possible distances = 16 distances

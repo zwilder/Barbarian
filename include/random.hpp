@@ -31,7 +31,7 @@ namespace wsl
 
 struct RNGState
 {
-    RNGState(uint32_t a = 0, uint32_t b = 362436069, uint32_t c = 521288629, uint32_t d = 88675123) : x(a), y(b), z(c), w(d) { }
+    RNGState(uint32_t a = 123456789, uint32_t b = 362436069, uint32_t c = 521288629, uint32_t d = 88675123) : x(a), y(b), z(c), w(d) { }
     uint32_t x;
     uint32_t y;
     uint32_t z;

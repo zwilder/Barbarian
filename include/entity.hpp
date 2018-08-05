@@ -132,6 +132,10 @@ class Entity : public wsl::BitFlag
         Entity();
         Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
 
+        Entity(const Entity & other); // Copy constructor
+        // Entity & operator=(const Entity & other); // Copy assignment
+        // Do I need a user defined destructor? memory is handled via unique/shared ptrs...
+
         // Component flags
         enum Flags : uint16_t
         {
@@ -160,7 +164,7 @@ class Entity : public wsl::BitFlag
 
         // Generic Entity functions
         void move(wsl::Vector2i delta);
-        wsl::Vector2i pos();
+        const wsl::Vector2i & pos();
         void setPos(wsl::Vector2i pos);
         wsl::Glyph & glyph();
         std::string name() { return *name_; }
