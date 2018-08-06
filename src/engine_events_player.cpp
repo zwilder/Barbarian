@@ -34,7 +34,8 @@ void Engine::handleEvents_player_(Input input)
             bool move = false;
             if(actor)
             {
-                addMessage("You attack the " + actor->name() + " for " + std::to_string(player_->power() - actor->defense()) + " damage!");
+                // addMessage("You attack the " + actor->name() + " for " + std::to_string(player_->power() - actor->defense()) + " damage!");
+                addMessage(player_->name() + " cleaves into the " + actor->name() + "!");
                 // actor->takeDamage(player_->power() - actor->defense());
                 player_->dealDamage(actor, player_->power() - actor->defense());
                 if(gameState_ != GameState::LEVEL_UP)

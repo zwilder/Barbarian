@@ -24,6 +24,7 @@
 #include <chrono>
 #include <thread>
 #include "../include/engine.hpp"
+#include "../include/random.hpp"
 
 Engine::Engine()
 {
@@ -51,6 +52,9 @@ Engine::Engine()
     currentMsg_ = "";
 
     running_ = init();
+
+    uint32_t seed = uint32_t(std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count());
+    engineRNG_ = std::make_shared<wsl::RNGState>(123987445, seed); // Random numbers
 }
 
 bool Engine::init()
@@ -233,7 +237,8 @@ void Engine::newGame()
     // Add the player entity - Should be a separate function,
     // which would facilitate a character creation option in the future. 
     *player_ = Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
-    player_->makeActor(Actor(50,5)); // speed, vision
+    player_->makeActor(Actor(50,5,100,1,4)); //s,v,mH,d,p,x
+    // player_->makeActor(Actor(50,5,)); // speed, vision
     player_->makeInventory();
     player_->makeLevel(Level());
     player_->setPos(gameMap_->rooms[0].center());

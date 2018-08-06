@@ -121,6 +121,8 @@ void Entity::use(int index)
     Entity & itemEntity = itemNode->data;
 
     // Check use functions
+    bool success = false;
+    if(itemEntity.item_->check(Item::Flags::HEAL))
     if(itemEntity.item_->check(Item::Flags::SCROLL))
     {
         game_->addMessage(name() + " reads the " + itemEntity.name() + "!");
@@ -131,45 +133,48 @@ void Entity::use(int index)
     }
     if(itemEntity.item_->check(Item::Flags::HEAL))
     {
-        use_heal_();
+        success = use_heal_();
     }
     if(itemEntity.item_->check(Item::Flags::CAST_LIGHTNING))
     {
-        use_cast_lightning_();
+        success = use_cast_lightning_();
     }
     if(itemEntity.item_->check(Item::Flags::CAST_FIREBOLT))
     {
-        use_cast_firebolt_();
+        success = use_cast_firebolt_();
     }
     if(itemEntity.item_->check(Item::Flags::CAST_FIREBALL))
     {
-        use_cast_fireball_();
+        success = use_cast_fireball_();
     }
 
     // Reduce quantity
-    itemEntity.item_->quantity -= 1;
-    if(itemEntity.item_->quantity <= 0)
+    if(success)
     {
-        // --if qty <= 0, remove from inventory
-        inventory_->remove(itemNode);
+        itemEntity.item_->quantity -= 1;
+        if(itemEntity.item_->quantity <= 0)
+        {
+            // --if qty <= 0, remove from inventory
+            inventory_->remove(itemNode);
+        }
+    }
+    else
+    {
+        game_->addMessage(name() + " changes their mind, and puts the " + itemEntity.name() + " away.");
     }
 }
 
-void Entity::use_heal_()
+bool Entity::use_heal_()
 {
     if(!isActor())
     {
-        return;
+        return false;
     }
     heal(actor_->maxHP / 3);
-    // actor_->HP += int(actor_->maxHP / 3);
-    // if(actor_->HP > actor_->maxHP)
-    // {
-    //     actor_->HP = actor_->maxHP;
-    // }
+    return true;
 }
 
-void Entity::use_cast_lightning_()
+bool Entity::use_cast_lightning_()
 {
     if(this == game_->player())
     {
@@ -179,7 +184,7 @@ void Entity::use_cast_lightning_()
         {
             game_->addMessage("It arcs towards the " + target->name() + ".");
             // target->takeDamage(20); // This magic number needs to be changed
-            dealDamage(target, 20);
+            dealDamage(target, 40);
         }
         else
         {
@@ -191,9 +196,10 @@ void Entity::use_cast_lightning_()
     // {
         // Other entities might use this function to cast lightning
     // }
+    return true;
 }
 
-void Entity::use_cast_firebolt_()
+bool Entity::use_cast_firebolt_()
 {
     if(this == game_->player())
     {
@@ -233,26 +239,28 @@ void Entity::use_cast_firebolt_()
             tile.glyph().setColor(wsl::Color::DkGrey);
         }
     }
+    return true;
 }
 
-void Entity::use_cast_fireball_()
+bool Entity::use_cast_fireball_()
 {
     if(this == game_->player())
     {
         game_->target();
-        game_->addMessage("Fire explodes out of " + name() + "\'s hands!");
 
         // Need all entities with a radius of the selected position
         wsl::Vector2i targetPos;
         if(!game_->targetSelected())
         {
-            targetPos = pos();
+            // targetPos = pos();
+            return false; // No target selected;
         }
         else
         {
             targetPos = game_->cursor();
         }
 
+        game_->addMessage("Fire explodes out of " + name() + "\'s hands!");
         for(int x = targetPos.x - 2; x <= targetPos.x + 2; ++x)
         {
             for(int y = targetPos.y - 2; y <= targetPos.y + 2; ++y)
@@ -264,7 +272,7 @@ void Entity::use_cast_fireball_()
                     {
                         game_->addMessage("The " + target->name() + " is scorched!");
                         // target->takeDamage(5);
-                        dealDamage(target, 5);
+                        dealDamage(target, 25);
                     }
                     else if(target->isItem())
                     {
@@ -277,7 +285,7 @@ void Entity::use_cast_fireball_()
                     if(pos() == wsl::Vector2i(x,y))
                     {
                         game_->addMessage(name() + " is caught in the explosion!");
-                        takeDamage(5);
+                        takeDamage(25);
                     }
                     else
                     {
@@ -298,4 +306,6 @@ void Entity::use_cast_fireball_()
             }
         }
     }
+
+    return true;
 }

@@ -38,6 +38,11 @@
 #include "sprite.hpp"
 #include "dllist.hpp"
 
+namespace wsl
+{
+    class RNGState;
+}
+
 enum class GameState : uint8_t
 {
     TITLE,
@@ -75,6 +80,7 @@ class Engine
         std::vector<wsl::Vector2i> * visible() { return visible_.get(); }
         wsl::Vector2i cursor();
         bool targetSelected() { return targetSelected_; }
+        wsl::RNGState * rng() { return engineRNG_.get(); }
 
         // Utility functions
         void newGame();
@@ -151,6 +157,9 @@ class Engine
         bool targetSelected_;
         bool targeting_;
         wsl::Vector2i cursorPos_;
+
+        // RNG
+        std::shared_ptr<wsl::RNGState> engineRNG_;
 };
 
 #endif // ENGINE_HPP

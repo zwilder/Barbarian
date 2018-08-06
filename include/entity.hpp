@@ -235,10 +235,10 @@ class Entity : public wsl::BitFlag
         std::shared_ptr<Level> level_;
 
         // Use Functions
-        void use_heal_();
-        void use_cast_lightning_();
-        void use_cast_firebolt_();
-        void use_cast_fireball_();
+        bool use_heal_();
+        bool use_cast_lightning_();
+        bool use_cast_firebolt_();
+        bool use_cast_fireball_();
 };
 
 #endif //ENTITY_HPP

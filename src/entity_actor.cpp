@@ -23,6 +23,7 @@
 #include "../include/game_map.hpp"
 #include "../include/engine.hpp"
 #include "../include/pathfinding.hpp"
+#include "../include/random.hpp"
 
 Actor::Actor(int s, int v, int mH, int d, int p, int x) : speed(s), vision(v), maxHP(mH), defense(d), power(p), xp(x)
 {
@@ -75,6 +76,14 @@ void Entity::takeDamage(int damage)
 
 void Entity::dealDamage(Entity * target, int damage)
 {
+    // int dealtDamage = wsl::randomInt(damage, game_->rng());
+    // int critChance = wsl::randomInt(100, game_->rng());
+    // if(critChance <= 10)
+    // {
+    //     dealtDamage += wsl::randomInt(1, damage, game_->rng());
+    //     game_->addMessage(target->name() + " grunts in agony!");
+    // }
+    // target->takeDamage(dealtDamage);
     target->takeDamage(damage);
     if(target->check(Flags::DEAD))
     {
@@ -115,7 +124,7 @@ bool Entity::update()
         //Player update
         success = true;
     }
-    else // if(fov::contains(game_->visible(), pos_)) // Right now the entities only move when they see the player
+    else if(!check(Flags::DEAD)) // if(fov::contains(game_->visible(), pos_)) // Right now the entities only move when they see the player
     {
         //Enemy update
         // All of this will be moved to separate functions depending on the type of AI.
@@ -139,9 +148,9 @@ bool Entity::update()
             }
             else if(next == game_->player()->pos())
             {
-                game_->addMessage("The " + name() + " viciously claws at " + game_->player()->name() + "!"); 
+                game_->addMessage("The " + name() + " claws at " + game_->player()->name() + "!"); 
                 // game_->player()->takeDamage(power() - game_->player()->defense());
-                dealDamage(game_->player(), power() -game_->player()->defense());
+                dealDamage(game_->player(), power() - game_->player()->defense());
             }
             else
             {

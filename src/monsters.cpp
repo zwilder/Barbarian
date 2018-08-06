@@ -28,7 +28,7 @@ namespace monster
 Entity skeleton(Engine * engine, wsl::Vector2i pos)
 {
     Entity skeleton(engine, pos, wsl::Glyph('s', wsl::Color::LtGrey), "skeleton");
-    skeleton.makeActor(Actor(25,8,10,0,3,35)); //s,v,mH,d,p,x
+    skeleton.makeActor(Actor(25,8,20,0,4,35)); //s,v,mH,d,p,x
     skeleton.engage(Entity::Flags::AI);
     return skeleton;
 }
@@ -36,7 +36,7 @@ Entity skeleton(Engine * engine, wsl::Vector2i pos)
 Entity shamblingCorpse(Engine * engine, wsl::Vector2i pos)
 {
     Entity corpse(engine, pos, wsl::Glyph('Z', wsl::Color::Red), "shambling corpse");
-    corpse.makeActor(Actor(75,8,16,1,4,100)); //s,v,mH,d,p,x
+    corpse.makeActor(Actor(75,8,30,2,8,100)); //s,v,mH,d,p,x
     corpse.engage(Entity::Flags::AI);
     return corpse;
 }
