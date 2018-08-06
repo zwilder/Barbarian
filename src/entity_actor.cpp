@@ -48,7 +48,6 @@ void Entity::makeActor(Actor actor)
 // }
 void Entity::takeDamage(int damage)
 {
-    std::cout << name() << " has " << std::to_string(actor_->HP) << " health.\n";
     if((actor_->HP <= 0) || check(Flags::DEAD))
     {
         return;

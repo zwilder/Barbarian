@@ -20,12 +20,15 @@
 
 #include <iostream>
 #include <chrono>
+// #include <ctime>
 #include "../include/random.hpp"
 #include "../include/game_map.hpp"
 #include "../include/engine.hpp"
 #include "../include/pqlist.hpp"
 #include "../include/dllist.hpp"
 #include "../include/entity.hpp"
+#include "../include/items.hpp"
+#include "../include/monsters.hpp"
 
 std::array<wsl::Vector2i, 8> GameMap::DIRS = {
     wsl::Vector2i(-1,0),
@@ -41,17 +44,40 @@ std::array<wsl::Vector2i, 8> GameMap::DIRS = {
 GameMap::GameMap(Engine * owner, int w, int h, int roomSizeMax, int roomSizeMin, int numRoomsMax) : owner_(owner), width_(w), height_(h), roomSizeMax_(roomSizeMax),
     roomSizeMin_(roomSizeMin), numRoomsMax_(numRoomsMax)
 {
+    uint32_t seed = uint32_t(std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count());
+    // std::time_t t = std::time(0);
+    // std::tm * now = std::localtime(&t);
+    // uint32_t seed = (now->tm_sec * 1000); // Current seconds after the minute, to milliseconds
+    // seed += (now->tm_min * 60 * 1000); // Minutes after the hour, to minutes, to milliseconds
+    // seed += (now->tm_hour * 60 * 60 * 1000); // Hours after midnight, to minutes, to seconds, to milliseconds
+    std::cout << "Map seed: " << seed << std::endl;
+    rngState_ = std::make_shared<wsl::RNGState>(seed);
+    
     if(owner)
     {
         initTiles_();
         makeMap_();
     }
     currentLevel_ = 1;
+}
 
-    auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    wsl::RNGState rngState_(seed);
-    // rngState_ = std::make_shared<wsl::RNGState>(seed,362436069,521288629,88675123); // Random numbers
-    // rngState_ = new wsl::RNGState(seed, 362436069,521288629,88675123);
+GameMap::GameMap(const GameMap & other) // copy constructor
+{
+    tiles = other.tiles;
+    rooms = other.rooms;
+    owner_ = other.owner_;
+    rngState_ = std::make_shared<wsl::RNGState>(*other.rngState_.get());
+    width_ = other.width_;
+    height_ = other.height_;
+    roomSizeMax_ = other.roomSizeMax_;
+    roomSizeMin_ = other.roomSizeMin_;
+    currentLevel_ = other.currentLevel_;
+}
+
+GameMap & GameMap::operator=(GameMap other) // Copy assignment
+{
+    swap(*this, other);
+    return *this;
 }
 
 void GameMap::nextLevel()
@@ -298,17 +324,17 @@ void GameMap::makeMap_()
     int numRooms = 0;
     while(numRooms < numRoomsMax_)
     {
-        int w = wsl::randomInt(roomSizeMin_, roomSizeMax_, &rngState_);
-        int h = wsl::randomInt(roomSizeMin_, roomSizeMax_, &rngState_);
-        int x = wsl::randomInt(0, width_ - w - 1, &rngState_);
+        int w = wsl::randomInt(roomSizeMin_, roomSizeMax_, rngState_.get());
+        int h = wsl::randomInt(roomSizeMin_, roomSizeMax_, rngState_.get());
+        int x = wsl::randomInt(0, width_ - w - 1, rngState_.get());
         while(x % 2 != 0)
         {
-            x = wsl::randomInt(0, width_ - w - 1, &rngState_);
+            x = wsl::randomInt(0, width_ - w - 1, rngState_.get());
         }
-        int y = wsl::randomInt(0, height_ - h - 1, &rngState_);
+        int y = wsl::randomInt(0, height_ - h - 1, rngState_.get());
         while(y % 2 != 0)
         {
-            y = wsl::randomInt(0, height_ - h - 1, &rngState_);
+            y = wsl::randomInt(0, height_ - h - 1, rngState_.get());
         }
 
         wsl::Rect newRoom = wsl::Rect(x,y,w,h);
@@ -327,7 +353,7 @@ void GameMap::makeMap_()
             {
                 wsl::Vector2i previous(rooms[rooms.size() - 1].center());
                 wsl::Vector2i current(newRoom.center());
-                if(wsl::randomBool(&rngState_))
+                if(wsl::randomBool(rngState_.get()))
                 {
                     hTunnel_(previous.x, current.x, previous.y);
                     vTunnel_(previous.y, current.y, current.x);
@@ -373,30 +399,21 @@ bool GameMap::isBlocked(int x, int y)
 
 void GameMap::placeActors(int maxPerRoom)
 {
-    // std::vector<Entity> * entityList = owner_->entityList();
     wsl::DLList<Entity> * entityList = owner_->entityList();
     wsl::WeightedList<Entity> entityWeights;
 
-    Entity skeleton(owner_, wsl::Vector2i(0,0), wsl::Glyph('s', wsl::Color::LtGrey), "skeleton");
-    skeleton.makeActor(Actor(25,8,10,0,3,35)); //s,v,mH,d,p,x
-    skeleton.engage(Entity::Flags::AI);
-    entityWeights.add(skeleton, 8);
-    
-    Entity corpse(owner_, wsl::Vector2i(0,0), wsl::Glyph('Z', wsl::Color::DkRed), "shambling corpse");
-    corpse.makeActor(Actor(75,8,16,1,4,100)); //s,v,mH,d,p,x
-    corpse.engage(Entity::Flags::AI);
-    entityWeights.add(corpse, 2);
+    entityWeights.add(monster::skeleton(owner_), 8);
+    entityWeights.add(monster::shamblingCorpse(owner_), 2);
 
-    // entityList->clear(); // This needs to go in the next level code in engine, not here.
     for(size_t i = 1; i < rooms.size(); ++i)
     {
         wsl::Rect & room = rooms[i];
-        int numEntities = wsl::randomInt(0, maxPerRoom, &rngState_);
+        int numEntities = wsl::randomInt(0, maxPerRoom, rngState_.get());
 
         for(int j = 0; j <= numEntities; ++j)
         {
-            int x = wsl::randomInt(room.x1 + 1,room.x2 - 1, &rngState_);
-            int y = wsl::randomInt(room.y1 + 1, room.y2 - 1, &rngState_);
+            int x = wsl::randomInt(room.x1 + 1,room.x2 - 1, rngState_.get());
+            int y = wsl::randomInt(room.y1 + 1, room.y2 - 1, rngState_.get());
             if(tileAt(x,y).blocksMovement())
             {
                 continue;
@@ -404,21 +421,9 @@ void GameMap::placeActors(int maxPerRoom)
             wsl::Vector2i newPos(x,y);
             if(!entityAt(newPos))
             {
-                Entity entity = entityWeights.pick(&rngState_);
+                Entity entity = entityWeights.pick(rngState_.get());
                 entity.setPos(newPos);
                 entityList->push(entity);
-                // if(wsl::randomInt(100, &rngState_) <= 80)
-                // {
-                //     entityList->push(Entity(owner_, newPos, wsl::Glyph('s', wsl::Color::LtGrey, wsl::Color::Black), "skeleton"));
-                //     entityList->head()->data.makeActor(Actor(25,8,10,0,3,35)); //s,v,mH,d,p,x
-                //     entityList->head()->data.engage(Entity::Flags::AI);
-                // }
-                // else
-                // {
-                //     entityList->push(Entity(owner_, newPos, wsl::Glyph('Z', wsl::Color::Red, wsl::Color::Black), "shambling corpse"));
-                //     entityList->head()->data.makeActor(Actor(75,8,16,1,4,100)); //s,v,mH,d,p,x
-                //     entityList->head()->data.engage(Entity::Flags::AI);
-                // }
             }
         }
     }
@@ -427,6 +432,11 @@ void GameMap::placeActors(int maxPerRoom)
 void GameMap::placeItems(int max)
 {
     wsl::DLList<Entity> * entityList = owner_->entityList();
+    wsl::WeightedList<Entity> itemWeights;
+    itemWeights.add(item::healingPotion(owner_), 4);
+    itemWeights.add(item::lightningScroll(owner_), 2);
+    itemWeights.add(item::fireballScroll(owner_), 3);
+    itemWeights.add(item::fireboltScroll(owner_), 2);
     // int numItems = wsl::randomInt(0,max);
     int numItems = max;
     int placedItems = 0;
@@ -437,55 +447,14 @@ void GameMap::placeItems(int max)
             // break;
         }
         wsl::Rect & room = rooms[i];
-        int x = wsl::randomInt(room.x1 + 1,room.x2 - 1, &rngState_);
-        int y = wsl::randomInt(room.y1 + 1, room.y2 - 1, &rngState_);
+        int x = wsl::randomInt(room.x1 + 1,room.x2 - 1, rngState_.get());
+        int y = wsl::randomInt(room.y1 + 1, room.y2 - 1, rngState_.get());
         if(!entityAt(x,y))
         {
-            if(wsl::randomInt(100, &rngState_) <= 15)
-            {
-                entityList->push(Entity(owner_, wsl::Vector2i(x,y), wsl::Glyph('!', wsl::Color::LtRed), "healing potion"));
-                entityList->head()->data.makeItem(Item(Item::Flags::HEAL | Item::Flags::POTION, 1, true));
-                placedItems += 1;
-            }
-            else
-            {
-                int scrollSelect = wsl::randomInt(1,3, &rngState_);
-                Item itemComponent(Item::Flags::SCROLL, 1, true);
-                std::string scrollName = "";
-                // scrollSelect = 2;
-                switch(scrollSelect)
-                {
-                    case 1:
-                    {
-                        //Fireball
-                        itemComponent.engage(Item::Flags::CAST_FIREBALL);
-                        scrollName = "scroll of fireball";
-                        break;
-                    }
-                    case 2:
-                    {
-                        //Firebolt
-                        itemComponent.engage(Item::Flags::CAST_FIREBOLT);
-                        scrollName = "scroll of firebolt";
-                        break;
-                    }
-                    case 3:
-                    {
-                        //Lightning
-                        itemComponent.engage(Item::Flags::CAST_LIGHTNING);
-                        scrollName = "scroll of lightning";
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
-                }
-                Entity itemEntity(owner_, wsl::Vector2i(x,y), wsl::Glyph('?', wsl::Color::LtYellow), scrollName);
-                itemEntity.makeItem(itemComponent);
-                entityList->push(itemEntity);
-                placedItems += 1;
-            }
+            wsl::Vector2i newPos(x,y);
+            Entity entity = itemWeights.pick(rngState_.get());
+            entity.setPos(newPos);
+            entityList->push(entity);
         }
     }
 }

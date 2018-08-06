@@ -26,14 +26,36 @@
 #include <memory>
 #include "tile.hpp"
 #include "rect.hpp"
-#include "random.hpp"
+// #include "random.hpp"
 
+namespace wsl
+{
+    class RNGState;
+}
 class Entity;
 class Engine;
 class GameMap
 {
     public:
         GameMap(Engine * owner = NULL, int w = 80, int h = 40, int roomSizeMax = 10, int roomSizeMin = 6, int numRoomsMax = 30);
+
+        GameMap(const GameMap & other); // copy constructor
+        friend void swap(GameMap & first, GameMap & other)
+        {
+            using std::swap;
+            swap(first.tiles, other.tiles);
+            swap(first.rooms, other.rooms);
+            swap(first.owner_, other.owner_);
+            swap(first.rngState_, other.rngState_);
+            swap(first.width_, other.width_);
+            swap(first.height_, other.height_);
+            swap(first.roomSizeMax_, other.roomSizeMax_);
+            swap(first.roomSizeMin_, other.roomSizeMin_);
+            swap(first.numRoomsMax_, other.numRoomsMax_);
+            swap(first.currentLevel_, other.currentLevel_);
+        }
+        GameMap & operator=(GameMap other); // Copy assignment
+
         // static std::array<wsl::Vector2i, 4> DIRS;
         static std::array<wsl::Vector2i, 8> DIRS;
         int width() { return width_; }
@@ -83,8 +105,8 @@ class GameMap
         
     private:
         Engine * owner_;
-        // std::shared_ptr<wsl::RNGState> rngState_;
-        wsl::RNGState rngState_;
+        std::shared_ptr<wsl::RNGState> rngState_;
+        // wsl::RNGState rngState_;
         int width_;
         int height_;
         int roomSizeMax_;
