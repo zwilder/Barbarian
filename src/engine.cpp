@@ -25,6 +25,7 @@
 #include <thread>
 #include "../include/engine.hpp"
 #include "../include/random.hpp"
+#include "../include/monsters.hpp"
 
 Engine::Engine()
 {
@@ -125,21 +126,6 @@ bool Engine::init()
         
         gameMap_ = std::make_unique<GameMap>();
         player_ = new Entity();
-        // // Setup the game map width/height - should be a different function, with the next three arguments passed in.
-        // gameMap_ = std::make_unique<GameMap>(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
-        //
-        // // Add the player entity - Should be a separate function,
-        // // which would facilitate a character creation option in the future. 
-        // player_ = new Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
-        // player_->makeActor(Actor(50,4)); // speed, vision
-        // player_->makeInventory();
-        // player_->setPos(gameMap_->rooms[0].center());
-        // fov::visible(visible_.get(), gameMap_.get(), player_);
-        //
-        // // Tell gamemap to place some enemies
-        // entityList_.clear();
-        // gameMap_->placeActors(2);
-        // gameMap_->placeItems(5);
     }
     return success;
 }
@@ -234,14 +220,8 @@ void Engine::newGame()
     // This code is a mess and should be replaced eventually with something cleaner, less specific, and reusable.
     *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
-    // Add the player entity - Should be a separate function,
-    // which would facilitate a character creation option in the future. 
-    *player_ = Entity(this, wsl::Vector2i(0,0), wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
-    player_->makeActor(Actor(50,5,100,1,4)); //s,v,mH,d,p,x
-    // player_->makeActor(Actor(50,5,)); // speed, vision
-    player_->makeInventory();
-    player_->makeLevel(Level());
-    player_->setPos(gameMap_->rooms[0].center());
+    // Create the player entity - this should eventually be from a character creation screen
+    *player_ = monster::player(this, gameMap_->rooms[0].center());
     fov::visible(visible_.get(), gameMap_.get(), player_);
 
     // Tell gamemap to place some enemies

@@ -25,6 +25,15 @@
 namespace monster
 {
 
+Entity player(Engine * engine, wsl::Vector2i pos)
+{
+    Entity player(engine, pos, wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
+    player.makeActor(Actor(50,5,100,1,4)); //s,v,mH,d,p,x
+    player.makeInventory();
+    player.makeLevel(Level());
+    return player;
+}
+
 Entity skeleton(Engine * engine, wsl::Vector2i pos)
 {
     Entity skeleton(engine, pos, wsl::Glyph('s', wsl::Color::LtGrey), "skeleton");

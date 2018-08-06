@@ -36,6 +36,8 @@ class Engine;
 namespace monster
 {
 
+Entity player(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
+
 Entity skeleton(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 Entity shamblingCorpse(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 
