@@ -19,8 +19,9 @@
 */
 
 #include "../include/entity.hpp"
+#include "../include/engine.hpp"
 
-Equipment::Equipment(int s, int p, int d, int h) : powerBonus(p), damageBonus(d), healthBonus(h)
+Equipment::Equipment(int s, int p, int d, int h) : powerBonus(p), defenseBonus(d), healthBonus(h)
 {
     set(s);
 }
@@ -50,7 +51,7 @@ void Entity::toggleEquip(Entity * item)
     // Entity & item = itemNode->data;
     if(!item->check(Flags::EQUIPMENT))
     {
-        game_->addMessage(name_ + " can't seem to figure out how to equip the " + item->name() "!");
+        game_->addMessage(name() + " can't seem to figure out how to equip the " + item->name() + "!");
     }
 
     // Check if the actor has an item already occupying the slot in the item occupies
@@ -62,14 +63,21 @@ void Entity::toggleEquip(Entity * item)
             Entity * mainHandItem = getMainHand();
             actor_->remove(Actor::Flags::EQUIP_MAIN_HAND);
             mainHandItem->equipment_->remove(Equipment::Flags::EQUIPPED);
-            game_->addMessage(name_ + " tried to equip a " + item->name() + ", but had to stop wielding a " + mainHandItem->name() + " first.");
+            if(item != mainHandItem)
+            {
+                game_->addMessage(name() + " tried to equip a " + item->name() + ", but had to stop wielding a " + mainHandItem->name() + " first.");
+            }
+            else
+            {
+                game_->addMessage(name() + " unequips the " + item->name() + ".");
+            }
         }
         else
         {
             // Actor has nothing equipped in the main hand, equip item
             actor_->engage(Actor::Flags::EQUIP_MAIN_HAND);
             item->equipment_->engage(Equipment::Flags::EQUIPPED);
-            game_->addMessage(name_ + " wields the " + item->name() + "!");
+            game_->addMessage(name() + " wields the " + item->name() + "!");
         }
     }
     else if(item->isOffHand())
@@ -80,14 +88,21 @@ void Entity::toggleEquip(Entity * item)
             Entity * offHandItem = getOffHand();
             actor_->remove(Actor::Flags::EQUIP_OFF_HAND);
             offHandItem->equipment_->remove(Equipment::Flags::EQUIPPED);
-            game_->addMessage(name_ + " tried to equip a " + item->name() + ", but had to stop wielding a " + offHandItem->name() + " first.");
+            if(item != offHandItem)
+            {
+                game_->addMessage(name() + " tried to equip a " + item->name() + ", but had to stop wielding a " + offHandItem->name() + " first.");
+            }
+            else
+            {
+                game_->addMessage(name() + " unequips the " + item->name() + ".");
+            }
         }
         else
         {
             // Actor has nothing equipped in the off hand, equip item
             actor_->engage(Actor::Flags::EQUIP_OFF_HAND);
             item->equipment_->engage(Equipment::Flags::EQUIPPED);
-            game_->addMessage(name_ + " readies the " + item->name() + "!");
+            game_->addMessage(name() + " readies the " + item->name() + "!");
         }
     }
 }
@@ -95,6 +110,23 @@ void Entity::toggleEquip(Entity * item)
 Entity * Entity::getMainHand()
 {
     Entity * result = NULL;
+    if(hasInventory())
+    {
+        //Iterate through inventory, checking each item looking for Equipment::Flags::MAIN_HAND.
+        //when found, if equipped set result to item and break.
+        for(wsl::DLNode<Entity> * node = inventory_->head(); node != NULL; node = node->next)
+        {
+            Entity * item = &node->data;
+            if(item->isEquipment())
+            {
+                if(item->isMainHand() && item->equipped())
+                {
+                    result = item;
+                    break;
+                }
+            }
+        }
+    }
 
     return result;
 }
@@ -103,5 +135,22 @@ Entity * Entity::getOffHand()
 {
     Entity * result = NULL;
 
+    if(hasInventory())
+    {
+        //Iterate through inventory, checking each item looking for Equipment::Flags::MAIN_HAND.
+        //when found, if equipped set result to item and break.
+        for(wsl::DLNode<Entity> * node = inventory_->head(); node != NULL; node = node->next)
+        {
+            Entity * item = &node->data;
+            if(item->isEquipment())
+            {
+                if(item->isOffHand() && item->equipped())
+                {
+                    result = item;
+                    break;
+                }
+            }
+        }
+    }
     return result;
 }

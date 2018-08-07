@@ -107,7 +107,7 @@ class Item : public wsl::BitFlag
 class Equipment : public wsl::BitFlag
 {
     public:
-        Equipment(int s, int p, int d, int h);
+        Equipment(int s = 0, int p = 0, int d = 0, int h = 0);
         enum Flags: uint8_t
         {
             NONE = 0,

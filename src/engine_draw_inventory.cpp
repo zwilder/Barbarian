@@ -57,6 +57,14 @@ void Engine::draw_inventory_()
             {
                 console_->print(nameSize + 4, int(i) + 3, "x " + std::to_string(item.quantity()));
             }
+            if(item.isEquipment())
+            {
+                if(item.equipped())
+                {
+                    std::string slot = (item.isMainHand() ? "Main Hand" : "Off Hand"); // This will obviously need to change when more slots added
+                    console_->print(nameSize + 4, int(i) + 3, " [Equipped - " + slot + "]");
+                }
+            }
             ++i;
         }
     }

@@ -66,7 +66,7 @@ void WeightedList<T>::add(T obj, int wt)
 template <typename T>
 T WeightedList<T>::pick(RNGState * rng)
 {
-    int index = randomInt(list_.size() - 1, rng);
+    int index = randomInt(0, list_.size() - 1, rng);
     return list_.at(index)->data;
 }
 

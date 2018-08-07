@@ -105,6 +105,22 @@ void Entity::drop(int index)
         return;
     }
     Entity itemEntity = itemNode->data;
+    if(itemEntity.isEquipment())
+    {
+        if(itemEntity.equipped())
+        {
+            toggleEquip(&itemNode->data); //Because itemEntity is a copy a pointer to the original is needed
+            return;
+        }
+    }
+    if(itemEntity.quantity() > 1 )
+    {
+        game_->addMessage("You drop the " + itemEntity.name() + "s.");
+    }
+    else
+    {
+        game_->addMessage("You drop the " + itemEntity.name() + ".");
+    }
     itemEntity.item_->carried = false;
     itemEntity.setPos(pos_);
     game_->entityList()->push(itemEntity);

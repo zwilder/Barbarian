@@ -53,4 +53,18 @@ Entity fireboltScroll(Engine * engine, wsl::Vector2i pos)
     return result;
 }
 
+Entity woodenShield(Engine * engine, wsl::Vector2i pos)
+{
+    Entity result(engine, pos, wsl::Glyph(']', wsl::Color::Sepia), "wooden shield");
+    result.makeEquipment(Equipment(Equipment::Flags::OFF_HAND, 0, 1, 0)); // Equipment(Equipment::Flags, atkBonus, defBonus, hpBonus)
+    return result;
+}
+
+Entity battleAxe(Engine * engine, wsl::Vector2i pos)
+{
+    Entity result(engine, pos, wsl::Glyph(')', wsl::Color::LtCyan), "battle axe");
+    result.makeEquipment(Equipment(Equipment::Flags::MAIN_HAND, 4, 0, 0)); // Equipment(Equipment::Flags, atkBonus, defBonus, hpBonus)
+    return result;
+}
+
 } //namespace item
