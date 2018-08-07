@@ -147,6 +147,11 @@ void Entity::use(int index)
     {
         success = use_cast_fireball_();
     }
+    if(itemEntity.item_->check(Item::Flags::EQUIP))
+    {
+        toggleEquip(&itemNode->data);
+        return;
+    }
 
     // Reduce quantity
     if(success)

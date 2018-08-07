@@ -28,28 +28,28 @@ namespace item
 Entity healingPotion(Engine * engine, wsl::Vector2i pos)
 {
     Entity result(engine, pos, wsl::Glyph('!', wsl::Color::LtRed), "healing potion");
-    result.makeItem(Item(Item::Flags::HEAL | Item::Flags::POTION, 1, true));
+    result.makeItem(Item(Item::Flags::HEAL | Item::Flags::POTION, 1, true)); // Item(Item::Flags, quantity, stackable)
     return result;
 }
 
 Entity lightningScroll(Engine * engine, wsl::Vector2i pos)
 {
     Entity result(engine, pos, wsl::Glyph('?', wsl::Color::LtYellow), "scroll of lightning");
-    result.makeItem(Item(Item::Flags::CAST_LIGHTNING | Item::Flags::SCROLL, 1, false));
+    result.makeItem(Item(Item::Flags::CAST_LIGHTNING | Item::Flags::SCROLL, 1, false)); // Item(Item::Flags, quantity, stackable)
     return result;
 }
 
 Entity fireballScroll(Engine * engine, wsl::Vector2i pos)
 {
     Entity result(engine, pos, wsl::Glyph('?', wsl::Color::LtYellow), "scroll of fireball");
-    result.makeItem(Item(Item::Flags::CAST_FIREBALL | Item::Flags::SCROLL, 1, false));
+    result.makeItem(Item(Item::Flags::CAST_FIREBALL | Item::Flags::SCROLL, 1, false)); // Item(Item::Flags, quantity, stackable)
     return result;
 }
 
 Entity fireboltScroll(Engine * engine, wsl::Vector2i pos)
 {
     Entity result(engine, pos, wsl::Glyph('?', wsl::Color::LtYellow), "scroll of firebolt");
-    result.makeItem(Item(Item::Flags::CAST_FIREBOLT | Item::Flags::SCROLL, 1, false));
+    result.makeItem(Item(Item::Flags::CAST_FIREBOLT | Item::Flags::SCROLL, 1, false)); // Item(Item::Flags, quantity, stackable)
     return result;
 }
 
