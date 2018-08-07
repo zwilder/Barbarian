@@ -25,20 +25,20 @@ void Engine::handleEvents_levelup_(Input input)
     if(input.alpha() == 'a')
     {
         //Constitution
-        player_->maxHP() += 20;
+        player_->baseMaxHP() += 20;
         player_->hp() += 20;
         changeState(GameState::PLAYERS_TURN);
     }
     else if(input.alpha() == 'b')
     {
         //Strength
-        player_->power() += 1;
+        player_->basePower() += 1;
         changeState(GameState::PLAYERS_TURN);
     }
     else if(input.alpha() == 'c')
     {
         //Dexterity
-        player_->defense() += 1;
+        player_->baseDefense() += 1;
         changeState(GameState::PLAYERS_TURN);
     }
 }

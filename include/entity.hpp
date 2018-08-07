@@ -64,6 +64,7 @@ class Actor : public wsl::BitFlag
         template<class Archive>
         void serialize(Archive & ar)
         {
+            ar(mask_);
             ar(speed);
             ar(vision);
             ar(energy);
@@ -122,6 +123,7 @@ class Equipment : public wsl::BitFlag
         template<class Archive>
         void serialize(Archive & ar)
         {
+            ar(mask_);
             ar(powerBonus);
             ar(defenseBonus);
             ar(healthBonus);
@@ -227,9 +229,12 @@ class Entity : public wsl::BitFlag
         // int & speed() { return speed_; }
         // void setNextAction(Action action);
         int & hp() { return actor_->HP; }
-        int & maxHP() { return actor_->maxHP; }
-        int & defense() { return actor_->defense; }
-        int & power() { return actor_->power; }
+        int & baseMaxHP() { return actor_->maxHP; }
+        int & baseDefense() { return actor_->defense; }
+        int & basePower() { return actor_->power; }
+        int maxHP();
+        int defense();
+        int power();
         int vision() { return actor_->vision; }
         int xp() { return actor_->xp; }
         void takeDamage(int damage);

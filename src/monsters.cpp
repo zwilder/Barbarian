@@ -21,6 +21,7 @@
 #include "../include/monsters.hpp"
 #include "../include/entity.hpp"
 #include "../include/engine.hpp"
+#include "../include/items.hpp"
 
 namespace monster
 {
@@ -28,9 +29,19 @@ namespace monster
 Entity player(Engine * engine, wsl::Vector2i pos)
 {
     Entity player(engine, pos, wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
-    player.makeActor(Actor(50,5,100,1,4)); //s,v,mH,d,p,x
+    player.makeActor(Actor(50,5,100,1,2)); //s,v,mH,d,p,x
     player.makeInventory();
     player.makeLevel(Level());
+
+    {
+        Entity dagger = item::dagger(engine);
+        engine->entityList()->push(dagger);
+    }   
+
+    Entity * dagger = &(engine->entityList()->head()->data);
+    player.pickup(dagger);
+    player.use(0);
+    
     return player;
 }
 

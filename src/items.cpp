@@ -67,4 +67,11 @@ Entity battleAxe(Engine * engine, wsl::Vector2i pos)
     return result;
 }
 
+Entity dagger(Engine * engine, wsl::Vector2i pos)
+{
+    Entity result(engine, pos, wsl::Glyph(')', wsl::Color::LtCyan), "dagger");
+    result.makeEquipment(Equipment(Equipment::Flags::OFF_HAND, 2, 0, 0));
+    return result;
+}
+
 } //namespace item

@@ -42,6 +42,7 @@ Entity fireballScroll(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 Entity fireboltScroll(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 Entity woodenShield(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 Entity battleAxe(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
+Entity dagger(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 
 } //namespace item
 

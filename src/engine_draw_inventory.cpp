@@ -62,7 +62,7 @@ void Engine::draw_inventory_()
                 if(item.equipped())
                 {
                     std::string slot = (item.isMainHand() ? "Main Hand" : "Off Hand"); // This will obviously need to change when more slots added
-                    console_->print(nameSize + 4, int(i) + 3, " [Equipped - " + slot + "]");
+                    console_->printf(nameSize + 4, int(i) + 3, " [Equipped - " + slot + "]", wsl::Color::Orange);
                 }
             }
             ++i;
