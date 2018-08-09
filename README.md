@@ -3,7 +3,7 @@
 A ~~Rogue~~Barbarian-like - created as an attempt to follow the famous [Python3 Roguelike tutorial](http://rogueliketutorials.com/) using C++
 and SDL2 as part of the [r/roguelikedev 2018 Tutorial Tuesday Challenge](https://www.reddit.com/r/roguelikedev/wiki/python_tutorial_series).
 
-The master branch has the current ('stable') version of the game, which is currently on Part 11 of the tutorial, you can see the source for each
+The master branch has the current ('stable') version of the game, which is currently finished with Part 13 of the tutorial, you can see the source for each
 part by checking the tags under branches.
 
 I'll be updating [the blog](https://wsl-blog.com) with my thoughts and rambles about this project.
@@ -17,6 +17,7 @@ I'll be updating [the blog](https://wsl-blog.com) with my thoughts and rambles a
 - [Week 5a: Part 8](https://wsl-blog.com/posts/2018-07-24-the-roguelike-tutorial-week5a/): Items and inventory!
 - [Week 5b: Part 9](https://wsl-blog.com/posts/2018-07-31-the-roguelike-tutorial-week5b6/): Targeting functions and spells 
 - [Week 6: Part 10-11](https://wsl-blog.com/posts/2018-07-31-the-roguelike-tutorial-week5b6/): Saving and player advancement 
+- Week 7: Part 12-13: Coming soon!
 
 **Stay tuned for next week!**
 
