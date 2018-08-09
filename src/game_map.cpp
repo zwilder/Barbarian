@@ -402,8 +402,8 @@ void GameMap::placeActors(int maxPerRoom)
     wsl::DLList<Entity> * entityList = owner_->entityList();
     wsl::WeightedList<Entity> entityWeights;
 
-    entityWeights.add(monster::skeleton(owner_), 8);
-    entityWeights.add(monster::shamblingCorpse(owner_), 2);
+    entityWeights.add(monster::skeleton(owner_), 10);
+    entityWeights.add(monster::shamblingCorpse(owner_), (0.5 * currentLevel_));
 
     for(size_t i = 1; i < rooms.size(); ++i)
     {
@@ -435,8 +435,11 @@ void GameMap::placeItems(int max)
     wsl::WeightedList<Entity> itemWeights;
     itemWeights.add(item::healingPotion(owner_), 4);
     itemWeights.add(item::lightningScroll(owner_), 2);
-    itemWeights.add(item::fireballScroll(owner_), 3);
+    itemWeights.add(item::fireballScroll(owner_), 2);
     itemWeights.add(item::fireboltScroll(owner_), 2);
+    itemWeights.add(item::battleAxe(owner_), 1);
+    itemWeights.add(item::woodenShield(owner_), 1);
+    itemWeights.add(item::dagger(owner_), 1);
     // int numItems = wsl::randomInt(0,max);
     int numItems = max;
     int placedItems = 0;

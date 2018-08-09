@@ -5,7 +5,7 @@ OPTS = -std=c++17 -Og -g -Wall
 LIBS = -lSDL2 -lSDL2_image
 OBJ_NAME = Barbarian
 FILES := color texture sprite random console input_handlers \
-   	entity entity_actor entity_item entity_level \
+   	entity entity_actor entity_item entity_equipment entity_level \
 	tile items monsters game_map pathfinding fov \
     engine engine_events engine_update engine_draw \
 	engine_events_player engine_events_inventory engine_events_target engine_events_title \

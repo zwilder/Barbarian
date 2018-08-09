@@ -95,9 +95,9 @@ namespace wsl
             static const Color LtViolet;
             static const Color Violet;
             static const Color DkViolet;
-            static const Color LtBrown;
-            static const Color Brown;
-            static const Color DkBrown;
+            static const Color LtSepia;
+            static const Color Sepia;
+            static const Color DkSepia;
             static const Color LtGrey;
             static const Color Grey;
             static const Color DkGrey;

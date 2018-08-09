@@ -40,6 +40,76 @@ void Entity::makeActor(Actor actor)
     *actor_ = actor;
 }
 
+int Entity::maxHP()
+{
+    int bonus = 0;
+    if(actor_->check(Actor::Flags::EQUIP_MAIN_HAND))
+    {
+        Entity * mainHandItem = getMainHand();
+        if(mainHandItem)
+        {
+            bonus += getMainHand()->healthBonus();
+        }
+    }
+    if(actor_->check(Actor::Flags::EQUIP_OFF_HAND))
+    {
+        Entity * offHandItem = getOffHand();
+        if(offHandItem)
+        {
+            bonus += getOffHand()->healthBonus();
+        }
+    }
+    return (actor_->maxHP + bonus);
+}
+
+int Entity::defense()
+{
+    int bonus = 0;
+    if(actor_->check(Actor::Flags::EQUIP_MAIN_HAND))
+    {
+        Entity * mainHandItem = getMainHand();
+        if(mainHandItem)
+        {
+            bonus += getMainHand()->defenseBonus();
+        }
+    }
+    if(actor_->check(Actor::Flags::EQUIP_OFF_HAND))
+    {
+        Entity * offHandItem = getOffHand();
+        if(offHandItem)
+        {
+            bonus += getOffHand()->defenseBonus();
+        }
+    }
+    return (actor_->defense + bonus);
+}
+
+int Entity::power()
+{
+    if(!isActor())
+    {
+        return 0;
+    }
+    int bonus = 0;
+    if(actor_->check(Actor::Flags::EQUIP_MAIN_HAND))
+    {
+        Entity * mainHandItem = getMainHand();
+        if(mainHandItem)
+        {
+            bonus += getMainHand()->powerBonus();
+        }
+    }
+    if(actor_->check(Actor::Flags::EQUIP_OFF_HAND))
+    {
+        Entity * offHandItem = getOffHand();
+        if(offHandItem)
+        {
+            bonus += getOffHand()->powerBonus();
+        }
+    }
+    return (actor_->power + bonus);
+}
+
 // void Entity::grantEnergy()
 // {
 //     if(check(Flags::ACTOR))

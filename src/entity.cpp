@@ -34,6 +34,7 @@ Entity::Entity()
     item_ = nullptr;
     inventory_ = nullptr;
     level_ = nullptr;
+    equipment_ = nullptr;
 }
 
 Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph)
@@ -44,6 +45,7 @@ Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string n
     item_ = nullptr;
     inventory_ = nullptr;
     level_ = nullptr;
+    equipment_ = nullptr;
 } 
 
 Entity::Entity(const Entity & other)
@@ -57,6 +59,7 @@ Entity::Entity(const Entity & other)
     item_ = nullptr;
     inventory_ = nullptr;
     level_ = nullptr;
+    equipment_ = nullptr;
     
     if(isActor())
     {
@@ -69,10 +72,18 @@ Entity::Entity(const Entity & other)
     if(hasInventory())
     {
         makeInventory();
+        for(wsl::DLNode<Entity> * node = other.inventory_->head(); node != NULL; node = node->next)
+        {
+            inventory_->push(node->data);
+        }
     }
     if(hasLevel())
     {
         makeLevel(*(other.level_.get()));
+    }
+    if(isEquipment())
+    {
+        makeEquipment(*(other.equipment_.get()));
     }
 }
 

@@ -48,14 +48,14 @@ void Engine::handleEvents_inventory_(Input input)
         else if (gameState_ == GameState::DROP)
         {
             player_->drop(index);
-            if(itemNode->data.quantity() > 1 )
-            {
-                addMessage("You drop the " + itemNode->data.name() + "s.");
-            }
-            else
-            {
-                addMessage("You drop the " + itemNode->data.name() + ".");
-            }
+            // if(itemNode->data.quantity() > 1 )
+            // {
+            //     addMessage("You drop the " + itemNode->data.name() + "s.");
+            // }
+            // else
+            // {
+            //     addMessage("You drop the " + itemNode->data.name() + ".");
+            // }
             changeState(GameState::ENEMY_TURN);
         }
         else if (gameState_ == GameState::EQUIP)

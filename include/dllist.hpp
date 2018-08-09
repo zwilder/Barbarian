@@ -47,6 +47,25 @@ class DLList
     public:
         DLList();
         DLList(T data);
+        DLList(const DLList<T> & other); // Copy constructor 
+        DLList<T> operator =(DLList<T> other) // Copy assignment  
+        {
+            swap(*this, other);
+            return *this;
+            // DLList<T> result;
+            // for(DLNode<T> * node = other.head_; node != NULL; node = node->next)
+            // {
+            //     result.push(node->data);
+            // }
+            // return result;
+        }
+        friend void swap(DLList<T> & first, DLList<T> & other)
+        {
+            DLNode<T> * temp = first.head_;
+            first.head_ = other.head_;
+            other.head_ = temp;
+        }
+
         ~DLList();
 
         DLNode<T> * head() { return head_; };
@@ -100,6 +119,15 @@ DLList<T>::~DLList()
         next = current->next;
         delete(current);
         current = next;
+    }
+}
+
+template <typename T>
+DLList<T>::DLList(const DLList<T> & other) // Copy constructor 
+{
+    for(DLNode<T> * node = other.head_; node != NULL; node = node->next)
+    {
+        push(node->data);
     }
 }
 

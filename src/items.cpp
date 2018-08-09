@@ -28,28 +28,49 @@ namespace item
 Entity healingPotion(Engine * engine, wsl::Vector2i pos)
 {
     Entity result(engine, pos, wsl::Glyph('!', wsl::Color::LtRed), "healing potion");
-    result.makeItem(Item(Item::Flags::HEAL | Item::Flags::POTION, 1, true));
+    result.makeItem(Item(Item::Flags::HEAL | Item::Flags::POTION, 1, true)); // Item(Item::Flags, quantity, stackable)
     return result;
 }
 
 Entity lightningScroll(Engine * engine, wsl::Vector2i pos)
 {
     Entity result(engine, pos, wsl::Glyph('?', wsl::Color::LtYellow), "scroll of lightning");
-    result.makeItem(Item(Item::Flags::CAST_LIGHTNING | Item::Flags::SCROLL, 1, false));
+    result.makeItem(Item(Item::Flags::CAST_LIGHTNING | Item::Flags::SCROLL, 1, false)); // Item(Item::Flags, quantity, stackable)
     return result;
 }
 
 Entity fireballScroll(Engine * engine, wsl::Vector2i pos)
 {
     Entity result(engine, pos, wsl::Glyph('?', wsl::Color::LtYellow), "scroll of fireball");
-    result.makeItem(Item(Item::Flags::CAST_FIREBALL | Item::Flags::SCROLL, 1, false));
+    result.makeItem(Item(Item::Flags::CAST_FIREBALL | Item::Flags::SCROLL, 1, false)); // Item(Item::Flags, quantity, stackable)
     return result;
 }
 
 Entity fireboltScroll(Engine * engine, wsl::Vector2i pos)
 {
     Entity result(engine, pos, wsl::Glyph('?', wsl::Color::LtYellow), "scroll of firebolt");
-    result.makeItem(Item(Item::Flags::CAST_FIREBOLT | Item::Flags::SCROLL, 1, false));
+    result.makeItem(Item(Item::Flags::CAST_FIREBOLT | Item::Flags::SCROLL, 1, false)); // Item(Item::Flags, quantity, stackable)
+    return result;
+}
+
+Entity woodenShield(Engine * engine, wsl::Vector2i pos)
+{
+    Entity result(engine, pos, wsl::Glyph(']', wsl::Color::Sepia), "wooden shield");
+    result.makeEquipment(Equipment(Equipment::Flags::OFF_HAND, 0, 1, 0)); // Equipment(Equipment::Flags, atkBonus, defBonus, hpBonus)
+    return result;
+}
+
+Entity battleAxe(Engine * engine, wsl::Vector2i pos)
+{
+    Entity result(engine, pos, wsl::Glyph(')', wsl::Color::LtCyan), "battle axe");
+    result.makeEquipment(Equipment(Equipment::Flags::MAIN_HAND, 4, 0, 0)); // Equipment(Equipment::Flags, atkBonus, defBonus, hpBonus)
+    return result;
+}
+
+Entity dagger(Engine * engine, wsl::Vector2i pos)
+{
+    Entity result(engine, pos, wsl::Glyph(')', wsl::Color::LtCyan), "dagger");
+    result.makeEquipment(Equipment(Equipment::Flags::OFF_HAND, 2, 0, 0));
     return result;
 }
 

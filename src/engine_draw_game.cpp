@@ -58,9 +58,11 @@ void Engine::draw_game_()
     console_->print(0,0, currentMsg_);
     console_->print(0,console_->height() - 2, player_->name());
     std::string status = "HP: " + std::to_string(player_->hp()) + "(" + std::to_string(player_->maxHP()) + ") | ";
-    status += "Lvl " + std::to_string(player_->currentLevel()) + ": " + std::to_string(player_->currentXP()) + "(" + std::to_string(player_->xpToNextLevel()) + ")";
+    status += "XP " + std::to_string(player_->currentLevel()) + ": " + std::to_string(player_->currentXP()) + "(" + std::to_string(player_->xpToNextLevel()) + ")";
+    status += " | ";
+    status += "P[D]: " + std::to_string(player_->power()) + "[" + std::to_string(player_->defense()) + "]";
     console_->print(0,console_->height() - 1, status);
 
-    std::string lvl = "Level: " + std::to_string(gameMap_->currentLevel());
+    std::string lvl = "Floor: " + std::to_string(gameMap_->currentLevel());
     console_->print(console_->width() - lvl.size() - 1, console_->height() - 2, lvl);
 }

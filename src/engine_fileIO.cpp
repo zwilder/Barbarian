@@ -22,6 +22,7 @@
 #include <fstream>
 
 #include "../include/cereal/archives/binary.hpp"
+#include "../include/cereal/archives/xml.hpp"
 #include "../include/cereal/types/vector.hpp"
 #include "../include/cereal/types/memory.hpp"
 #include "../include/cereal/types/string.hpp"
@@ -35,7 +36,7 @@ class CerealEntity
 {
     public:
        
-        void convert(Entity entity);
+        void convert(Entity & entity);
         Entity extract();
         int mask;
         wsl::Vector2i pos;
@@ -44,6 +45,7 @@ class CerealEntity
         Actor actor;
         Item item;
         Level level;
+        Equipment equipment;
         std::vector<CerealEntity> inventory;
 
         template<class Archive>
@@ -55,12 +57,13 @@ class CerealEntity
             ar(name);
             ar(actor);
             ar(item);
+            ar(equipment);
             ar(inventory);
             ar(level);
         }
 };
 
-void CerealEntity::convert(Entity entity)
+void CerealEntity::convert(Entity & entity)
 {
     mask = entity.mask();
     pos = entity.pos();
@@ -70,6 +73,7 @@ void CerealEntity::convert(Entity entity)
     entity.isActor() ? actor = entity.actor() : actor = Actor();
     entity.hasLevel() ? level = entity.level() : level = Level();    
     entity.isItem() ? item = entity.item() : item = Item();
+    entity.isEquipment() ? equipment = entity.equipment() : equipment = Equipment();
 
     if(entity.hasInventory())
     {
@@ -108,6 +112,10 @@ Entity CerealEntity::extract()
             Entity itemEntity = inventory[i].extract();
             resultEntity.inventory()->push(itemEntity);
         }
+    }
+    if(resultEntity.isEquipment())
+    {
+        resultEntity.makeEquipment(equipment);
     }
     return resultEntity;
 }

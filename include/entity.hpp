@@ -25,12 +25,13 @@
 #include <vector>
 #include <memory>
 #include <string>
+
 #include "dllist.hpp"
 #include "vector.hpp"
 #include "console.hpp"
 #include "bitflag.hpp"
 
-class Actor
+class Actor : public wsl::BitFlag
 {
     public:
         Actor(int s = 50, int v = 4, int mH = 30, int d = 1, int p = 6, int x = 0);
@@ -43,6 +44,14 @@ class Actor
         //     Rest
         // };
         
+        enum Flags : uint8_t
+        {
+            NONE = 0,
+            STATUS_CONFUSED =  0x002,
+            EQUIP_MAIN_HAND = 0x004,
+            EQUIP_OFF_HAND = 0x008
+        };
+
         int speed;
         int vision;
         int energy;
@@ -55,6 +64,7 @@ class Actor
         template<class Archive>
         void serialize(Archive & ar)
         {
+            ar(mask_);
             ar(speed);
             ar(vision);
             ar(energy);
@@ -78,7 +88,8 @@ class Item : public wsl::BitFlag
             POTION = 0x008,
             SCROLL = 0x010,
             CAST_FIREBALL = 0x020,
-            CAST_FIREBOLT = 0x040
+            CAST_FIREBOLT = 0x040,
+            EQUIP = 0x080
         };
         bool carried;
         bool stackable;
@@ -91,6 +102,31 @@ class Item : public wsl::BitFlag
             ar(carried);
             ar(stackable);
             ar(quantity);
+        }
+};
+
+class Equipment : public wsl::BitFlag
+{
+    public:
+        Equipment(int s = 0, int p = 0, int d = 0, int h = 0);
+        enum Flags: uint8_t
+        {
+            NONE = 0,
+            EQUIPPED = 0x002,
+            MAIN_HAND = 0x004,
+            OFF_HAND = 0x008
+        };
+        int powerBonus;
+        int defenseBonus;
+        int healthBonus;
+
+        template<class Archive>
+        void serialize(Archive & ar)
+        {
+            ar(mask_);
+            ar(powerBonus);
+            ar(defenseBonus);
+            ar(healthBonus);
         }
 };
 
@@ -145,6 +181,7 @@ class Entity : public wsl::BitFlag
             swap(first.item_, other.item_);
             swap(first.inventory_, other.inventory_);
             swap(first.level_, other.level_);
+            swap(first.equipment_, other.equipment_);
         }
         Entity & operator=(Entity other); // Copy assignment
         // Do I need a user defined destructor? memory is handled via unique/shared ptrs...
@@ -162,7 +199,8 @@ class Entity : public wsl::BitFlag
             DEAD = 0x0080,
             ITEM = 0x0100,
             INVENTORY = 0x0200,
-            LEVEL = 0x0400
+            LEVEL = 0x0400,
+            EQUIPMENT = 0x0800
         };
         
         // Component checks
@@ -174,6 +212,7 @@ class Entity : public wsl::BitFlag
         bool isItem() { return check(Flags::ITEM); }
         bool hasInventory() { return check(Flags::INVENTORY); }
         bool hasLevel() { return check(Flags::LEVEL); }
+        bool isEquipment() { return check(Flags::EQUIPMENT); }
 
         // Generic Entity functions
         void move(wsl::Vector2i delta);
@@ -190,9 +229,12 @@ class Entity : public wsl::BitFlag
         // int & speed() { return speed_; }
         // void setNextAction(Action action);
         int & hp() { return actor_->HP; }
-        int & maxHP() { return actor_->maxHP; }
-        int & defense() { return actor_->defense; }
-        int & power() { return actor_->power; }
+        int & baseMaxHP() { return actor_->maxHP; }
+        int & baseDefense() { return actor_->defense; }
+        int & basePower() { return actor_->power; }
+        int maxHP();
+        int defense();
+        int power();
         int vision() { return actor_->vision; }
         int xp() { return actor_->xp; }
         void takeDamage(int damage);
@@ -200,17 +242,19 @@ class Entity : public wsl::BitFlag
         void dealDamage(Entity * target, int damage);
         bool update();
 
-        // Item/Inventory Functions
+        // Item Functions
         void makeItem(Item item);
         Item item() { return *(item_.get()); }
-        void makeInventory();
         bool carried() { return item_->carried; }
         void pickup(Entity * itemEntity);
         void drop(int index);
         void use(int index);
-        wsl::DLList<Entity> * inventory() { return inventory_.get(); }
         int & quantity() { return item_->quantity; }
         bool stackable() { return item_->stackable; }
+
+        // Inventory functions
+        void makeInventory();
+        wsl::DLList<Entity> * inventory() { return inventory_.get(); }
 
         // Level functions
         void makeLevel(Level level);
@@ -219,6 +263,21 @@ class Entity : public wsl::BitFlag
         int currentXP() const { return level_->currentXP; }
         bool addXP(int xp);
         int xpToNextLevel(); 
+
+        // Equipment functions
+        void makeEquipment(Equipment equipment);
+        Equipment equipment() { return *(equipment_.get()); }
+        int powerBonus() { return equipment_->powerBonus; }
+        int defenseBonus() { return equipment_->defenseBonus; }
+        int healthBonus() { return equipment_->healthBonus; }
+        bool equipped() { return equipment_->check(Equipment::Flags::EQUIPPED); }
+        void toggleEquip(Entity * item);
+        void equip(Entity * item);
+        void unequip(Entity * item);
+        bool isMainHand() { return equipment_->check(Equipment::Flags::MAIN_HAND); }
+        bool isOffHand() { return equipment_->check(Equipment::Flags::OFF_HAND); }
+        Entity * getMainHand();
+        Entity * getOffHand();
 
         Engine * game() { return game_; }
         void setGame(Engine * game) { game_ = game; }
@@ -233,6 +292,7 @@ class Entity : public wsl::BitFlag
         std::shared_ptr<Item> item_;
         std::shared_ptr< wsl::DLList<Entity> > inventory_;
         std::shared_ptr<Level> level_;
+        std::shared_ptr<Equipment> equipment_;
 
         // Use Functions
         bool use_heal_();
