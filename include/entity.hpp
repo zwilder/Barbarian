@@ -249,12 +249,12 @@ class Entity : public wsl::BitFlag
         void pickup(Entity * itemEntity);
         void drop(int index);
         void use(int index);
-        wsl::DLList<Entity> * inventory() { return inventory_.get(); }
         int & quantity() { return item_->quantity; }
         bool stackable() { return item_->stackable; }
 
         // Inventory functions
         void makeInventory();
+        wsl::DLList<Entity> * inventory() { return inventory_.get(); }
 
         // Level functions
         void makeLevel(Level level);

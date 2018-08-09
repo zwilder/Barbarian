@@ -402,8 +402,8 @@ void GameMap::placeActors(int maxPerRoom)
     wsl::DLList<Entity> * entityList = owner_->entityList();
     wsl::WeightedList<Entity> entityWeights;
 
-    entityWeights.add(monster::skeleton(owner_), 8);
-    entityWeights.add(monster::shamblingCorpse(owner_), 2);
+    entityWeights.add(monster::skeleton(owner_), 10);
+    entityWeights.add(monster::shamblingCorpse(owner_), (0.5 * currentLevel_));
 
     for(size_t i = 1; i < rooms.size(); ++i)
     {
