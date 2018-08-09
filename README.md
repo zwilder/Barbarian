@@ -17,11 +17,9 @@ I'll be updating [the blog](https://wsl-blog.com) with my thoughts and rambles a
 - [Week 3b: Part 5](https://wsl-blog.com/posts/2018-07-10-the-roguelike-tutorial-week3b/): Adding entities, scheduling and pathfinding.
 - [Week 4: Part 6-7](https://wsl-blog.com/posts/2018-07-18-the-roguelike-tutorial-week4/): Combat and a (rough) UI!
 - [Week 5a: Part 8](https://wsl-blog.com/posts/2018-07-24-the-roguelike-tutorial-week5a/): Items and inventory!
-- [Week 5b: Part 9](https://wsl-blog.com/posts/2018-07-31-the-roguelike-tutorial-week5b6/): Targeting functions and spells 
-- [Week 6: Part 10-11](https://wsl-blog.com/posts/2018-07-31-the-roguelike-tutorial-week5b6/): Saving and player advancement 
-- Week 7: Part 12-13: Coming soon!
-
-**Stay tuned for next week!**
+- [Week 5b: Part 9](https://wsl-blog.com/posts/2018-07-31-the-roguelike-tutorial-week5b6/): Targeting functions and spells.
+- [Week 6: Part 10-11](https://wsl-blog.com/posts/2018-07-31-the-roguelike-tutorial-week5b6/): Saving and player advancement .
+- [Week 7: Part 12-13](https://wsl-blog.com/posts/2018-08-09-the-rogueliketutorial-week7/): Randomization and equippable items. 
 
 ### Building Barbarian! From Source
 So far, the build process has only been tested on Arch Linux. For most flavors of Linux, building should look like this:
