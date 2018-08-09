@@ -1,5 +1,7 @@
 # Barbarian!
 
+![Barbarian Logo](https://wsl-blog.com/assets/2018-07-30/BarbarianLogo.png)
+
 A ~~Rogue~~Barbarian-like - created as an attempt to follow the famous [Python3 Roguelike tutorial](http://rogueliketutorials.com/) using C++
 and SDL2 as part of the [r/roguelikedev 2018 Tutorial Tuesday Challenge](https://www.reddit.com/r/roguelikedev/wiki/python_tutorial_series).
 
