@@ -27,6 +27,7 @@
  * and parsing that file will live here. For now, monsters are hard coded and these functions just return an entity
  * representing that monster. It seemed like a good idea to move their definitions here - we'll see how it pans out.
  */
+#include <string>
 
 #include "vector.hpp"
 
@@ -35,6 +36,9 @@ class Engine;
 
 namespace monster
 {
+
+// wsl::DLList<Entity> loadMonsters();
+// Entity parseEntry(std::string entry);
 
 Entity player(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 
