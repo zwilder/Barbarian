@@ -52,10 +52,12 @@ Engine::Engine()
 
     currentMsg_ = "";
 
-    running_ = init();
+    monster::loadMonsters(&monsterList_);
 
     uint32_t seed = uint32_t(std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count());
     engineRNG_ = std::make_shared<wsl::RNGState>(123987445, seed); // Random numbers
+
+    running_ = init();
 }
 
 bool Engine::init()

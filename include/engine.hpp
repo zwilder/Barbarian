@@ -82,6 +82,9 @@ class Engine
         bool targetSelected() { return targetSelected_; }
         wsl::RNGState * rng() { return engineRNG_.get(); }
 
+        wsl::DLList<Entity> * monsterList() { return &monsterList_; }
+        wsl::DLList<Entity> * itemList() { return &itemList_; }
+
         // Utility functions
         void newGame();
         bool loadGame();
@@ -144,6 +147,9 @@ class Engine
         wsl::DLList<Entity> entityList_;
         wsl::DLList<Entity *> schedule_;
         Entity * curActor_;
+
+        wsl::DLList<Entity> monsterList_;
+        wsl::DLList<Entity> itemList_;
 
         // Game state
         GameState gameState_;

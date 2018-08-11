@@ -30,6 +30,8 @@
 #include <string>
 
 #include "vector.hpp"
+#include "color.hpp"
+#include "dllist.hpp"
 
 class Entity;
 class Engine;
@@ -37,8 +39,10 @@ class Engine;
 namespace monster
 {
 
-// wsl::DLList<Entity> loadMonsters();
-// Entity parseEntry(std::string entry);
+void loadMonsters(wsl::DLList<Entity> * list);
+Entity parseEntry(std::string entry);
+wsl::Color parseColor(int colorInt);
+Entity * pick(wsl::DLList<Entity> * list, std::string name);
 
 Entity player(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 

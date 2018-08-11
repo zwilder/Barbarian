@@ -402,8 +402,13 @@ void GameMap::placeActors(int maxPerRoom)
     wsl::DLList<Entity> * entityList = owner_->entityList();
     wsl::WeightedList<Entity> entityWeights;
 
-    entityWeights.add(monster::skeleton(owner_), 10);
-    entityWeights.add(monster::shamblingCorpse(owner_), (0.5 * currentLevel_));
+    // entityWeights.add(monster::skeleton(owner_), 10);
+    // entityWeights.add(monster::shamblingCorpse(owner_), (0.5 * currentLevel_));
+    // these next three lines are temporary, the game map class will have a weighted list thats
+    // generated dynamically each level using the monsters minimum dungeon level
+    entityWeights.add(*(monster::pick(owner_->monsterList(), "skeleton")), 10);
+    entityWeights.add(*(monster::pick(owner_->monsterList(), "shambling corpse")), (0.5 * currentLevel_));
+    entityWeights.add(*(monster::pick(owner_->monsterList(), "confused carcass")), 2);
 
     for(size_t i = 1; i < rooms.size(); ++i)
     {
@@ -423,6 +428,7 @@ void GameMap::placeActors(int maxPerRoom)
             {
                 Entity entity = entityWeights.pick(rngState_.get());
                 entity.setPos(newPos);
+                entity.setGame(owner_);
                 entityList->push(entity);
             }
         }
