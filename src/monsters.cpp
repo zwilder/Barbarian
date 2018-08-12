@@ -27,8 +27,9 @@
 
 namespace monster
 {
-void loadMonsters(wsl::DLList<Entity> * list)
+void loadMonsters(Engine * engine)
 {
+    wsl::DLList<Entity> * list = engine->monsterList();
     // wsl::DLList<Entity> resultList;
     list->clear();
     std::ifstream file("assets/monsters.config");
@@ -37,7 +38,7 @@ void loadMonsters(wsl::DLList<Entity> * list)
 
     while(std::getline(file, entry, ';'))
     {
-        Entity readEntity = parseEntry(entry);
+        Entity readEntity = parseEntry(entry, engine);
         if(readEntity.name() != "foo")
         {
             // resultList.push(readEntity);
@@ -47,8 +48,12 @@ void loadMonsters(wsl::DLList<Entity> * list)
     // return resultList;
 }
 
-Entity parseEntry(std::string entry)
+Entity parseEntry(std::string entry, Engine * engine)
 {
+    if(!engine)
+    {
+        std::cout << "Warning, parseEntry called with NULL engine\n";
+    }
     std::string name = "foo";
     char symbol = '+';
     wsl::Color fgColor = wsl::Color::White;
@@ -62,6 +67,8 @@ Entity parseEntry(std::string entry)
     bool inventory = false;
     bool level = false;
     bool ai = false;
+    int mlvl = 0;
+    int wt = 0;
     std::string items;
 
     wsl::Vector2<std::string> nvp;
@@ -75,36 +82,48 @@ Entity parseEntry(std::string entry)
             if(nvp.x[0] == '#') continue;
             if(std::getline(isLine, nvp.y))
             {
-                // std::cout << nvp << std::endl;
                 if(nvp.x == "name") name = nvp.y;
-                if(nvp.x == "symbol") symbol = nvp.y[0];
+                if(nvp.x == "sym") symbol = nvp.y[0];
                 if(nvp.x == "fg") fgColor = parseColor(std::stoi(nvp.y));
                 if(nvp.x == "bg") bgColor = parseColor(std::stoi(nvp.y));
-                if(nvp.x == "speed") speed = std::stoi(nvp.y);
-                if(nvp.x == "vision") vision = std::stoi(nvp.y);
-                if(nvp.x == "maxHP") maxHP = std::stoi(nvp.y);
-                if(nvp.x == "defense") defense = std::stoi(nvp.y);
-                if(nvp.x == "power") power = std::stoi(nvp.y);
+                if(nvp.x == "spd") speed = std::stoi(nvp.y);
+                if(nvp.x == "vis") vision = std::stoi(nvp.y);
+                if(nvp.x == "mhp") maxHP = std::stoi(nvp.y);
+                if(nvp.x == "def") defense = std::stoi(nvp.y);
+                if(nvp.x == "pow") power = std::stoi(nvp.y);
                 if(nvp.x == "xp") xp = std::stoi(nvp.y);
-                if(nvp.x == "inventory" && nvp.y == "1") inventory = true;
-                if(nvp.x == "level" && nvp.y == "1") level = true;
+                if(nvp.x == "inv" && nvp.y == "1") inventory = true;
+                if(nvp.x == "lvl" && nvp.y == "1") level = true;
                 if(nvp.x == "ai" && nvp.y == "1") ai = true;
                 if(nvp.x == "items") items = nvp.y;
+                if(nvp.x == "wt") wt = std::stoi(nvp.y);
+                if(nvp.x == "mlvl") mlvl = std::stoi(nvp.y);
             }
         }
     }
 
-    Entity resultEntity(NULL, wsl::Vector2i(), wsl::Glyph(symbol, fgColor, bgColor), name);
+    Entity resultEntity(engine, wsl::Vector2i(), wsl::Glyph(symbol, fgColor, bgColor), name, wt, mlvl);
     resultEntity.makeActor(Actor(speed, vision, maxHP, defense, power, xp));
     if(inventory) resultEntity.makeInventory();
     if(ai) resultEntity.engage(Entity::Flags::AI); // This needs to be made into a proper Entity::makeAI(int type) component
     if(level) resultEntity.makeLevel(Level());
     if(items != "")
     {
-        //TO DO
-        //Basically, if this actually works and sets up the monsters properly items will be next
-        //Then, this will split the items string (like the entry string above) with a comma delimiter
-        //and pick each item from there to add to this entities inventory.
+        // If the entity has items listed in the config file, this breaks up the string (comma delimited)
+        // and adds those items to the engine's entity list, then picks them up. I do it this way instead of
+        // adding to the inventory directly, because there's less code this way... Might as well use stuff I've
+        // already written, right?
+        std::string itemString;
+        std::istringstream isLine(items);
+        while(std::getline(isLine, itemString, ','))
+        {
+            Entity * itemEntity = monster::pick(engine->itemList(), itemString);
+            if(itemEntity)
+            {
+                engine->entityList()->push(*itemEntity);
+                resultEntity.pickup(&(engine->entityList()->head()->data));
+            }
+        }
     }
     return resultEntity;
 }

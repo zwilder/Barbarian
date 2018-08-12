@@ -21,7 +21,7 @@
 #include <iostream>
 #include <chrono>
 // #include <ctime>
-#include "../include/random.hpp"
+// #include "../include/random.hpp"
 #include "../include/game_map.hpp"
 #include "../include/engine.hpp"
 #include "../include/pqlist.hpp"
@@ -52,13 +52,15 @@ GameMap::GameMap(Engine * owner, int w, int h, int roomSizeMax, int roomSizeMin,
     // seed += (now->tm_hour * 60 * 60 * 1000); // Hours after midnight, to minutes, to seconds, to milliseconds
     std::cout << "Map seed: " << seed << std::endl;
     rngState_ = std::make_shared<wsl::RNGState>(seed);
+    currentLevel_ = 1;
     
     if(owner)
     {
         initTiles_();
+        initActorList_();
+        initItemList_();
         makeMap_();
     }
-    currentLevel_ = 1;
 }
 
 GameMap::GameMap(const GameMap & other) // copy constructor
@@ -72,6 +74,7 @@ GameMap::GameMap(const GameMap & other) // copy constructor
     roomSizeMax_ = other.roomSizeMax_;
     roomSizeMin_ = other.roomSizeMin_;
     currentLevel_ = other.currentLevel_;
+    monsterWeights_ = other.monsterWeights_;
 }
 
 GameMap & GameMap::operator=(GameMap other) // Copy assignment
@@ -88,6 +91,8 @@ void GameMap::nextLevel()
 
     tiles.clear();
     rooms.clear();
+    initActorList_();
+    initItemList_();
     initTiles_();
     makeMap_();
 
@@ -273,10 +278,66 @@ Entity * GameMap::closestActorTo(wsl::Vector2i pos)
     }
     return result;
 }
+
 void GameMap::initTiles_()
 {
     Tile wallTile = Tile::Wall;
     tiles.assign(width_ * height_, wallTile);
+}
+
+void GameMap::initActorList_()
+{
+    //Loop through owner_->monsterList(), creating weighted list for currentLevel
+    //Each monster has a minLvl they can be found, and a weight
+    //If minLvl >= (currentLevel) + 2 -> 25% chance of adding that monster at reduced weight
+    //   currentLevel - 2 <= minLevel <= currentLevel + 2
+    //If minLvl >= (currentLevel) + 1 -> 50% chance of adding that monster at reduced weight
+    //   currentLevel - 1 <= minLevel <= currentLevel + 1
+    wsl::DLList<Entity> * monsterList = owner_->monsterList();
+    std::cout << "monsterList size: " << monsterList->size() << std::endl;
+    // int fMin = currentLevel_ - 1;
+    // int fMax = currentLevel_ + 1;
+    // int tMin = currentLevel_ - 2;
+    // int tMax = currentLevel_ + 2;
+
+    monsterWeights_.clear();
+    for(wsl::DLNode<Entity> * node = monsterList->head(); node != NULL; node = node->next)
+    {
+        int minLvl = node->data.minLvl();
+        Entity entity = node->data;
+        entity.setGame(owner_);
+        // if(minLvl == currentLevel_)
+        // {
+            //100% chance added, at wt
+            monsterWeights_.add(entity, node->data.wt());
+        // }
+        // if(minLvl == fMin || minLvl == fMax)
+        // {
+            //50% chance added at wt 1 
+            // monsterWeights_.add(node->data, 1);
+        // }
+        // if(minLvl == tMin || minLvl == tMax)
+        // {
+            //25% chance added at wt 1
+            // monsterWeights_.add(node->data, 1);
+        // }
+        std::cout << "Added to monster weights\t";
+        std::cout << "monsterWeights_.size() " << monsterWeights_.size() << std::endl;
+    }
+    // wsl::WeightedList<Entity> entityWeights;
+    // entityWeights.add(monster::skeleton(owner_), 10);
+    // entityWeights.add(monster::shamblingCorpse(owner_), (0.5 * currentLevel_));
+    // these next three lines are temporary, the game map class will have a weighted list thats
+    // generated dynamically each level using the monsters minimum dungeon level
+    // entityWeights.add(*(monster::pick(owner_, "skeleton")), 10);
+    // entityWeights.add(*(monster::pick(owner_, "shambling corpse")), (0.5 * currentLevel_));
+    // entityWeights.add(*(monster::pick(owner_, "confused carcass")), 2);
+
+}
+
+void GameMap::initItemList_()
+{
+
 }
 
 void GameMap::createRoom_(wsl::Rect room)
@@ -400,15 +461,15 @@ bool GameMap::isBlocked(int x, int y)
 void GameMap::placeActors(int maxPerRoom)
 {
     wsl::DLList<Entity> * entityList = owner_->entityList();
-    wsl::WeightedList<Entity> entityWeights;
+    // wsl::WeightedList<Entity> entityWeights;
 
     // entityWeights.add(monster::skeleton(owner_), 10);
     // entityWeights.add(monster::shamblingCorpse(owner_), (0.5 * currentLevel_));
     // these next three lines are temporary, the game map class will have a weighted list thats
     // generated dynamically each level using the monsters minimum dungeon level
-    entityWeights.add(*(monster::pick(owner_->monsterList(), "skeleton")), 10);
-    entityWeights.add(*(monster::pick(owner_->monsterList(), "shambling corpse")), (0.5 * currentLevel_));
-    entityWeights.add(*(monster::pick(owner_->monsterList(), "confused carcass")), 2);
+    // entityWeights.add(*(monster::pick(owner_, "skeleton")), 10);
+    // entityWeights.add(*(monster::pick(owner_, "shambling corpse")), (0.5 * currentLevel_));
+    // entityWeights.add(*(monster::pick(owner_, "confused carcass")), 2);
 
     for(size_t i = 1; i < rooms.size(); ++i)
     {
@@ -426,9 +487,8 @@ void GameMap::placeActors(int maxPerRoom)
             wsl::Vector2i newPos(x,y);
             if(!entityAt(newPos))
             {
-                Entity entity = entityWeights.pick(rngState_.get());
+                Entity entity = monsterWeights_.pick(rngState_.get());
                 entity.setPos(newPos);
-                entity.setGame(owner_);
                 entityList->push(entity);
             }
         }

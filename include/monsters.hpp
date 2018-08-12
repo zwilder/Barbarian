@@ -39,8 +39,8 @@ class Engine;
 namespace monster
 {
 
-void loadMonsters(wsl::DLList<Entity> * list);
-Entity parseEntry(std::string entry);
+void loadMonsters(Engine * engine);
+Entity parseEntry(std::string entry, Engine * engine);
 wsl::Color parseColor(int colorInt);
 Entity * pick(wsl::DLList<Entity> * list, std::string name);
 

@@ -26,13 +26,13 @@
 #include <memory>
 #include "tile.hpp"
 #include "rect.hpp"
-// #include "random.hpp"
+#include "random.hpp"
+#include "entity.hpp"
 
 namespace wsl
 {
     class RNGState;
 }
-class Entity;
 class Engine;
 class GameMap
 {
@@ -53,6 +53,7 @@ class GameMap
             swap(first.roomSizeMin_, other.roomSizeMin_);
             swap(first.numRoomsMax_, other.numRoomsMax_);
             swap(first.currentLevel_, other.currentLevel_);
+            swap(first.monsterWeights_, other.monsterWeights_);
         }
         GameMap & operator=(GameMap other); // Copy assignment
 
@@ -101,6 +102,7 @@ class GameMap
             ar(tiles);
             ar(rooms);
             ar(currentLevel_);
+            // ar(rngState_);
         }
         
     private:
@@ -113,8 +115,11 @@ class GameMap
         int roomSizeMin_;
         int numRoomsMax_;
         int currentLevel_;
+        wsl::WeightedList<Entity> monsterWeights_;
 
         void initTiles_();
+        void initActorList_();
+        void initItemList_();
         void makeMap_();
         void createRoom_(wsl::Rect room);
         void hTunnel_(int x1, int x2, int y);

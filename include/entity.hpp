@@ -166,7 +166,7 @@ class Entity : public wsl::BitFlag
 {
     public:
         Entity();
-        Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name);
+        Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name, int wt = 0, int minLvl = 0);
 
         Entity(const Entity & other); // Copy constructor
         friend void swap(Entity & first, Entity & other) // Copy/Swap idiom?
@@ -175,6 +175,8 @@ class Entity : public wsl::BitFlag
             swap(first.game_, other.game_);
             swap(first.pos_, other.pos_);
             swap(first.glyph_, other.glyph_);
+            swap(first.weight_, other.weight_);
+            swap(first.minLvl_, other.minLvl_);
             swap(first.name_, other.name_);
             swap(first.mask_, other.mask_);
             swap(first.actor_, other.actor_);
@@ -219,7 +221,9 @@ class Entity : public wsl::BitFlag
         wsl::Vector2i & pos();
         void setPos(wsl::Vector2i pos);
         wsl::Glyph & glyph();
-        std::string name() { return *name_; }
+        std::string name() { return (name_.size() == 0 ? "foo" : name_); }
+        int & wt() { return weight_; }
+        int & minLvl() { return minLvl_; }
         
         // Actor functions
         void makeActor(Actor actor);
@@ -287,7 +291,10 @@ class Entity : public wsl::BitFlag
         // Components
         wsl::Vector2i pos_; 
         wsl::Glyph glyph_; 
-        std::shared_ptr<std::string> name_;
+        int weight_;
+        int minLvl_;
+        // std::shared_ptr<std::string> name_;
+        std::string name_;
         std::shared_ptr<Actor> actor_;
         std::shared_ptr<Item> item_;
         std::shared_ptr< wsl::DLList<Entity> > inventory_;

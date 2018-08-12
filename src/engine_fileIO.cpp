@@ -35,6 +35,7 @@
 class CerealEntity
 {
     public:
+        CerealEntity();
        
         void convert(Entity & entity);
         Entity extract();
@@ -62,6 +63,18 @@ class CerealEntity
             ar(level);
         }
 };
+
+CerealEntity::CerealEntity()
+{
+    mask = 0;
+    pos = wsl::Vector2i();
+    glyph = wsl::Glyph();
+    name = "foo";
+    actor = Actor();
+    item = Item();
+    equipment = Equipment();
+    level = Level();
+}
 
 void CerealEntity::convert(Entity & entity)
 {

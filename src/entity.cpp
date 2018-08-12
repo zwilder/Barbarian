@@ -28,18 +28,23 @@ Entity::Entity()
     game_ = nullptr;
     pos_ = wsl::Vector2i();
     glyph_ = wsl::Glyph();
-    name_ = std::make_shared<std::string>("");
+    // name_ = std::make_shared<std::string>("");
+    name_ = "foo";
     mask_ = Flags::NONE;
     actor_ = nullptr;
     item_ = nullptr;
     inventory_ = nullptr;
     level_ = nullptr;
     equipment_ = nullptr;
+    weight_ = 0;
+    minLvl_ = 0;
 }
 
-Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name) : game_(game), pos_(pos), glyph_(glyph)
+Entity::Entity(Engine * game, wsl::Vector2i pos, wsl::Glyph glyph, std::string name, int wt, int minLvl) : game_(game), pos_(pos), glyph_(glyph),
+                                                                                                           weight_(wt), minLvl_(minLvl)
 {
-    name_ = std::make_shared<std::string>(name);
+    // name_ = std::make_shared<std::string>(name);
+    name_ = name;
     mask_ = Flags::POS | Flags::GLYPH;
     actor_ = nullptr;
     item_ = nullptr;
@@ -53,7 +58,10 @@ Entity::Entity(const Entity & other)
     game_ = other.game_;
     pos_ = other.pos_;
     glyph_ = other.glyph_;
-    name_ = std::make_shared<std::string>(*other.name_.get());
+    weight_ = other.weight_;
+    minLvl_ = other.minLvl_;
+    // name_ = std::make_shared<std::string>(*other.name_.get());
+    name_ = (other.name_.size() == 0 ? "foo" : other.name_);
     mask_ = other.mask_;
     actor_ = nullptr;
     item_ = nullptr;

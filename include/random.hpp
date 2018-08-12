@@ -43,7 +43,27 @@ template <typename T>
 class WeightedList
 {
     public:
+        WeightedList() { }
+        WeightedList(const WeightedList<T> & other) // Copy constructor 
+        {
+            list_ = other.list_; 
+        }
+        WeightedList<T> operator =(WeightedList<T> other) // Copy assignment  
+        {
+            swap(*this, other);
+            return *this;
+        }
+        friend void swap(WeightedList<T> & first, WeightedList<T> & other)
+        {
+            using std::swap;
+            swap(first.list_, other.list_);
+            // DLNode<T> * temp = first.head_;
+            // first.head_ = other.head_;
+            // other.head_ = temp;
+        }
         void add(T obj, int wt);
+        void clear() { list_.clear(); }
+        int size() { return list_.size(); }
         T pick(RNGState * rng);
 
     private:
@@ -66,6 +86,7 @@ void WeightedList<T>::add(T obj, int wt)
 template <typename T>
 T WeightedList<T>::pick(RNGState * rng)
 {
+    if(list_.isEmpty()) return T();
     int index = randomInt(0, list_.size() - 1, rng);
     return list_.at(index)->data;
 }
