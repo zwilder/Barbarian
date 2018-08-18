@@ -221,7 +221,8 @@ class Entity : public wsl::BitFlag
         wsl::Vector2i & pos();
         void setPos(wsl::Vector2i pos);
         wsl::Glyph & glyph();
-        std::string name() { return (name_.size() == 0 ? "foo" : name_); }
+        // std::string name() { return (name_.size() == 0 ? "foo" : name_); }
+        std::string & name() { return name_; }
         int & wt() { return weight_; }
         int & minLvl() { return minLvl_; }
         

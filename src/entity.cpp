@@ -61,7 +61,7 @@ Entity::Entity(const Entity & other)
     weight_ = other.weight_;
     minLvl_ = other.minLvl_;
     // name_ = std::make_shared<std::string>(*other.name_.get());
-    name_ = (other.name_.size() == 0 ? "foo" : other.name_);
+    name_ = (other.name_.size() <= 0 ? "foo" : other.name_);
     mask_ = other.mask_;
     actor_ = nullptr;
     item_ = nullptr;

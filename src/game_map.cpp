@@ -74,7 +74,9 @@ GameMap::GameMap(const GameMap & other) // copy constructor
     roomSizeMax_ = other.roomSizeMax_;
     roomSizeMin_ = other.roomSizeMin_;
     currentLevel_ = other.currentLevel_;
-    monsterWeights_ = other.monsterWeights_;
+    // monsterWeights_ = other.monsterWeights_;
+    initActorList_();
+    initItemList_();
 }
 
 GameMap & GameMap::operator=(GameMap other) // Copy assignment
@@ -293,8 +295,16 @@ void GameMap::initActorList_()
     //   currentLevel - 2 <= minLevel <= currentLevel + 2
     //If minLvl >= (currentLevel) + 1 -> 50% chance of adding that monster at reduced weight
     //   currentLevel - 1 <= minLevel <= currentLevel + 1
+    if(!owner_)
+    {
+        return;
+    }
     wsl::DLList<Entity> * monsterList = owner_->monsterList();
-    std::cout << "monsterList size: " << monsterList->size() << std::endl;
+    if(!monsterList)
+    {
+        return;
+    }
+    // std::cout << "monsterList size: " << monsterList->size() << std::endl;
     // int fMin = currentLevel_ - 1;
     // int fMax = currentLevel_ + 1;
     // int tMin = currentLevel_ - 2;
@@ -303,13 +313,13 @@ void GameMap::initActorList_()
     monsterWeights_.clear();
     for(wsl::DLNode<Entity> * node = monsterList->head(); node != NULL; node = node->next)
     {
-        int minLvl = node->data.minLvl();
+        // int minLvl = node->data.minLvl();
         Entity entity = node->data;
         entity.setGame(owner_);
         // if(minLvl == currentLevel_)
         // {
             //100% chance added, at wt
-            monsterWeights_.add(entity, node->data.wt());
+            monsterWeights_.push(entity, node->data.wt());
         // }
         // if(minLvl == fMin || minLvl == fMax)
         // {
@@ -321,8 +331,8 @@ void GameMap::initActorList_()
             //25% chance added at wt 1
             // monsterWeights_.add(node->data, 1);
         // }
-        std::cout << "Added to monster weights\t";
-        std::cout << "monsterWeights_.size() " << monsterWeights_.size() << std::endl;
+        // std::cout << "Added to monster weights\t";
+        // std::cout << "monsterWeights_.size() " << monsterWeights_.size() << std::endl;
     }
     // wsl::WeightedList<Entity> entityWeights;
     // entityWeights.add(monster::skeleton(owner_), 10);
@@ -498,14 +508,14 @@ void GameMap::placeActors(int maxPerRoom)
 void GameMap::placeItems(int max)
 {
     wsl::DLList<Entity> * entityList = owner_->entityList();
-    wsl::WeightedList<Entity> itemWeights;
-    itemWeights.add(item::healingPotion(owner_), 4);
-    itemWeights.add(item::lightningScroll(owner_), 2);
-    itemWeights.add(item::fireballScroll(owner_), 2);
-    itemWeights.add(item::fireboltScroll(owner_), 2);
-    itemWeights.add(item::battleAxe(owner_), 1);
-    itemWeights.add(item::woodenShield(owner_), 1);
-    itemWeights.add(item::dagger(owner_), 1);
+    wsl::WList<Entity> itemWeights;
+    itemWeights.push(item::healingPotion(owner_), 4);
+    itemWeights.push(item::lightningScroll(owner_), 2);
+    itemWeights.push(item::fireballScroll(owner_), 2);
+    itemWeights.push(item::fireboltScroll(owner_), 2);
+    itemWeights.push(item::battleAxe(owner_), 1);
+    itemWeights.push(item::woodenShield(owner_), 1);
+    itemWeights.push(item::dagger(owner_), 1);
     // int numItems = wsl::randomInt(0,max);
     int numItems = max;
     int placedItems = 0;
