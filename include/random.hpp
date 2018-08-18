@@ -38,7 +38,7 @@ class RNGState
         uint32_t z;
         uint32_t w;
 };
-
+/*
 template <typename T>
 class WeightedList
 {
@@ -55,11 +55,11 @@ class WeightedList
         }
         friend void swap(WeightedList<T> & first, WeightedList<T> & other)
         {
-            using std::swap;
-            swap(first.list_, other.list_);
-            // DLNode<T> * temp = first.head_;
-            // first.head_ = other.head_;
-            // other.head_ = temp;
+            // using std::swap;
+            // swap(first.list_, other.list_);
+            DLNode<T> * temp = first.list_.head();
+            first.list_.head() = other.list_.head();
+            other.list_.head() = temp;
         }
         void add(T obj, int wt);
         void clear() { list_.clear(); }
@@ -90,6 +90,7 @@ T WeightedList<T>::pick(RNGState * rng)
     int index = randomInt(0, list_.size() - 1, rng);
     return list_.at(index)->data;
 }
+*/
 
 uint32_t xor128(RNGState * rng);
 int randomInt(int min, int max, RNGState * rng);

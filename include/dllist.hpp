@@ -52,12 +52,6 @@ class DLList
         {
             swap(*this, other);
             return *this;
-            // DLList<T> result;
-            // for(DLNode<T> * node = other.head_; node != NULL; node = node->next)
-            // {
-            //     result.push(node->data);
-            // }
-            // return result;
         }
         friend void swap(DLList<T> & first, DLList<T> & other)
         {
@@ -90,8 +84,8 @@ class DLList
         DLNode<T> * tail();
         void print();
 
-    private:
         DLNode<T> * head_;
+    // private:
         
 };
 
@@ -285,9 +279,6 @@ DLNode<T> * DLList<T>::at(int index)
         ++count;
         resultNode = resultNode->next;
     }
-    
-    // std::cout << "Looking for node in DLList out of bounds!\n";
-    // assert(0);
     return resultNode;
 }
 

@@ -147,7 +147,9 @@ void Engine::saveGame()
     CerealEntity player;
     player.convert(*player_);
 
+    std::cout << "Saving map\n";
     GameMap map = *gameMap_;
+    std::cout << "Map saved!\n";
 
     wsl::CerealDLList<std::string> msgListCereal;
     msgListCereal.convert(&msgList_);

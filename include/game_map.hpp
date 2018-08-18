@@ -24,9 +24,11 @@
 
 #include <vector>
 #include <memory>
+
 #include "tile.hpp"
 #include "rect.hpp"
 #include "random.hpp"
+#include "wlist.hpp"
 #include "entity.hpp"
 
 namespace wsl
@@ -53,7 +55,11 @@ class GameMap
             swap(first.roomSizeMin_, other.roomSizeMin_);
             swap(first.numRoomsMax_, other.numRoomsMax_);
             swap(first.currentLevel_, other.currentLevel_);
-            swap(first.monsterWeights_, other.monsterWeights_);
+            first.initActorList_();
+            first.initItemList_();
+            other.initActorList_();
+            other.initItemList_();
+            // swap(first.monsterWeights_, other.monsterWeights_);
         }
         GameMap & operator=(GameMap other); // Copy assignment
 
@@ -115,7 +121,7 @@ class GameMap
         int roomSizeMin_;
         int numRoomsMax_;
         int currentLevel_;
-        wsl::WeightedList<Entity> monsterWeights_;
+        wsl::WList<Entity> monsterWeights_;
 
         void initTiles_();
         void initActorList_();
