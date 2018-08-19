@@ -28,6 +28,8 @@
  * representing that item. It seemed like a good idea to move their definitions here - we'll see how it pans out.
  */
 
+#include <string>
+
 #include "vector.hpp"
 
 class Entity;
@@ -36,6 +38,13 @@ class Engine;
 namespace item
 {
 
+void loadItems(Engine * engine);
+Entity parseEntry(std::string entry, Engine * engine);
+
+int parseUse(std::string useString);
+int parseEquip(std::string eqpString);
+
+//Depreciated - up to line 54 will be removed when item definition parsing finished
 Entity healingPotion(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 Entity lightningScroll(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 Entity fireballScroll(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));

@@ -30,7 +30,6 @@ namespace monster
 void loadMonsters(Engine * engine)
 {
     wsl::DLList<Entity> * list = engine->monsterList();
-    // wsl::DLList<Entity> resultList;
     list->clear();
     std::ifstream file("assets/monsters.config");
     std::string entry;
@@ -41,11 +40,9 @@ void loadMonsters(Engine * engine)
         Entity readEntity = parseEntry(entry, engine);
         if(readEntity.name() != "foo")
         {
-            // resultList.push(readEntity);
             list->push(readEntity);
         }
     }
-    // return resultList;
 }
 
 Entity parseEntry(std::string entry, Engine * engine)
@@ -181,39 +178,4 @@ Entity * pick(wsl::DLList<Entity> * list, std::string name)
     return result;
 }
             
-Entity player(Engine * engine, wsl::Vector2i pos)
-{
-    Entity player(engine, pos, wsl::Glyph('@', wsl::Color::Black, wsl::Color::Green), "Griff");
-    player.makeActor(Actor(50,5,100,1,2)); //s,v,mH,d,p,x
-    player.makeInventory();
-    player.makeLevel(Level());
-
-    {
-        Entity dagger = item::dagger(engine);
-        engine->entityList()->push(dagger);
-    }   
-
-    Entity * dagger = &(engine->entityList()->head()->data);
-    player.pickup(dagger);
-    player.use(0);
-    
-    return player;
-}
-
-Entity skeleton(Engine * engine, wsl::Vector2i pos)
-{
-    Entity skeleton(engine, pos, wsl::Glyph('s', wsl::Color::LtGrey), "skeleton");
-    skeleton.makeActor(Actor(25,8,20,0,4,35)); //s,v,mH,d,p,x
-    skeleton.engage(Entity::Flags::AI);
-    return skeleton;
-}
-
-Entity shamblingCorpse(Engine * engine, wsl::Vector2i pos)
-{
-    Entity corpse(engine, pos, wsl::Glyph('Z', wsl::Color::Red), "shambling corpse");
-    corpse.makeActor(Actor(75,8,30,2,8,100)); //s,v,mH,d,p,x
-    corpse.engage(Entity::Flags::AI);
-    return corpse;
-}
-
 } //namespace monster

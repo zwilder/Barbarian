@@ -41,13 +41,10 @@ namespace monster
 
 void loadMonsters(Engine * engine);
 Entity parseEntry(std::string entry, Engine * engine);
+
+//This are reused by the item parsing code - located here just because I wrote these first
 wsl::Color parseColor(int colorInt);
 Entity * pick(wsl::DLList<Entity> * list, std::string name);
-
-Entity player(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
-
-Entity skeleton(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
-Entity shamblingCorpse(Engine * engine, wsl::Vector2i pos = wsl::Vector2i(0,0));
 
 } // namespace monster
 
