@@ -73,6 +73,7 @@ GameMap::GameMap(const GameMap & other) // copy constructor
     height_ = other.height_;
     roomSizeMax_ = other.roomSizeMax_;
     roomSizeMin_ = other.roomSizeMin_;
+    numRoomsMax_ = other.numRoomsMax_;
     currentLevel_ = other.currentLevel_;
     // monsterWeights_ = other.monsterWeights_;
     initActorList_();
@@ -304,7 +305,6 @@ void GameMap::initActorList_()
     {
         return;
     }
-    // std::cout << "monsterList size: " << monsterList->size() << std::endl;
     // int fMin = currentLevel_ - 1;
     // int fMax = currentLevel_ + 1;
     // int tMin = currentLevel_ - 2;
@@ -313,36 +313,25 @@ void GameMap::initActorList_()
     monsterWeights_.clear();
     for(wsl::DLNode<Entity> * node = monsterList->head(); node != NULL; node = node->next)
     {
-        // int minLvl = node->data.minLvl();
+        int minLvl = node->data.minLvl();
         Entity entity = node->data;
         entity.setGame(owner_);
-        // if(minLvl == currentLevel_)
-        // {
-            //100% chance added, at wt
+        if(minLvl <= currentLevel_)
+        {
+            // 100% chance added, at wt
             monsterWeights_.push(entity, node->data.wt());
-        // }
+        }
         // if(minLvl == fMin || minLvl == fMax)
         // {
-            //50% chance added at wt 1 
-            // monsterWeights_.add(node->data, 1);
+        //     //50% chance added at wt 1 
+        //     monsterWeights_.push(node->data, 1);
         // }
         // if(minLvl == tMin || minLvl == tMax)
         // {
-            //25% chance added at wt 1
-            // monsterWeights_.add(node->data, 1);
+        //     //25% chance added at wt 1
+        //     monsterWeights_.push(node->data, 1);
         // }
-        // std::cout << "Added to monster weights\t";
-        // std::cout << "monsterWeights_.size() " << monsterWeights_.size() << std::endl;
     }
-    // wsl::WeightedList<Entity> entityWeights;
-    // entityWeights.add(monster::skeleton(owner_), 10);
-    // entityWeights.add(monster::shamblingCorpse(owner_), (0.5 * currentLevel_));
-    // these next three lines are temporary, the game map class will have a weighted list thats
-    // generated dynamically each level using the monsters minimum dungeon level
-    // entityWeights.add(*(monster::pick(owner_, "skeleton")), 10);
-    // entityWeights.add(*(monster::pick(owner_, "shambling corpse")), (0.5 * currentLevel_));
-    // entityWeights.add(*(monster::pick(owner_, "confused carcass")), 2);
-
 }
 
 void GameMap::initItemList_()

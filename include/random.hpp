@@ -37,6 +37,11 @@ class RNGState
         uint32_t y;
         uint32_t z;
         uint32_t w;
+        template <class Archive>
+        void serialize(Archive & ar)
+        {
+            ar(x,y,z,w);
+        }
 };
 /*
 template <typename T>

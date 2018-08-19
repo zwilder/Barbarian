@@ -108,7 +108,7 @@ class GameMap
             ar(tiles);
             ar(rooms);
             ar(currentLevel_);
-            // ar(rngState_);
+            ar(rngState_);
         }
         
     private:
