@@ -18,6 +18,9 @@
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <fstream>
+#include <sstream>
+
 #include "../include/items.hpp"
 #include "../include/entity.hpp"
 #include "../include/engine.hpp"
@@ -106,42 +109,85 @@ Entity parseEntry(std::string entry, Engine * engine)
     //Make Equip component
     if(resultEntity.isEquipment())
     {
-        result.makeEquipment(Equipment(parseEquip(equipFlagString, powerBonus, defenseBonus, hpBonus)); // Equipment(Equipment::Flags, atkBonus, defBonus, hpBonus)
+        // Equipment(Equipment::Flags, atkBonus, defBonus, hpBonus)
+        resultEntity.makeEquipment(Equipment(parseEquip(equipFlagString), powerBonus, defenseBonus, hpBonus));
     }
     return resultEntity;
 }
 
 int parseUse(std::string useString)
 {
-    //Take string, split and return mask 
-/*
-# Use
-# 1   - Heal
-# 2   - Cast Lightning
-# 3   - Potion
-# 4   - Scroll
-# 5   - Cast Fireball
-# 6   - Cast Firebolt
-# 7   - Equip
-#
-*/
+    /*
+    # Use
+    # 1   - Heal
+    # 2   - Cast Lightning
+    # 3   - Potion
+    # 4   - Scroll
+    # 5   - Cast Fireball
+    # 6   - Cast Firebolt
+    # 7   - Equip
+    #
+    */
+    int mask = Item::Flags::NONE;
+    if(useString != "")
+    {
+        std::istringstream isLine(useString);
+        while(std::getline(isLine, useString, ','))
+        {
+            int flag = std::stoi(useString);
+            switch(flag)
+            {
+                case 1: mask ^= Item::Flags::HEAL; break;
+                case 2: mask ^= Item::Flags::CAST_LIGHTNING; break;
+                case 3: mask ^= Item::Flags::POTION; break;
+                case 4: mask ^= Item::Flags::SCROLL; break;
+                case 5: mask ^= Item::Flags::CAST_FIREBALL; break;
+                case 6: mask ^= Item::Flags::CAST_FIREBOLT; break;
+                case 7: mask ^= Item::Flags::EQUIP; break;
+                default: break;
+            }
+        }
+    }
+    return mask;
 }
 
 int parseEquip(std::string eqpString)
 {
-    //Take string, split and return mask 
     /*
-# Eqp
-# 1   - Main Hand
-# 2   - Off Hand
-# 3   - Body
-# 4   - Back
-# 5   - L Ring
-# 6   - R Ring
-# 7   - Boots
-# 8   - Ranged
-# 9   - Ammo
+    # Eqp
+    # 1   - Main Hand
+    # 2   - Off Hand
+    # 3   - Body
+    # 4   - Back
+    # 5   - L Ring
+    # 6   - R Ring
+    # 7   - Boots
+    # 8   - Ranged
+    # 9   - Ammo
     */
+    int mask = Equipment::Flags::NONE;
+    if(eqpString != "")
+    {
+        std::istringstream isLine(eqpString);
+        while(std::getline(isLine, eqpString, ','))
+        {
+            int flag = std::stoi(eqpString);
+            switch(flag)
+            {
+                case 1: mask ^= Equipment::Flags::MAIN_HAND; break;
+                case 2: mask ^= Equipment::Flags::OFF_HAND; break;
+                // case 3: mask ^= Equipment::Flags::BODY; break;
+                // case 4: mask ^= Equipment::Flags::BACK; break;
+                // case 5: mask ^= Equipment::Flags::LRING; break;
+                // case 6: mask ^= Equipment::Flags::RRING; break;
+                // case 7: mask ^= Equipment::Flags::BOOTS; break;
+                // case 8: mask ^= Equipment::Flags::RANGED; break;
+                // case 9: mask ^= Equipment::Flags::AMMO; break;
+                default: break;
+            }
+        }
+    }
+    return mask;
 }
 
 // Below will be deleted

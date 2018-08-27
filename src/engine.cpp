@@ -26,6 +26,7 @@
 #include "../include/engine.hpp"
 #include "../include/random.hpp"
 #include "../include/monsters.hpp"
+#include "../include/items.hpp"
 
 Engine::Engine()
 {
@@ -53,6 +54,7 @@ Engine::Engine()
     currentMsg_ = "";
 
     monster::loadMonsters(this);
+    item::loadItems(this);
 
     uint32_t seed = uint32_t(std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count());
     engineRNG_ = std::make_shared<wsl::RNGState>(123987445, seed); // Random numbers
@@ -223,7 +225,10 @@ void Engine::newGame()
     *gameMap_ = GameMap(this, consoleWidth_, consoleHeight_, maxRoomSize_, minRoomSize_, maxRooms_);
 
     // Create the player entity - this should eventually be from a character creation screen
-    *player_ = monster::player(this, gameMap_->rooms[0].center());
+    // *player_ = monster::player(this, gameMap_->rooms[0].center());
+    *player_ = *(monster::pick(monsterList(), "player"));
+    player_->setPos(gameMap_->rooms[0].center());
+    player_->name() = "Griff";
     fov::visible(visible_.get(), gameMap_.get(), player_);
 
     // Tell gamemap to place some enemies
