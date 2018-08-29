@@ -107,7 +107,7 @@ Entity parseEntry(std::string entry, Engine * engine)
     //Make Item component
     resultEntity.makeItem(Item(parseUse(useFlagString), qty, stackable));
     //Make Equip component
-    if(resultEntity.isEquipment())
+    if(resultEntity.item().check(Item::Flags::EQUIP))
     {
         // Equipment(Equipment::Flags, atkBonus, defBonus, hpBonus)
         resultEntity.makeEquipment(Equipment(parseEquip(equipFlagString), powerBonus, defenseBonus, hpBonus));
@@ -137,13 +137,13 @@ int parseUse(std::string useString)
             int flag = std::stoi(useString);
             switch(flag)
             {
-                case 1: mask ^= Item::Flags::HEAL; break;
-                case 2: mask ^= Item::Flags::CAST_LIGHTNING; break;
-                case 3: mask ^= Item::Flags::POTION; break;
-                case 4: mask ^= Item::Flags::SCROLL; break;
-                case 5: mask ^= Item::Flags::CAST_FIREBALL; break;
-                case 6: mask ^= Item::Flags::CAST_FIREBOLT; break;
-                case 7: mask ^= Item::Flags::EQUIP; break;
+                case 1: mask |= Item::Flags::HEAL; break;
+                case 2: mask |= Item::Flags::CAST_LIGHTNING; break;
+                case 3: mask |= Item::Flags::POTION; break;
+                case 4: mask |= Item::Flags::SCROLL; break;
+                case 5: mask |= Item::Flags::CAST_FIREBALL; break;
+                case 6: mask |= Item::Flags::CAST_FIREBOLT; break;
+                case 7: mask |= Item::Flags::EQUIP; break;
                 default: break;
             }
         }
@@ -174,15 +174,15 @@ int parseEquip(std::string eqpString)
             int flag = std::stoi(eqpString);
             switch(flag)
             {
-                case 1: mask ^= Equipment::Flags::MAIN_HAND; break;
-                case 2: mask ^= Equipment::Flags::OFF_HAND; break;
-                // case 3: mask ^= Equipment::Flags::BODY; break;
-                // case 4: mask ^= Equipment::Flags::BACK; break;
-                // case 5: mask ^= Equipment::Flags::LRING; break;
-                // case 6: mask ^= Equipment::Flags::RRING; break;
-                // case 7: mask ^= Equipment::Flags::BOOTS; break;
-                // case 8: mask ^= Equipment::Flags::RANGED; break;
-                // case 9: mask ^= Equipment::Flags::AMMO; break;
+                case 1: mask |= Equipment::Flags::MAIN_HAND; break;
+                case 2: mask |= Equipment::Flags::OFF_HAND; break;
+                // case 3: mask |= Equipment::Flags::BODY; break;
+                // case 4: mask |= Equipment::Flags::BACK; break;
+                // case 5: mask |= Equipment::Flags::LRING; break;
+                // case 6: mask |= Equipment::Flags::RRING; break;
+                // case 7: mask |= Equipment::Flags::BOOTS; break;
+                // case 8: mask |= Equipment::Flags::RANGED; break;
+                // case 9: mask |= Equipment::Flags::AMMO; break;
                 default: break;
             }
         }

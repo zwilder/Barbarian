@@ -53,8 +53,8 @@ Engine::Engine()
 
     currentMsg_ = "";
 
-    monster::loadMonsters(this);
     item::loadItems(this);
+    monster::loadMonsters(this);
 
     uint32_t seed = uint32_t(std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count());
     engineRNG_ = std::make_shared<wsl::RNGState>(123987445, seed); // Random numbers

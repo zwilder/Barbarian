@@ -122,6 +122,7 @@ class GameMap
         int numRoomsMax_;
         int currentLevel_;
         wsl::WList<Entity> monsterWeights_;
+        wsl::WList<Entity> itemWeights_;
 
         void initTiles_();
         void initActorList_();

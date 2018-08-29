@@ -336,7 +336,27 @@ void GameMap::initActorList_()
 
 void GameMap::initItemList_()
 {
+    if(!owner_)
+    {
+        return;
+    }
+    wsl::DLList<Entity> * itemList = owner_->itemList();
+    if(!itemList)
+    {
+        return;
+    }
 
+    itemWeights_.clear();
+    for(wsl::DLNode<Entity> * node = itemList->head(); node != NULL; node = node->next)
+    {
+        int minLvl = node->data.minLvl();
+        Entity entity = node->data;
+        entity.setGame(owner_);
+        if(minLvl <= currentLevel_)
+        {
+            itemWeights_.push(entity, node->data.wt());
+        }
+    }
 }
 
 void GameMap::createRoom_(wsl::Rect room)
@@ -497,14 +517,15 @@ void GameMap::placeActors(int maxPerRoom)
 void GameMap::placeItems(int max)
 {
     wsl::DLList<Entity> * entityList = owner_->entityList();
-    wsl::WList<Entity> itemWeights;
-    itemWeights.push(item::healingPotion(owner_), 4);
-    itemWeights.push(item::lightningScroll(owner_), 2);
-    itemWeights.push(item::fireballScroll(owner_), 2);
-    itemWeights.push(item::fireboltScroll(owner_), 2);
-    itemWeights.push(item::battleAxe(owner_), 1);
-    itemWeights.push(item::woodenShield(owner_), 1);
-    itemWeights.push(item::dagger(owner_), 1);
+
+    // wsl::WList<Entity> itemWeights;
+    // itemWeights.push(item::healingPotion(owner_), 4);
+    // itemWeights.push(item::lightningScroll(owner_), 2);
+    // itemWeights.push(item::fireballScroll(owner_), 2);
+    // itemWeights.push(item::fireboltScroll(owner_), 2);
+    // itemWeights.push(item::battleAxe(owner_), 1);
+    // itemWeights.push(item::woodenShield(owner_), 1);
+    // itemWeights.push(item::dagger(owner_), 1);
     // int numItems = wsl::randomInt(0,max);
     int numItems = max;
     int placedItems = 0;
@@ -520,7 +541,7 @@ void GameMap::placeItems(int max)
         if(!entityAt(x,y))
         {
             wsl::Vector2i newPos(x,y);
-            Entity entity = itemWeights.pick(rngState_.get());
+            Entity entity = itemWeights_.pick(rngState_.get());
             entity.setPos(newPos);
             entityList->push(entity);
         }

@@ -114,10 +114,11 @@ Entity parseEntry(std::string entry, Engine * engine)
         std::istringstream isLine(items);
         while(std::getline(isLine, itemString, ','))
         {
-            Entity * itemEntity = monster::pick(engine->itemList(), itemString);
-            if(itemEntity)
+            Entity * item = monster::pick(engine->itemList(), itemString);
+            if(item)
             {
-                engine->entityList()->push(*itemEntity);
+                Entity itemEntity = *item;
+                engine->entityList()->push(itemEntity);
                 resultEntity.pickup(&(engine->entityList()->head()->data));
             }
         }

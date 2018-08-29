@@ -123,7 +123,21 @@ void Entity::takeDamage(int damage)
     {
         return;
     }
-    actor_->HP -= damage;
+    if(damage <= 0)
+    {
+        if(this == game_->player())
+        {
+            game_->addMessage("The attack bounces off " + name() + "'s gleaming muscles harmlessly!");
+        }
+        else
+        {
+            game_->addMessage(name() + " barely notices the attack.");
+        }
+    }
+    else
+    {
+        actor_->HP -= damage;
+    }
     if(actor_->HP <= 0)
     {
         // remove(Flags::ACTOR);
