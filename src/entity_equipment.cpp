@@ -60,9 +60,10 @@ void Entity::toggleEquip(Entity * item)
         if(actor_->check(Actor::Flags::EQUIP_MAIN_HAND))
         {
             // Actor has an item equipped in the main hand, unequip it
-            Entity * mainHandItem = getMainHand();
-            actor_->remove(Actor::Flags::EQUIP_MAIN_HAND);
-            mainHandItem->equipment_->remove(Equipment::Flags::EQUIPPED);
+            // Entity * mainHandItem = getMainHand();
+            Entity * mainHandItem = getSlot(Equipment::Flags::MAIN_HAND);
+            actor_->remove(Actor::Flags::EQUIP_MAIN_HAND); // Remove slot equipped flag from actor
+            mainHandItem->equipment_->remove(Equipment::Flags::EQUIPPED); // Remove equipped status from item
             if(item != mainHandItem)
             {
                 game_->addMessage(name() + " tried to equip a " + item->name() + ", but had to stop wielding a " + mainHandItem->name() + " first.");
@@ -85,7 +86,8 @@ void Entity::toggleEquip(Entity * item)
         if(actor_->check(Actor::Flags::EQUIP_OFF_HAND))
         {
             // Actor has an item equipped in the off hand, unequip it
-            Entity * offHandItem = getOffHand();
+            // Entity * offHandItem = getOffHand();
+            Entity * offHandItem = getSlot(Equipment::Flags::OFF_HAND);
             actor_->remove(Actor::Flags::EQUIP_OFF_HAND);
             offHandItem->equipment_->remove(Equipment::Flags::EQUIPPED);
             if(item != offHandItem)
@@ -105,6 +107,27 @@ void Entity::toggleEquip(Entity * item)
             game_->addMessage(name() + " readies the " + item->name() + "!");
         }
     }
+}
+
+Entity * Entity::getSlot(int slotFlag)
+{
+    Entity * result = NULL;
+    if(hasInventory())
+    {
+        for(wsl::PQNode<Entity, int> * node = inventory_->head(); node != NULL; node = node->next)
+        {
+            Entity * item = &node->data;
+            if(item->isEquipment())
+            {
+                if(item->equipment().check(slotFlag) && item->equipped())
+                {
+                    result = item;
+                    break;
+                }
+            }
+        }
+    }
+    return result;
 }
 
 Entity * Entity::getMainHand()

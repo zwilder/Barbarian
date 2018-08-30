@@ -45,12 +45,19 @@ class Actor : public wsl::BitFlag
         //     Rest
         // };
         
-        enum Flags : uint8_t
+        enum Flags : uint16_t
         {
             NONE = 0,
             STATUS_CONFUSED =  0x002,
             EQUIP_MAIN_HAND = 0x004,
-            EQUIP_OFF_HAND = 0x008
+            EQUIP_OFF_HAND = 0x008,
+            EQUIP_BODY = 0x010,
+            EQUIP_BACK = 0x020,
+            EQUIP_LRING = 0x040,
+            EQUIP_RRING = 0x080,
+            EQUIP_BOOTS = 0x100,
+            EQUIP_RANGED = 0x200,
+            EQUIP_AMMO = 0x400
         };
 
         int speed;
@@ -110,12 +117,19 @@ class Equipment : public wsl::BitFlag
 {
     public:
         Equipment(int s = 0, int p = 0, int d = 0, int h = 0);
-        enum Flags: uint8_t
+        enum Flags: uint16_t
         {
             NONE = 0,
             EQUIPPED = 0x002,
             MAIN_HAND = 0x004,
-            OFF_HAND = 0x008
+            OFF_HAND = 0x008,
+            BODY = 0x010,
+            BACK = 0x020,
+            LRING = 0x040,
+            RRING = 0x080,
+            BOOTS = 0x100,
+            RANGED = 0x200,
+            AMMO = 0x400
         };
         int powerBonus;
         int defenseBonus;
@@ -283,6 +297,7 @@ class Entity : public wsl::BitFlag
         void unequip(Entity * item);
         bool isMainHand() { return equipment_->check(Equipment::Flags::MAIN_HAND); }
         bool isOffHand() { return equipment_->check(Equipment::Flags::OFF_HAND); }
+        Entity * getSlot(int slotFlag);
         Entity * getMainHand();
         Entity * getOffHand();
 

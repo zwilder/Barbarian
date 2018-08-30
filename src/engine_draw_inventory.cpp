@@ -33,7 +33,7 @@ void Engine::draw_inventory_()
     }
     else if(gameState_ == GameState::EQUIP)
     {
-        console_->print(0,0, "Select the item you wish to equip:");
+        console_->print(0,0, "Equipment");
     }
 
     console_->print(0,2, "---------");
