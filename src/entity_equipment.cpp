@@ -114,7 +114,7 @@ Entity * Entity::getMainHand()
     {
         //Iterate through inventory, checking each item looking for Equipment::Flags::MAIN_HAND.
         //when found, if equipped set result to item and break.
-        for(wsl::DLNode<Entity> * node = inventory_->head(); node != NULL; node = node->next)
+        for(wsl::PQNode<Entity, int> * node = inventory_->head(); node != NULL; node = node->next)
         {
             Entity * item = &node->data;
             if(item->isEquipment())
@@ -139,7 +139,7 @@ Entity * Entity::getOffHand()
     {
         //Iterate through inventory, checking each item looking for Equipment::Flags::MAIN_HAND.
         //when found, if equipped set result to item and break.
-        for(wsl::DLNode<Entity> * node = inventory_->head(); node != NULL; node = node->next)
+        for(wsl::PQNode<Entity, int> * node = inventory_->head(); node != NULL; node = node->next)
         {
             Entity * item = &node->data;
             if(item->isEquipment())

@@ -42,7 +42,8 @@ void Entity::makeItem(Item item)
 void Entity::makeInventory()
 {
     engage(Flags::INVENTORY);
-    inventory_ = std::make_shared< wsl::DLList<Entity> >();
+    // inventory_ = std::make_shared< wsl::DLList<Entity> >();
+    inventory_ = std::make_shared<wsl::PQList<Entity, int> >();
 }
 
 void Entity::pickup(Entity * itemEntity)
@@ -57,14 +58,15 @@ void Entity::pickup(Entity * itemEntity)
         return;
     }
     itemEntity->item_->carried = true;
+
     if(itemEntity->item_->stackable)
     {
-        // Check if inventory has an item of the same name (?) 
+        // Check if inventory has an item of the same type using the item's mask
         Entity * invItem = NULL;
-        for(wsl::DLNode<Entity> * temp = inventory_->head(); temp != NULL; temp = temp->next)
+        for(wsl::PQNode<Entity, int> * temp = inventory_->head(); temp != NULL; temp = temp->next)
         {
             Entity * listEntity = &temp->data;
-            if(listEntity->name() == itemEntity->name())
+            if(listEntity->item().mask() == itemEntity->item().mask())
             {
                 invItem = listEntity;
                 break;
@@ -76,12 +78,12 @@ void Entity::pickup(Entity * itemEntity)
         }
         else // invItem == NULL
         {
-            inventory_->push(*itemEntity);
+            inventory_->push(*itemEntity, itemEntity->itemPriority());
         }
     }
     else // !itemEntity->item_->stackable
     {
-        inventory_->push(*itemEntity);
+        inventory_->push(*itemEntity, itemEntity->itemPriority());
     } 
     // Remove item from game entityList
     wsl::DLNode<Entity> * current = game_->entityList()->head();
@@ -99,7 +101,8 @@ void Entity::pickup(Entity * itemEntity)
 
 void Entity::drop(int index)
 {
-    wsl::DLNode<Entity> * itemNode = inventory_->at(index);
+    // wsl::DLNode<Entity> * itemNode = inventory_->at(index);
+    wsl::PQNode<Entity, int> * itemNode = inventory_->at(index);
     if(!itemNode)
     {
         return;
@@ -129,7 +132,7 @@ void Entity::drop(int index)
 
 void Entity::use(int index)
 {
-    wsl::DLNode<Entity> * itemNode = inventory_->at(index);
+    wsl::PQNode<Entity, int> * itemNode = inventory_->at(index);
     if(!itemNode)
     {
         return;
@@ -183,6 +186,15 @@ void Entity::use(int index)
     {
         game_->addMessage(name() + " changes their mind, and puts the " + itemEntity.name() + " away.");
     }
+}
+
+int Entity::itemPriority()
+{
+    int result = 5; //Arbitrary number greater than number of item types
+    if(item_->check(Item::Flags::EQUIP)) result = 1;
+    else if(item_->check(Item::Flags::POTION)) result = 2;
+    else if(item_->check(Item::Flags::SCROLL)) result = 3;
+    return result;
 }
 
 bool Entity::use_heal_()

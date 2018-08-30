@@ -44,7 +44,7 @@ void Engine::draw_inventory_()
     else
     {
         int i = 0;
-        for(wsl::DLNode<Entity> * temp = player_->inventory()->head(); temp != NULL; temp = temp->next)
+        for(wsl::PQNode<Entity, int> * temp = player_->inventory()->head(); temp != NULL; temp = temp->next)
         {
             Entity & item = temp->data;
             std::string name = item.name();

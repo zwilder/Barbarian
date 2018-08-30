@@ -26,7 +26,7 @@ void Engine::handleEvents_inventory_(Input input)
     if(input.alpha() >= 'a' && input.alpha() <= 'z')
     {
         int index = int(input.alpha() - 97);
-        wsl::DLNode<Entity> * itemNode = player_->inventory()->at(index);
+        wsl::PQNode<Entity, int> * itemNode = player_->inventory()->at(index);
         if(!itemNode)
         {
             return;

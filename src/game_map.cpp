@@ -50,7 +50,7 @@ GameMap::GameMap(Engine * owner, int w, int h, int roomSizeMax, int roomSizeMin,
     // uint32_t seed = (now->tm_sec * 1000); // Current seconds after the minute, to milliseconds
     // seed += (now->tm_min * 60 * 1000); // Minutes after the hour, to minutes, to milliseconds
     // seed += (now->tm_hour * 60 * 60 * 1000); // Hours after midnight, to minutes, to seconds, to milliseconds
-    std::cout << "Map seed: " << seed << std::endl;
+    // std::cout << "Map seed: " << seed << std::endl;
     rngState_ = std::make_shared<wsl::RNGState>(seed);
     currentLevel_ = 1;
     

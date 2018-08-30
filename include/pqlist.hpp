@@ -41,7 +41,7 @@ class PQList
 {
     public:
         PQList();
-        PQList(T data, S priority);
+        PQList(T data, S priority = S());
         ~PQList();
         
         PQNode<T,S> * head() { return head_; }
@@ -50,6 +50,9 @@ class PQList
         void push(T data, S priority);
         T pop();
         T peek();
+        PQNode<T, S> * at(int index);
+        // void remove(T data);
+        void remove(PQNode<T,S> * node);
         int size();
 
         bool isEmpty() { return head_ == NULL; }
@@ -94,6 +97,7 @@ void PQList<T,S>::push(T data, S priority)
     if(head_ == NULL)
     {
         head_ = newNode;
+        tail_ = newNode;
     }
     else if(head_->priority > newNode->priority)
     {
@@ -139,6 +143,49 @@ T PQList<T,S>::pop()
     head_ = head_->next;
     delete(temp);
     return result;
+}
+
+template <typename T, typename S>
+PQNode<T,S> * PQList<T,S>::at(int index)
+{
+    PQNode<T,S> * resultNode = head_;
+    int count = 0;
+    while(resultNode != NULL)
+    {
+        if(count == index)
+        {
+            break;
+        }
+        ++count;
+        resultNode = resultNode->next;
+    }
+    return resultNode;
+}
+
+template <typename T, typename S>
+void PQList<T,S>::remove(PQNode<T,S> * node)
+{
+    if(head_ == NULL || node == NULL)
+    {
+        return;
+    }
+    
+    if(head_ == node)
+    {
+        head_ = node->next;
+    }
+
+    // if(node->next != NULL)
+    // {
+    //     node->next->prev = node->prev;
+    // }
+    //
+    // if(node->prev != NULL)
+    // {
+    //     node->prev->next = node->next;
+    // }
+
+    delete(node);
 }
 
 template <typename T, typename S>

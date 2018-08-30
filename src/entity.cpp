@@ -80,9 +80,9 @@ Entity::Entity(const Entity & other)
     if(hasInventory())
     {
         makeInventory();
-        for(wsl::DLNode<Entity> * node = other.inventory_->head(); node != NULL; node = node->next)
+        for(wsl::PQNode<Entity, int> * node = other.inventory_->head(); node != NULL; node = node->next)
         {
-            inventory_->push(node->data);
+            inventory_->push(node->data, node->priority);
         }
     }
     if(hasLevel())

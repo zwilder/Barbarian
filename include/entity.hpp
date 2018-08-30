@@ -27,6 +27,7 @@
 #include <string>
 
 #include "dllist.hpp"
+#include "pqlist.hpp"
 #include "vector.hpp"
 #include "console.hpp"
 #include "bitflag.hpp"
@@ -254,12 +255,13 @@ class Entity : public wsl::BitFlag
         void pickup(Entity * itemEntity);
         void drop(int index);
         void use(int index);
+        int itemPriority();
         int & quantity() { return item_->quantity; }
         bool stackable() { return item_->stackable; }
 
         // Inventory functions
         void makeInventory();
-        wsl::DLList<Entity> * inventory() { return inventory_.get(); }
+        wsl::PQList<Entity, int> * inventory() { return inventory_.get(); }
 
         // Level functions
         void makeLevel(Level level);
@@ -298,7 +300,8 @@ class Entity : public wsl::BitFlag
         std::string name_;
         std::shared_ptr<Actor> actor_;
         std::shared_ptr<Item> item_;
-        std::shared_ptr< wsl::DLList<Entity> > inventory_;
+        // std::shared_ptr< wsl::DLList<Entity> > inventory_;
+        std::shared_ptr< wsl::PQList<Entity, int> > inventory_;
         std::shared_ptr<Level> level_;
         std::shared_ptr<Equipment> equipment_;
 

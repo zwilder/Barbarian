@@ -91,7 +91,7 @@ void CerealEntity::convert(Entity & entity)
     if(entity.hasInventory())
     {
         // Loop through inventory, creating CerealEntities for each item and pushing them into the inventory vector
-        for(wsl::DLNode<Entity> * node = entity.inventory()->head(); node != NULL; node = node->next)
+        for(wsl::PQNode<Entity, int> * node = entity.inventory()->head(); node != NULL; node = node->next)
         {
             CerealEntity itemEntity;
             itemEntity.convert(node->data);
@@ -123,7 +123,7 @@ Entity CerealEntity::extract()
         for(size_t i = 0; i < inventory.size(); ++i)
         {
             Entity itemEntity = inventory[i].extract();
-            resultEntity.inventory()->push(itemEntity);
+            resultEntity.inventory()->push(itemEntity, itemEntity.itemPriority());
         }
     }
     if(resultEntity.isEquipment())
