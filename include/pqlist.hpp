@@ -42,6 +42,19 @@ class PQList
     public:
         PQList();
         PQList(T data, S priority = S());
+        PQList(const PQList<T,S> & other); // Copy constructor 
+        PQList<T,S> operator =(PQList<T,S> other) // Copy assignment  
+        {
+            swap(*this, other);
+            return *this;
+        }
+        friend void swap(PQList<T,S> & first, PQList<T,S> & other)
+        {
+            PQNode<T,S> * temp = first.head_;
+            first.head_ = other.head_;
+            other.head_ = temp;
+        }
+
         ~PQList();
         
         PQNode<T,S> * head() { return head_; }
@@ -74,6 +87,15 @@ PQList<T,S>::PQList(T data, S priority)
     head_ = NULL;
     tail_ = NULL;
     push(data, priority);
+}
+
+template<typename T, typename S>
+PQList<T,S>::PQList(const PQList<T,S> & other)
+{
+    for(PQNode<T,S> * node = other.head_; node != NULL; node = node->next)
+    {
+        push(node->data, node->priority);
+    }
 }
 
 template<typename T, typename S>
@@ -170,9 +192,21 @@ void PQList<T,S>::remove(PQNode<T,S> * node)
         return;
     }
     
+    PQNode<T,S> * prevNode = head_;
+    for(PQNode<T,S> * temp = head_; temp != NULL; temp = temp->next)
+    {
+        if(temp == node) break;
+        prevNode = temp;
+    }
+
     if(head_ == node)
     {
         head_ = node->next;
+    }
+
+    if(prevNode != NULL)
+    {
+        prevNode->next = node->next;
     }
 
     // if(node->next != NULL)
