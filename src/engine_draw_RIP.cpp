@@ -60,7 +60,7 @@ void Engine::draw_RIP_()
      * x,20
      * where 16 < x < 38
      */
-    std::string xp = std::to_string(player_->xp()) + " xp.";
+    std::string xp = std::to_string(player_->currentXP()) + " xp.";
     int xpOfs = (22 - xp.size()) / 2;
     console_->printf(17 + xOfs + xpOfs, 20 + yOfs, xp, wsl::Color::White);
 
