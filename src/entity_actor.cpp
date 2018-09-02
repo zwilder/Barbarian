@@ -267,9 +267,9 @@ void Entity::heal(int qty)
         return;
     }
     actor_->HP += qty;
-    if(actor_->HP > actor_->maxHP)
+    if(actor_->HP > maxHP())
     {
-        actor_->HP = actor_->maxHP;
+        actor_->HP = maxHP();
     }
 }
 
