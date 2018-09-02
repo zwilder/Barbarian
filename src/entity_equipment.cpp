@@ -55,13 +55,37 @@ void Entity::toggleEquip(Entity * item)
     }
 
     // Check if the actor has an item already occupying the slot in the item occupies
+    int slotFlag = getSlot(item);
+    if(hasEquippedInSlot(slotFlag))
+    {
+        // Try unequipping your ITEMINSLOT first!
+        Entity * oldItem = itemInSlot(slotFlag);
+        actor_->remove(actorSlot(slotFlag)); // actorSlot turns Equipment::Flag into Actor::Flag
+        oldItem->equipment_->remove(Equipment::Flags::EQUIPPED);
+        if(item != oldItem)
+        {
+            game_->addMessage(name() + " tried to equip a " + item->name() + ", but had to stop wielding a " + oldItem->name() + " first.");
+        }
+        else
+        {
+            game_->addMessage(name() + " unequips the " + item->name() + ".");
+        }
+    }
+    else
+    {
+        // Equip the ITEM
+        actor_->engage(actorSlot(slotFlag));
+        item->equipment_->engage(Equipment::Flags::EQUIPPED);
+        game_->addMessage(name() + " wields the " + item->name() + "!");
+    }
+    /*
     if(item->isMainHand())
     {
         if(actor_->check(Actor::Flags::EQUIP_MAIN_HAND))
         {
             // Actor has an item equipped in the main hand, unequip it
             // Entity * mainHandItem = getMainHand();
-            Entity * mainHandItem = getSlot(Equipment::Flags::MAIN_HAND);
+            Entity * mainHandItem = itemInSlot(Equipment::Flags::MAIN_HAND);
             actor_->remove(Actor::Flags::EQUIP_MAIN_HAND); // Remove slot equipped flag from actor
             mainHandItem->equipment_->remove(Equipment::Flags::EQUIPPED); // Remove equipped status from item
             if(item != mainHandItem)
@@ -87,7 +111,7 @@ void Entity::toggleEquip(Entity * item)
         {
             // Actor has an item equipped in the off hand, unequip it
             // Entity * offHandItem = getOffHand();
-            Entity * offHandItem = getSlot(Equipment::Flags::OFF_HAND);
+            Entity * offHandItem = itemInSlot(Equipment::Flags::OFF_HAND);
             actor_->remove(Actor::Flags::EQUIP_OFF_HAND);
             offHandItem->equipment_->remove(Equipment::Flags::EQUIPPED);
             if(item != offHandItem)
@@ -107,9 +131,10 @@ void Entity::toggleEquip(Entity * item)
             game_->addMessage(name() + " readies the " + item->name() + "!");
         }
     }
+    */
 }
 
-Entity * Entity::getSlot(int slotFlag)
+Entity * Entity::itemInSlot(int slotFlag)
 {
     Entity * result = NULL;
     if(hasInventory())
@@ -130,50 +155,103 @@ Entity * Entity::getSlot(int slotFlag)
     return result;
 }
 
-Entity * Entity::getMainHand()
+int Entity::getSlot(Entity * item)
 {
-    Entity * result = NULL;
-    if(hasInventory())
+    // Returns the item's equipment flags stripped of the excess flags
+    //  like EQUIPPED - the result is the slot the item equips to.
+    int result = Equipment::Flags::NONE;
+    if(item->isEquipment())
     {
-        //Iterate through inventory, checking each item looking for Equipment::Flags::MAIN_HAND.
-        //when found, if equipped set result to item and break.
-        for(wsl::PQNode<Entity, int> * node = inventory_->head(); node != NULL; node = node->next)
-        {
-            Entity * item = &node->data;
-            if(item->isEquipment())
-            {
-                if(item->isMainHand() && item->equipped())
-                {
-                    result = item;
-                    break;
-                }
-            }
-        }
+        result = item->equipment_->mask();
+        result &= ~(Equipment::Flags::EQUIPPED);
     }
-
     return result;
 }
 
-Entity * Entity::getOffHand()
+int Entity::actorSlot(int equipmentSlot)
 {
-    Entity * result = NULL;
-
-    if(hasInventory())
+    int result = Actor::Flags::NONE;
+    if((equipmentSlot & Equipment::Flags::MAIN_HAND) == Equipment::Flags::MAIN_HAND)
     {
-        //Iterate through inventory, checking each item looking for Equipment::Flags::MAIN_HAND.
-        //when found, if equipped set result to item and break.
-        for(wsl::PQNode<Entity, int> * node = inventory_->head(); node != NULL; node = node->next)
-        {
-            Entity * item = &node->data;
-            if(item->isEquipment())
-            {
-                if(item->isOffHand() && item->equipped())
-                {
-                    result = item;
-                    break;
-                }
-            }
-        }
+        result |= Actor::Flags::EQUIP_MAIN_HAND;
+    }
+    else if((equipmentSlot & Equipment::Flags::OFF_HAND) == Equipment::Flags::OFF_HAND)
+    {
+        result |= Actor::Flags::EQUIP_OFF_HAND;
+    }
+    else if((equipmentSlot & Equipment::Flags::BODY) == Equipment::Flags::BODY)
+    {
+        result |= Actor::Flags::EQUIP_BODY;
+    }
+    else if((equipmentSlot & Equipment::Flags::BACK) == Equipment::Flags::BACK)
+    {
+        result |= Actor::Flags::EQUIP_BACK;
+    }
+    else if((equipmentSlot & Equipment::Flags::LRING) == Equipment::Flags::LRING)
+    {
+        result |= Actor::Flags::EQUIP_LRING;
+    }
+    else if((equipmentSlot & Equipment::Flags::RRING) == Equipment::Flags::RRING)
+    {
+        result |= Actor::Flags::EQUIP_RRING;
+    }
+    else if((equipmentSlot & Equipment::Flags::BOOTS) == Equipment::Flags::BOOTS)
+    {
+        result |= Actor::Flags::EQUIP_BOOTS;
+    }
+    else if((equipmentSlot & Equipment::Flags::RANGED) == Equipment::Flags::RANGED)
+    {
+        result |= Actor::Flags::EQUIP_RANGED;
+    }
+    else if((equipmentSlot & Equipment::Flags::AMMO) == Equipment::Flags::AMMO)
+    {
+        result |= Actor::Flags::EQUIP_AMMO;
+    }
+    return result;
+}
+
+bool Entity::hasEquippedInSlot(int equipmentSlot)
+{
+    if(!isActor())
+    {
+        return false;
+    }
+    bool result = false;
+    if((equipmentSlot & Equipment::Flags::MAIN_HAND) == Equipment::Flags::MAIN_HAND)
+    {
+        result = actor_->check(Actor::Flags::EQUIP_MAIN_HAND);
+    }
+    else if((equipmentSlot & Equipment::Flags::OFF_HAND) == Equipment::Flags::OFF_HAND)
+    {
+        result = actor_->check(Actor::Flags::EQUIP_OFF_HAND);
+    }
+    else if((equipmentSlot & Equipment::Flags::BODY) == Equipment::Flags::BODY)
+    {
+        result = actor_->check(Actor::Flags::EQUIP_BODY);
+    }
+    else if((equipmentSlot & Equipment::Flags::BACK) == Equipment::Flags::BACK)
+    {
+        result = actor_->check(Actor::Flags::EQUIP_BACK);
+    }
+    else if((equipmentSlot & Equipment::Flags::LRING) == Equipment::Flags::LRING)
+    {
+        result = actor_->check(Actor::Flags::EQUIP_LRING);
+    }
+    else if((equipmentSlot & Equipment::Flags::RRING) == Equipment::Flags::RRING)
+    {
+        result = actor_->check(Actor::Flags::EQUIP_RRING);
+    }
+    else if((equipmentSlot & Equipment::Flags::BOOTS) == Equipment::Flags::BOOTS)
+    {
+        result = actor_->check(Actor::Flags::EQUIP_BOOTS);
+    }
+    else if((equipmentSlot & Equipment::Flags::RANGED) == Equipment::Flags::RANGED)
+    {
+        result = actor_->check(Actor::Flags::EQUIP_RANGED);
+    }
+    else if((equipmentSlot & Equipment::Flags::AMMO) == Equipment::Flags::AMMO)
+    {
+        result = actor_->check(Actor::Flags::EQUIP_AMMO);
     }
     return result;
 }

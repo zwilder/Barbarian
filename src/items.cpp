@@ -176,13 +176,13 @@ int parseEquip(std::string eqpString)
             {
                 case 1: mask |= Equipment::Flags::MAIN_HAND; break;
                 case 2: mask |= Equipment::Flags::OFF_HAND; break;
-                // case 3: mask |= Equipment::Flags::BODY; break;
-                // case 4: mask |= Equipment::Flags::BACK; break;
-                // case 5: mask |= Equipment::Flags::LRING; break;
-                // case 6: mask |= Equipment::Flags::RRING; break;
-                // case 7: mask |= Equipment::Flags::BOOTS; break;
-                // case 8: mask |= Equipment::Flags::RANGED; break;
-                // case 9: mask |= Equipment::Flags::AMMO; break;
+                case 3: mask |= Equipment::Flags::BODY; break;
+                case 4: mask |= Equipment::Flags::BACK; break;
+                case 5: mask |= Equipment::Flags::LRING; break;
+                case 6: mask |= Equipment::Flags::RRING; break;
+                case 7: mask |= Equipment::Flags::BOOTS; break;
+                case 8: mask |= Equipment::Flags::RANGED; break;
+                case 9: mask |= Equipment::Flags::AMMO; break;
                 default: break;
             }
         }

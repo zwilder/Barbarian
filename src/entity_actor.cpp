@@ -25,6 +25,123 @@
 #include "../include/pathfinding.hpp"
 #include "../include/random.hpp"
 
+/* 
+ * BonusStruct is a convience structure so that I don't have to repeat some code below - makes it so that I can
+ *  check all the actor's slots ONCE and return all the bonuses, instead of repeating the code multiple times.
+ *  This will also help when I eventually change the combat system and add new bonuses.
+ * Since it's solely a convience structure, it shouldn't be used elsewhere.
+ */
+class BonusStruct
+{
+    public:
+        BonusStruct(int h = 0, int d = 0, int p = 0) : hp(h), def(d), pow(p) { }
+        int hp;
+        int def;
+        int pow;
+};
+
+BonusStruct getBonus(Entity * entity)
+{
+    BonusStruct bonus;
+    if(!entity->isActor())
+    {
+        return bonus;
+    }
+
+    Actor actor = entity->actor();
+    if(actor.check(Actor::Flags::EQUIP_MAIN_HAND))
+    {
+        Entity * item = entity->itemInSlot(Equipment::Flags::MAIN_HAND);
+        if(item)
+        {
+            bonus.hp += item->healthBonus();
+            bonus.def += item->defenseBonus();
+            bonus.pow += item->powerBonus();
+        }
+    }
+    if(actor.check(Actor::Flags::EQUIP_OFF_HAND))
+    {
+        Entity * item = entity->itemInSlot(Equipment::Flags::OFF_HAND);
+        if(item)
+        {
+            bonus.hp += item->healthBonus();
+            bonus.def += item->defenseBonus();
+            bonus.pow += item->powerBonus();
+        }
+    }
+    if(actor.check(Actor::Flags::EQUIP_BODY))
+    {
+        Entity * item = entity->itemInSlot(Equipment::Flags::BODY);
+        if(item)
+        {
+            bonus.hp += item->healthBonus();
+            bonus.def += item->defenseBonus();
+            bonus.pow += item->powerBonus();
+        }
+    }
+    if(actor.check(Actor::Flags::EQUIP_BACK))
+    {
+        Entity * item = entity->itemInSlot(Equipment::Flags::BACK);
+        if(item)
+        {
+            bonus.hp += item->healthBonus();
+            bonus.def += item->defenseBonus();
+            bonus.pow += item->powerBonus();
+        }
+    }
+    if(actor.check(Actor::Flags::EQUIP_LRING))
+    {
+        Entity * item = entity->itemInSlot(Equipment::Flags::LRING);
+        if(item)
+        {
+            bonus.hp += item->healthBonus();
+            bonus.def += item->defenseBonus();
+            bonus.pow += item->powerBonus();
+        }
+    }
+    if(actor.check(Actor::Flags::EQUIP_RRING))
+    {
+        Entity * item = entity->itemInSlot(Equipment::Flags::RRING);
+        if(item)
+        {
+            bonus.hp += item->healthBonus();
+            bonus.def += item->defenseBonus();
+            bonus.pow += item->powerBonus();
+        }
+    }
+    if(actor.check(Actor::Flags::EQUIP_BOOTS))
+    {
+        Entity * item= entity->itemInSlot(Equipment::Flags::BOOTS);
+        if(item)
+        {
+            bonus.hp += item->healthBonus();
+            bonus.def += item->defenseBonus();
+            bonus.pow += item->powerBonus();
+        }
+    }
+    if(actor.check(Actor::Flags::EQUIP_RANGED))
+    {
+        Entity * item= entity->itemInSlot(Equipment::Flags::RANGED);
+        if(item)
+        {
+            bonus.hp += item->healthBonus();
+            bonus.def += item->defenseBonus();
+            bonus.pow += item->powerBonus();
+        }
+    }
+    if(actor.check(Actor::Flags::EQUIP_AMMO))
+    {
+        Entity * item = entity->itemInSlot(Equipment::Flags::AMMO);
+        if(item)
+        {
+            bonus.hp += item->healthBonus();
+            bonus.def += item->defenseBonus();
+            bonus.pow += item->powerBonus();
+        }
+    }
+    return bonus;
+}
+
 Actor::Actor(int s, int v, int mH, int d, int p, int x) : speed(s), vision(v), maxHP(mH), defense(d), power(p), xp(x)
 {
     HP = maxHP;
@@ -42,45 +159,21 @@ void Entity::makeActor(Actor actor)
 
 int Entity::maxHP()
 {
-    int bonus = 0;
-    if(actor_->check(Actor::Flags::EQUIP_MAIN_HAND))
+    if(!isActor())
     {
-        Entity * mainHandItem = getMainHand();
-        if(mainHandItem)
-        {
-            bonus += getMainHand()->healthBonus();
-        }
+        return 0;
     }
-    if(actor_->check(Actor::Flags::EQUIP_OFF_HAND))
-    {
-        Entity * offHandItem = getOffHand();
-        if(offHandItem)
-        {
-            bonus += getOffHand()->healthBonus();
-        }
-    }
+    int bonus = getBonus(this).hp;
     return (actor_->maxHP + bonus);
 }
 
 int Entity::defense()
 {
-    int bonus = 0;
-    if(actor_->check(Actor::Flags::EQUIP_MAIN_HAND))
+    if(!isActor())
     {
-        Entity * mainHandItem = getMainHand();
-        if(mainHandItem)
-        {
-            bonus += getMainHand()->defenseBonus();
-        }
+        return 0;
     }
-    if(actor_->check(Actor::Flags::EQUIP_OFF_HAND))
-    {
-        Entity * offHandItem = getOffHand();
-        if(offHandItem)
-        {
-            bonus += getOffHand()->defenseBonus();
-        }
-    }
+    int bonus = getBonus(this).def;
     return (actor_->defense + bonus);
 }
 
@@ -90,23 +183,7 @@ int Entity::power()
     {
         return 0;
     }
-    int bonus = 0;
-    if(actor_->check(Actor::Flags::EQUIP_MAIN_HAND))
-    {
-        Entity * mainHandItem = getMainHand();
-        if(mainHandItem)
-        {
-            bonus += getMainHand()->powerBonus();
-        }
-    }
-    if(actor_->check(Actor::Flags::EQUIP_OFF_HAND))
-    {
-        Entity * offHandItem = getOffHand();
-        if(offHandItem)
-        {
-            bonus += getOffHand()->powerBonus();
-        }
-    }
+    int bonus = getBonus(this).pow;
     return (actor_->power + bonus);
 }
 

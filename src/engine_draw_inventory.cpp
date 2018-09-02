@@ -61,7 +61,17 @@ void Engine::draw_inventory_()
             {
                 if(item.equipped())
                 {
-                    std::string slot = (item.isMainHand() ? "Main Hand" : "Off Hand"); // This will obviously need to change when more slots added
+                    std::string slot = "";
+                    if(item.equipment().check(Equipment::Flags::MAIN_HAND)) slot = "Main Hand";
+                    if(item.equipment().check(Equipment::Flags::OFF_HAND)) slot = "Off Hand";
+                    if(item.equipment().check(Equipment::Flags::BODY)) slot = "Body";
+                    if(item.equipment().check(Equipment::Flags::BACK)) slot = "Back";
+                    if(item.equipment().check(Equipment::Flags::LRING)) slot = "Left Ring";
+                    if(item.equipment().check(Equipment::Flags::RRING)) slot = "Right Ring";
+                    if(item.equipment().check(Equipment::Flags::BOOTS)) slot = "Boots";
+                    if(item.equipment().check(Equipment::Flags::RANGED)) slot = "Ranged";
+                    if(item.equipment().check(Equipment::Flags::AMMO)) slot = "Ammo";
+                    // std::string slot = (item.isMainHand() ? "Main Hand" : "Off Hand"); // This will obviously need to change when more slots added
                     console_->printf(nameSize + 4, int(i) + 3, " [Equipped - " + slot + "]", wsl::Color::Orange);
                 }
             }

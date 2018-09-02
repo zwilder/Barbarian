@@ -297,9 +297,10 @@ class Entity : public wsl::BitFlag
         void unequip(Entity * item);
         bool isMainHand() { return equipment_->check(Equipment::Flags::MAIN_HAND); }
         bool isOffHand() { return equipment_->check(Equipment::Flags::OFF_HAND); }
-        Entity * getSlot(int slotFlag);
-        Entity * getMainHand();
-        Entity * getOffHand();
+        Entity * itemInSlot(int slotFlag);
+        int getSlot(Entity * item);
+        bool hasEquippedInSlot(int equipmentSlot);
+        int actorSlot(int equipmentSlot);
 
         Engine * game() { return game_; }
         void setGame(Engine * game) { game_ = game; }
