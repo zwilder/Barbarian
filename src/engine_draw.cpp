@@ -50,6 +50,10 @@ void Engine::draw()
     {
         draw_levelup_();
     }
+    else if(gameState_ == GameState::RIP)
+    {
+        draw_RIP_();
+    }
 
     // Clear the SDL window
     SDL_SetRenderDrawColor(renderer_, 0x00, 0x00, 0x00, 0x00);

@@ -74,6 +74,10 @@ void Engine::handleEvents()
     else if(gameState_ == GameState::GAME_OVER && keyPressed)
     {
         saveGame();
+        changeState(GameState::RIP);
+    }
+    else if(gameState_ == GameState::RIP && keyPressed)
+    {
         changeState(GameState::TITLE);
     }
     else if(gameState_ == GameState::TARGET)

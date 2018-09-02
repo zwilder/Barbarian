@@ -49,6 +49,7 @@ enum class GameState : uint8_t
     PLAYERS_TURN,
     ENEMY_TURN,
     GAME_OVER,
+    RIP,
     MSG_WAIT,
     INVENTORY,
     EQUIP,
@@ -109,6 +110,7 @@ class Engine
         void draw_game_(); // engine_draw_game.cpp
         void draw_target_(); // engine_draw_target.cpp
         void draw_levelup_(); // engine_draw_levelup.cpp
+        void draw_RIP_(); // engine_draw_RIP.cpp
 
         // Engine utility functions/variables
         void advanceMsg_();
