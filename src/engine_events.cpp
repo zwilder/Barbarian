@@ -21,6 +21,8 @@
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <ctime>
+
 #include "../include/engine.hpp"
 
 void Engine::handleEvents()
@@ -49,7 +51,14 @@ void Engine::handleEvents()
     }
     else if(gameState_ == GameState::PLAYERS_TURN)
     {
-        handleEvents_player_(input);
+        if(input.sshot())
+        {
+            screenshot_();
+        }
+        else
+        {
+            handleEvents_player_(input);
+        }
     }
     // else if(gameState_ == GameState::MSG_WAIT && input.enter())
     // {
@@ -69,16 +78,37 @@ void Engine::handleEvents()
     // }
     else if (gameState_ == GameState::INVENTORY || gameState_ == GameState::DROP || gameState_ == GameState::EQUIP)
     {
-        handleEvents_inventory_(input);
+        if(input.sshot())
+        {
+            screenshot_();
+        }
+        else
+        {
+            handleEvents_inventory_(input);
+        }
     }
     else if(gameState_ == GameState::GAME_OVER && keyPressed)
     {
-        saveGame();
-        changeState(GameState::RIP);
+        if(input.sshot())
+        {
+            screenshot_();
+        }
+        else
+        {
+            saveGame();
+            changeState(GameState::RIP);
+        }
     }
-    else if(gameState_ == GameState::RIP && keyPressed)
+    else if(gameState_ == GameState::RIP)
     {
-        changeState(GameState::TITLE);
+        if(input.sshot())
+        {
+            screenshot_();
+        }
+        else if(keyPressed)
+        {
+            changeState(GameState::TITLE);
+        }
     }
     else if(gameState_ == GameState::TARGET)
     {
@@ -125,4 +155,24 @@ void Engine::handleEvents()
             fullscreen_ = true;
         }
     }
+}
+
+void Engine::screenshot_()
+{
+    // Take screenshot
+    std::time_t t = std::time(0);
+    std::tm * now = std::localtime(&t);
+    std::string mon = now->tm_mon + 1 < 10 ? "0" + std::to_string(now->tm_mon + 1) : std::to_string(now->tm_mon + 1);
+    std::string day = now->tm_mday < 10 ? "0" + std::to_string(now->tm_mday) : std::to_string(now->tm_mday);
+    std::string date = mon  + "_" + day  + "_" + std::to_string(1900 + now->tm_year);
+    std::string time = std::to_string(now->tm_hour) + std::to_string(now->tm_min) + std::to_string(now->tm_sec);
+    std::string filename = "ss-" + date + "-" + time + ".png";
+    SDL_Surface *sshot = SDL_CreateRGBSurface(0, windowWidth_, windowHeight_, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    // int w = consoleWidth_ * spriteSize.x;
+    // int h = consoleHeight_ * spriteSize.y;
+    // SDL_Surface *sshot = SDL_CreateRGBSurface(0, w, h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+    SDL_RenderReadPixels(renderer_, NULL, SDL_PIXELFORMAT_ARGB8888, sshot->pixels, sshot->pitch);
+    // SDL_SaveBMP(sshot, filename.c_str());
+    IMG_SavePNG(sshot, filename.c_str());
+    SDL_FreeSurface(sshot);
 }

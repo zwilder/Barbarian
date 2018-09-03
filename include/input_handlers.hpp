@@ -43,7 +43,8 @@ class Input : public wsl::BitFlag
             OPEN_INV = 0x080,
             OPEN_DROP = 0x100,
             LOOK = 0x200,
-            ESCAPE = 0x400
+            ESCAPE = 0x400,
+            SSHOT = 0x800
         };
             
         bool move() { return(check(Cmd::MOVE)); }
@@ -56,6 +57,7 @@ class Input : public wsl::BitFlag
         bool openDrop() { return(check(Cmd::OPEN_DROP)); }
         bool look() { return(check(Cmd::LOOK)); }
         bool escape() { return(check(Cmd::ESCAPE)); }
+        bool sshot() { return(check(Cmd::SSHOT)); }
 
         wsl::Vector2i dir() { return dir_; }
         char alpha() { return alpha_; }

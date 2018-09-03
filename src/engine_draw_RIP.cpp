@@ -78,7 +78,7 @@ void Engine::draw_RIP_()
     /*
      * [Press any key to continue]
      */
-    console_->printf(1, console_->height() - 2, "[Press any key to continue]", wsl::Color::Grey);
+    console_->printf(1, console_->height() - 2, "[Press F2 to screenshot or any other key to continue]", wsl::Color::Grey);
 
     // This is the graphic, drawn in REXPaint, Zach Wilder (c) 2018
     console_->put(xOfs + 21,yOfs + 1 ,wsl::Glyph(46,wsl::Color::DkGrey,wsl::Color::Black));

@@ -2,6 +2,7 @@
 *.d
 *.o
 *.bak
+ss-*.png
 gamedata.*
 Scratch*
 Barbarian

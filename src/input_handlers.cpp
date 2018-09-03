@@ -172,6 +172,10 @@ Input handleKeys(int key, int mod)
         {
             return Input(Input::Cmd::FULLSCREEN);
         }
+        case SDLK_F2:
+        {
+            return Input(Input::Cmd::SSHOT);
+        }
         default: { break; }
     }
 
