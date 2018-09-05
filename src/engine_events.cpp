@@ -168,8 +168,8 @@ void Engine::screenshot_()
     std::string time = std::to_string(now->tm_hour) + std::to_string(now->tm_min) + std::to_string(now->tm_sec);
     std::string filename = "ss-" + date + "-" + time + ".png";
     SDL_Surface *sshot = SDL_CreateRGBSurface(0, windowWidth_, windowHeight_, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-    // int w = consoleWidth_ * spriteSize.x;
-    // int h = consoleHeight_ * spriteSize.y;
+    // int w = 800;
+    // int h = 600;
     // SDL_Surface *sshot = SDL_CreateRGBSurface(0, w, h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
     SDL_RenderReadPixels(renderer_, NULL, SDL_PIXELFORMAT_ARGB8888, sshot->pixels, sshot->pitch);
     // SDL_SaveBMP(sshot, filename.c_str());
