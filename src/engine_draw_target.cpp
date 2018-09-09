@@ -66,7 +66,7 @@ void Engine::draw_target_()
             console_->put(cursorPath[i].x, cursorPath[i].y, wsl::Glyph('*', wsl::Color::Orange, wsl::Color::Black));
         }
 
-        console_->put(cursorPos_.x, cursorPos_.y, wsl::Glyph('X', wsl::Color::Orange, wsl::Color::Black));
+        console_->put(cursorPos_.x, cursorPos_.y, wsl::Glyph('X', wsl::Color::Black, wsl::Color::Orange));
     }
     else if(gameState_ == GameState::LOOK)
     {
