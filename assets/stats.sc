@@ -10,7 +10,9 @@ format F 16 0 0
 format G 20 0 0
 format H 10 0 0
 format I 10 0 0
-mark t B10
+format K 10 0 0
+format L 10 0 0
+mark t H10
 label B0 = "Min"
 label C0 = "Max"
 label D0 = "Range"
@@ -19,39 +21,39 @@ label H0 = "Giant Rat"
 label I0 = "Skeleton"
 label A1 = "Strength"
 let B1 = 1
-let C1 = 20
+let C1 = 30
 let D1 = C1-B1
 label F1 = "Strength"
 let G1 = 10
-let H1 = 4
+let H1 = 2
 let I1 = 8
 label A2 = "Agility"
 let B2 = 1
-let C2 = 20
+let C2 = 30
 let D2 = C2-B2
 label F2 = "Agility"
 let G2 = 10
-let H2 = 14
-let I2 = 10
+let H2 = 4
+let I2 = 8
 label A3 = "Vitality"
 let B3 = 1
-let C3 = 20
+let C3 = 30
 let D3 = C3-B3
 label F3 = "Vitality"
 let G3 = 10
-let H3 = 5
+let H3 = 2
 let I3 = 5
 label A4 = "Fortitude"
 let B4 = 1
-let C4 = 20
+let C4 = 30
 let D4 = C4-B4
 label F4 = "Fortitude"
 let G4 = 10
 let H4 = 1
-let I4 = 5
+let I4 = 3
 label A5 = "Intellect"
 let B5 = 1
-let C5 = 20
+let C5 = 30
 let D5 = C5-B5
 label F5 = "Intellect"
 let G5 = 10
@@ -88,13 +90,13 @@ let G9 = (G1+G2)/5
 let H9 = (H1+H2)/5
 let I9 = (I1+I2)/5
 label A10 = "Defense Rating"
-let B10 = (B2+B4)/5
-let C10 = (C2+C4)/5
+let B10 = (B2+B4)/1
+let C10 = (C2+C4)/1
 let D10 = C10-B10
 label F10 = "Defense Rating"
-let G10 = (G2+G4)/5
-let H10 = (H2+H4)/5
-let I10 = (I2+I4)/5
+let G10 = (G2+G4)/1
+let H10 = (H2+H4)/1
+let I10 = (I2+I4)/1
 label A11 = "Attack Rating"
 let B11 = B1+B5
 let C11 = C1+C5
@@ -268,4 +270,4 @@ let C43 = B43-B42
 let D43 = B43/$C$16
 let E43 = B43/$B$16
 let F43 = B43/$H$16
-goto H11
+goto H7
