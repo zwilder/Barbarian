@@ -46,9 +46,13 @@ void Engine::handleEvents_player_(Input input)
             else if(item)
             {
                 move = true;
-                if(item->quantity() > 1)
+                if(item->quantity() > 1 && item->stackable())
                 {
                     addMessage("You see " + std::to_string(item->quantity()) + " " + item->name() + "s here.");
+                }
+                else if(item->quantity() > 1)
+                {
+                    addMessage("You see a " + item->name() + "s here.");
                 }
                 else
                 {
