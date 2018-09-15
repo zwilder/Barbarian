@@ -13,6 +13,7 @@ FILES := color texture sprite random console input_handlers \
 	engine_draw_game engine_draw_inventory engine_draw_target engine_draw_title \
 	engine_draw_levelup  engine_draw_RIP \
 	engine_fileIO \
+	animation \
 	main
 OBJS := $(FILES:=.o)
 SRC := $(OBJS:.o=.cpp)

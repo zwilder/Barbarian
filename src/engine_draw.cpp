@@ -55,6 +55,12 @@ void Engine::draw()
         draw_RIP_();
     }
 
+    // Render animations
+    for(wsl::DLNode<Animation> * node = animations_->head(); node != NULL; node = node->next)
+    {
+        node->data.draw(console_.get());
+    }
+
     // Clear the SDL window
     SDL_SetRenderDrawColor(renderer_, 0x00, 0x00, 0x00, 0x00);
     SDL_RenderClear(renderer_);

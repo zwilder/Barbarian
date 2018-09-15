@@ -22,6 +22,7 @@
 #include "../include/game_map.hpp"
 #include "../include/engine.hpp"
 #include "../include/pathfinding.hpp"
+#include "../include/animation.hpp"
 
 Item::Item(int u, int q, bool s)
 {
@@ -234,10 +235,13 @@ bool Entity::use_cast_lightning_()
 
 bool Entity::use_cast_firebolt_()
 {
+    wsl::Vector2i animationOrigin = pos();
+    wsl::Vector2i animationTarget;
     if(this == game_->player())
     {
         game_->target();
         Entity * target = game_->gameMap()->entityAt(game_->cursor());
+        animationTarget = game_->cursor();
         game_->addMessage("A bolt of fire shoots out of " + name() + "\'s hands!");
         if(game_->cursor() == pos() || !game_->targetSelected())
         {
@@ -272,6 +276,7 @@ bool Entity::use_cast_firebolt_()
             tile.glyph().setColor(wsl::Color::DkGrey);
         }
     }
+    game_->animations()->push(Animated::projectile(wsl::Glyph('*',wsl::Color::LtOrange), animationOrigin, animationTarget));
     return true;
 }
 

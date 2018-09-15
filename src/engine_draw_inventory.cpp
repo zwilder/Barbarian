@@ -57,7 +57,7 @@ void Engine::draw_inventory_()
             {
                 console_->print(nameSize + 4, int(i) + 3, "x " + std::to_string(item.quantity()));
             }
-            else if(item.quantity() >= 1)
+            else if(item.quantity() > 1)
             {
                 console_->print(nameSize + 4, int(i) + 3, "x " + std::to_string(item.quantity()) + " charges");
             }

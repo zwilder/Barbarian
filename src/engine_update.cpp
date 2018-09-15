@@ -23,7 +23,7 @@
 #include <sstream>
 #include "../include/engine.hpp"
 
-void Engine::update()
+void Engine::update(int dt)
 {
     /*
     if(!schedule_->isEmpty())
@@ -109,6 +109,26 @@ void Engine::update()
         else
         {
             current = current->next;
+        }
+    }
+
+    //Update animations
+    if(!animations_->isEmpty())
+    {
+        wsl::DLNode<Animation> * node = animations_->head();
+        while(node != NULL)
+        {
+            wsl::DLNode<Animation> * current = node;
+            node = node->next;
+            if(current->data.check(Animation::Flags::DEAD))
+            {
+                // Remove node
+                animations_->remove(current);
+            }
+            else
+            {
+                current->data.update(dt);
+            }
         }
     }
 }

@@ -31,21 +31,23 @@ int main(int argc, char * argv [])
 
     std::unique_ptr<Engine> engine = std::make_unique<Engine>();
 
-    // Obviously save/load/new game will be a part of the main menu - when that's implemented!
-    // if(!engine->loadGame())
-    // {
-    //     engine->newGame();
-    // }
-
+    milliseconds previous = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    milliseconds lag = std::chrono::milliseconds(0);
     while(engine->running())
     {
-        milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-        
+        milliseconds current = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+        milliseconds elapsed = current - previous;
+        previous = current;
+        lag += elapsed;
+
         engine->handleEvents();
-        engine->update();
+        while(lag >= MS_PER_FRAME)
+        {
+            engine->update(int(elapsed.count()));
+            // engine->update();
+            lag -= MS_PER_FRAME;
+        }
         engine->draw();
-        
-        std::this_thread::sleep_for(milliseconds(start + MS_PER_FRAME - duration_cast<milliseconds>(system_clock::now().time_since_epoch())));
     }
 
     engine->saveGame();

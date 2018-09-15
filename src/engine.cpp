@@ -47,7 +47,6 @@ Engine::Engine()
     visible_ = std::make_unique< std::vector<wsl::Vector2i> >();
 
     ACTION_COST = 100;
-    // gameState_ = GameState::PLAYERS_TURN;
     gameState_ = GameState::TITLE;
     prevGameState_ = gameState_;
 
@@ -58,6 +57,8 @@ Engine::Engine()
 
     uint32_t seed = uint32_t(std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count());
     engineRNG_ = std::make_shared<wsl::RNGState>(123987445, seed); // Random numbers
+
+    animations_ = std::make_unique< wsl::DLList<Animation> >();
 
     running_ = init();
 }

@@ -37,6 +37,7 @@
 #include "texture.hpp"
 #include "sprite.hpp"
 #include "dllist.hpp"
+#include "animation.hpp"
 
 namespace wsl
 {
@@ -68,7 +69,7 @@ class Engine
         bool init();
         void cleanup();
         void handleEvents();
-        void update();
+        void update(int dt = 0);
         void draw();
 
         // Variable access functions
@@ -82,6 +83,8 @@ class Engine
         wsl::Vector2i cursor();
         bool targetSelected() { return targetSelected_; }
         wsl::RNGState * rng() { return engineRNG_.get(); }
+        wsl::Console * console() { return console_.get(); }
+        wsl::DLList<Animation> * animations() { return animations_.get(); }
 
         wsl::DLList<Entity> * monsterList() { return &monsterList_; }
         wsl::DLList<Entity> * itemList() { return &itemList_; }
@@ -135,6 +138,8 @@ class Engine
         std::array<wsl::Rect, 256> spriteRects_;
         int spriteIndex_(int x, int y) { return (x + (y*consoleWidth_)); }
 
+        std::unique_ptr< wsl::DLList<Animation> > animations_;
+
         // Game Map
         std::unique_ptr<GameMap> gameMap_;
         int maxRoomSize_; // Do these three variables need to be stored?
@@ -169,6 +174,7 @@ class Engine
 
         // RNG
         std::shared_ptr<wsl::RNGState> engineRNG_;
+
 };
 
 #endif // ENGINE_HPP
