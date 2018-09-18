@@ -17,6 +17,7 @@
 * You should have received a copy of the GNU General Public License
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <cmath>
 
 #include "../include/entity.hpp"
 #include "../include/game_map.hpp"
@@ -276,12 +277,18 @@ bool Entity::use_cast_firebolt_()
             tile.glyph().setColor(wsl::Color::DkGrey);
         }
     }
-    game_->animations()->push(Animated::projectile(wsl::Glyph('*',wsl::Color::LtOrange), animationOrigin, animationTarget));
+    // Animation fireProjectile = Animated::projectile(wsl::Glyph('*',wsl::Color::LtOrange), animationOrigin, animationTarget);
+    // Animation animation;
+    // game_->animations()->push(animation);
+    // game_->animations()->push(Animated::projectile(wsl::Glyph(9,wsl::Color::Red), animationOrigin, animationTarget));
+    game_->animations()->push(Animated::firebolt(animationOrigin, animationTarget));
     return true;
 }
 
 bool Entity::use_cast_fireball_()
 {
+    wsl::Vector2i animationOrigin = pos();
+    wsl::Vector2i animationTarget;
     if(this == game_->player())
     {
         game_->target();
@@ -296,6 +303,7 @@ bool Entity::use_cast_fireball_()
         else
         {
             targetPos = game_->cursor();
+            animationTarget = game_->cursor();
         }
 
         game_->addMessage("Fire explodes out of " + name() + "\'s hands!");
@@ -345,5 +353,7 @@ bool Entity::use_cast_fireball_()
         }
     }
 
+    game_->animations()->push(Animated::fireball(3,animationOrigin, animationTarget));
+    // game_->animations()->push(Animated::explosion(animationTarget,3));
     return true;
 }

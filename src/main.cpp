@@ -20,7 +20,6 @@
 
 
 #include <chrono>
-#include <thread>
 #include <memory>
 #include "../include/engine.hpp"
 
@@ -41,13 +40,14 @@ int main(int argc, char * argv [])
         lag += elapsed;
 
         engine->handleEvents();
+        engine->update(int(elapsed.count()));
+        engine->draw();
         while(lag >= MS_PER_FRAME)
         {
-            engine->update(int(elapsed.count()));
-            // engine->update();
+            // Move update here, and put draw below to separate Update more frequently than draw
+            // Not an issue in a turn based game.
             lag -= MS_PER_FRAME;
         }
-        engine->draw();
     }
 
     engine->saveGame();

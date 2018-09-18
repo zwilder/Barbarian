@@ -58,7 +58,8 @@ void Engine::draw()
     // Render animations
     for(wsl::DLNode<Animation> * node = animations_->head(); node != NULL; node = node->next)
     {
-        node->data.draw(console_.get());
+        // node->data.draw(console_.get());
+        node->data.draw(this);
     }
 
     // Clear the SDL window

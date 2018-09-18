@@ -22,15 +22,18 @@
 #ifndef ANIMATION_HPP
 #define ANIMATION_HPP
 
+#include <memory>
+
 #include "vector.hpp"
 #include "dllist.hpp"
 #include "tile.hpp"
 
-namespace wsl
-{
-class Console;
-}
+// namespace wsl
+// {
+class Engine;
+// }
 
+/*
 class AnimationTile
 {
     public:
@@ -43,7 +46,19 @@ class Frame
 {
     public:
         Frame(wsl::DLList<AnimationTile> t = wsl::DLList<AnimationTile>(), int d = 0);
-        wsl::DLList<AnimationTile> tiles;
+        Frame(const Frame & other);
+        Frame & operator =(Frame & other)
+        {
+            swap(*this, other);
+            return * this;
+        }
+        friend void swap(Frame & a, Frame & b)
+        {
+            using std::swap;
+            swap(a.tiles, b.tiles);
+            swap(a.duration, b.duration);
+        }
+        std::unique_ptr< wsl::DLList<AnimationTile> > tiles;
         int duration; // in milliseconds
 };
 
@@ -60,18 +75,71 @@ class Animation : public wsl::BitFlag
             LOOP = 0x020
         };
         Animation(wsl::DLList<Frame> f = wsl::DLList<Frame>());
+        Animation(Animation & other); //Copy constructor
+        Animation & operator =(Animation & other)
+        {
+            swap(*this, other);
+            return *this;
+        }
+        friend void swap(Animation & a, Animation & b)
+        {
+            using std::swap;
+            swap(a.lastUpdate, b.lastUpdate);
+            swap(a.nextUpdate, b.nextUpdate);
+            swap(a.frames, b.frames);
+        }
         void update(int dt);
         void draw(wsl::Console * console);
 
-        wsl::DLList<Frame> frames;
+        std::unique_ptr< wsl::DLList<Frame> > frames;
+        int lastUpdate;
+        int nextUpdate;
+};
+*/
+class AnimationTile
+{
+    public:
+        AnimationTile(wsl::Glyph g = wsl::Glyph(), wsl::Vector2i p = wsl::Vector2i()) : glyph(g), pos(p) { }
+        wsl::Glyph glyph;
+        wsl::Vector2i pos;
+};
+
+class AnimationFrame
+{
+    public:
+        AnimationFrame() { duration = 0; }
+        std::vector<AnimationTile> tiles;
+        int duration;
+};
+
+class Animation : public wsl::BitFlag
+{
+    public:
+        Animation();
+        enum Flags : uint8_t
+        {
+            NONE = 0,
+            APPLY_BG = 0x002,
+            APPLY_FG = 0x004,
+            APPLY_GLYPH = 0x008,
+            DEAD = 0x010,
+            LOOP = 0x020
+        };
+
+        void update(int dt);
+        void draw(Engine * engine);
+
+        std::vector<AnimationFrame> frames;
+        int currentFrame;
         int lastUpdate;
         int nextUpdate;
 };
 
 namespace Animated
 {
-// Animation explosion(wsl::Vector2i origin, int radius);
+Animation explosion(wsl::Vector2i origin, int radius);
 Animation projectile(wsl::Glyph glyph, wsl::Vector2i origin, wsl::Vector2i destination);
-// Animation fireball(wsl::Vector2i origin, wsl::Vector2i destination);
+Animation fireball(int radius, wsl::Vector2i origin, wsl::Vector2i destination);
+Animation firebolt(wsl::Vector2i origin, wsl::Vector2i destination);
 }
 #endif // ANIMATION_HPP
