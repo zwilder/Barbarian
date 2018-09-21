@@ -295,13 +295,21 @@ void Engine::target(bool look)
     // Target is a mini-main loop - so this limits it's speed a bit
     using namespace std::chrono;
     const milliseconds MS_PER_FRAME = std::chrono::milliseconds(16); // 16ms = ~60fps, 33ms = ~30fps
-
+    milliseconds previous = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+    milliseconds lag = std::chrono::milliseconds(0);
     while(targeting_)
     {
-        milliseconds start = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+        milliseconds current = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+        milliseconds elapsed = current - previous;
+        previous = current;
+        lag += elapsed;
+
         handleEvents(); // moving the cursor, waiting for [enter] to set targetSelected_ to true
         draw(); // Drawing the path from the player to the cursor
-        std::this_thread::sleep_for(milliseconds(start + MS_PER_FRAME - duration_cast<milliseconds>(system_clock::now().time_since_epoch())));
+        while(lag >= MS_PER_FRAME)
+        {
+            lag -= MS_PER_FRAME;
+        }
     } 
     changeState(prevState);
     addMessage(prevMsg);

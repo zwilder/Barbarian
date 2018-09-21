@@ -274,7 +274,7 @@ bool Entity::use_cast_firebolt_()
             {
                 game_->addMessage("The firebolt explodes against the dungeon wall!");
             }
-            tile.glyph().setColor(wsl::Color::DkGrey);
+            // tile.glyph().setColor(wsl::Color::DkGrey);
         }
     }
     // Animation fireProjectile = Animated::projectile(wsl::Glyph('*',wsl::Color::LtOrange), animationOrigin, animationTarget);
@@ -289,6 +289,8 @@ bool Entity::use_cast_fireball_()
 {
     wsl::Vector2i animationOrigin = pos();
     wsl::Vector2i animationTarget;
+    int radius = 3; // These might get passed in eventually or be based on a player's wisdom stat or something
+    int damage = 25;
     if(this == game_->player())
     {
         game_->target();
@@ -307,10 +309,11 @@ bool Entity::use_cast_fireball_()
         }
 
         game_->addMessage("Fire explodes out of " + name() + "\'s hands!");
-        for(int x = targetPos.x - 2; x <= targetPos.x + 2; ++x)
+        for(int x = targetPos.x - radius; x <= targetPos.x + radius; ++x)
         {
-            for(int y = targetPos.y - 2; y <= targetPos.y + 2; ++y)
+            for(int y = targetPos.y - radius; y <= targetPos.y + radius; ++y)
             {
+                if(sqrt(pow(x - targetPos.x, 2) + pow(y - targetPos.y, 2)) > radius) continue;
                 Entity * target = game_->gameMap()->entityAt(x,y);
                 if(target)
                 {
@@ -318,7 +321,7 @@ bool Entity::use_cast_fireball_()
                     {
                         game_->addMessage("The " + target->name() + " is scorched!");
                         // target->takeDamage(5);
-                        dealDamage(target, 25);
+                        dealDamage(target, damage);
                     }
                     else if(target->isItem())
                     {
@@ -331,7 +334,7 @@ bool Entity::use_cast_fireball_()
                     if(pos() == wsl::Vector2i(x,y))
                     {
                         game_->addMessage(name() + " is caught in the explosion!");
-                        takeDamage(25);
+                        takeDamage(damage);
                     }
                     else
                     {
@@ -353,7 +356,7 @@ bool Entity::use_cast_fireball_()
         }
     }
 
-    game_->animations()->push(Animated::fireball(3,animationOrigin, animationTarget));
-    // game_->animations()->push(Animated::explosion(animationTarget,3));
+    game_->animations()->push(Animated::fireball(radius,animationOrigin, animationTarget));
+    game_->animations()->push(Animated::screenflash(wsl::Vector2i(game_->console()->width(), game_->console()->height()), wsl::Color::Yellow));
     return true;
 }

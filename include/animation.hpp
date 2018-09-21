@@ -139,6 +139,8 @@ namespace Animated
 {
 Animation explosion(wsl::Vector2i origin, int radius);
 Animation projectile(wsl::Glyph glyph, wsl::Vector2i origin, wsl::Vector2i destination);
+Animation beam(wsl::Vector2i origin, wsl::Vector2i destination, wsl::Color color);
+Animation screenflash(wsl::Vector2i screenDimensions, wsl::Color color);
 Animation fireball(int radius, wsl::Vector2i origin, wsl::Vector2i destination);
 Animation firebolt(wsl::Vector2i origin, wsl::Vector2i destination);
 }

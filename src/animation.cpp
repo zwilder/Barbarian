@@ -17,6 +17,7 @@
 * You should have received a copy of the GNU General Public License
 * along with Barbarian!.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include <iostream>
 #include <cmath>
 #include <chrono>
 
@@ -168,29 +169,22 @@ namespace Animated
 {
 Animation explosion(wsl::Vector2i origin, int radius)
 {
-    /*
-     * 
-     */
     uint32_t seed = uint32_t(std::chrono::duration_cast< std::chrono::milliseconds >(std::chrono::system_clock::now().time_since_epoch()).count());
     wsl::RNGState rng(123987445, seed); // Random numbers
     const int ANIMATION_DURATION = 250;
     Animation result;
-    int frameDuration = ANIMATION_DURATION / radius;
+    int frameDuration = ANIMATION_DURATION / (radius * 2); // Outward explosion/Inward Explosion
+    //Outward explosion
     for(int i = 1; i <= radius; ++i)
     {
-        // 1 frame is one step from radius
         AnimationFrame frame;
-        // Each frame get the tiles from origin to radius
         for(int x = origin.x - i; x <= origin.x + i; ++x)
         {
             for(int y = origin.y - i; y <= origin.y + i; ++y)
             {
-                // if(sqrt(pow(x, 2) + pow(y, 2)) > 2)
-                // {
-                    // continue;
-                // }
                 // Without adding in an if sqrt(x^2 + y^2) <= r this just makes a square instead of a circle
-                // Light up tiles randomly (Start at 75%?) - bg Red/Orange/Yellow
+                // if(sqrt(pow(x, 2) + pow(y, 2)) <= radius) continue;
+                if(sqrt(pow(x - origin.x, 2) + pow(y - origin.y, 2)) > radius) continue;
                 if(wsl::randomInt(1,100,&rng) >= 65)
                 {
                     continue;
@@ -203,13 +197,49 @@ Animation explosion(wsl::Vector2i origin, int radius)
                     case 3: bg = wsl::Color::Red; break;
                     default: break;
                 }
-                frame.tiles.push_back(AnimationTile(wsl::Glyph('.',bg,bg), wsl::Vector2i(x,y)));
+                // int randomGlyph = wsl::randomInt('A','z',&rng);
+                // frame.tiles.push_back(AnimationTile(wsl::Glyph(randomGlyph,wsl::Color::White,bg), wsl::Vector2i(x,y)));
+                // frame.tiles.push_back(AnimationTile(wsl::Glyph(' ',bg,bg), wsl::Vector2i(x,y)));
+                frame.tiles.push_back(AnimationTile(wsl::Glyph('.',wsl::Color::Yellow,bg), wsl::Vector2i(x,y)));
             }
         }
         frame.duration = frameDuration;
         result.frames.push_back(frame);
     }
-    // result.engage(Animation::Flags::APPLY_GLYPH);
+    //Inward explosion
+    for(int i = radius; i >= 1; --i)
+    {
+        AnimationFrame frame;
+        for(int x = origin.x - i; x <= origin.x + i; ++x)
+        {
+            for(int y = origin.y - i; y <= origin.y + i; ++y)
+            {
+                if(sqrt(pow(x - origin.x, 2) + pow(y - origin.y, 2)) > radius) continue;
+                if(wsl::randomInt(1,100,&rng) >= 25)
+                {
+                    continue;
+                }
+                wsl::Color bg = wsl::Color::Red;
+                switch(wsl::randomInt(1,3,&rng))
+                {
+                    case 1: bg = wsl::Color::Yellow; break;
+                    case 2: bg = wsl::Color::Orange; break;
+                    case 3: bg = wsl::Color::Red; break;
+                    case 4: bg = wsl::Color::LtGrey; break;
+                    case 5: bg = wsl::Color::White; break;
+                    default: break;
+                }
+                // int randomGlyph = wsl::randomInt('A','z',&rng);
+                // frame.tiles.push_back(AnimationTile(wsl::Glyph(randomGlyph,wsl::Color::White,bg), wsl::Vector2i(x,y)));
+                // frame.tiles.push_back(AnimationTile(wsl::Glyph(' ',bg,bg), wsl::Vector2i(x,y)));
+                // frame.tiles.push_back(AnimationTile(wsl::Glyph(wsl::randomInt(176,178,&rng),wsl::Color::Yellow,bg), wsl::Vector2i(x,y)));
+                frame.tiles.push_back(AnimationTile(wsl::Glyph('.',wsl::Color::Yellow,bg), wsl::Vector2i(x,y)));
+            }
+        }
+        frame.duration = frameDuration;
+        result.frames.push_back(frame);
+    }
+    result.engage(Animation::Flags::APPLY_GLYPH);
     result.engage(Animation::Flags::APPLY_FG);
     result.engage(Animation::Flags::APPLY_BG);
     return result;
@@ -224,6 +254,10 @@ Animation projectile(wsl::Glyph glyph, wsl::Vector2i origin, wsl::Vector2i desti
     //Unsure how long animations should take, so starting at 500ms (half a second)
     const int ANIMATION_DURATION = 250;
     Animation result;
+    if(origin == destination)
+    {
+        return result;
+    }
     std::vector<wsl::Vector2i> path;
     path::bhline(origin, destination, &path);
     int frameDuration = ANIMATION_DURATION / int(path.size());
@@ -238,9 +272,81 @@ Animation projectile(wsl::Glyph glyph, wsl::Vector2i origin, wsl::Vector2i desti
     return result;
 }
 
+Animation beam(wsl::Vector2i origin, wsl::Vector2i destination, wsl::Color color)
+{
+    const int ANIMATION_DURATION = 750;
+    Animation result;
+    if(origin == destination)
+    {
+        return result;
+    }
+    std::vector<wsl::Vector2i> path;
+    path::bhline(origin, destination, &path);
+    int frameDuration = ANIMATION_DURATION / 3; // Charge bg color change->add glyph '-'-> add glyph '='
+    for(int j = 0; j < 3; ++j)
+    {
+        AnimationFrame frame;
+        uint8_t sym = 0;
+        wsl::Color fg;
+        wsl::Color bg;
+        switch(j)
+        {
+            case 0:
+            {
+                sym = '.';
+                fg = color;
+                bg = color;
+                break;
+            }
+            case 1:
+            {
+                sym = '-';
+                fg = wsl::Color::White;
+                bg = color;
+                break;
+            }
+            case 2:
+            {
+                sym = '=';
+                fg = wsl::Color::White;
+                bg = color;
+                break;
+            }
+            default: break;
+        }
+
+        for(size_t i = 0; i < path.size(); ++i)
+        {
+            frame.tiles.push_back(AnimationTile(wsl::Glyph(sym,fg,bg), path[i]));
+        }
+        frame.duration = frameDuration;
+        result.frames.push_back(frame);
+    }
+    result.engage(Animation::Flags::APPLY_BG | Animation::Flags::APPLY_FG | Animation::Flags::APPLY_GLYPH);
+    return result;
+}
+
+Animation screenflash(wsl::Vector2i screenDimensions, wsl::Color color)
+{
+    const int ANIMATION_DURATION = 250;
+    Animation result;
+    AnimationFrame frame;
+    for(int x = 0; x < screenDimensions.x; ++x)
+    {
+        for(int y = 0; y < screenDimensions.y; ++y)
+        {
+            frame.tiles.push_back(AnimationTile(wsl::Glyph(' ',color,color), wsl::Vector2i(x,y)));
+        }
+    }
+    frame.duration = ANIMATION_DURATION;
+    result.frames.push_back(frame);
+    result.engage(Animation::Flags::APPLY_BG | Animation::Flags::APPLY_FG | Animation::Flags::APPLY_GLYPH);
+    return result;
+}
+
 Animation firebolt(wsl::Vector2i origin, wsl::Vector2i destination)
 {
-    Animation result = projectile(wsl::Glyph(9,wsl::Color::Red),origin,destination);
+    Animation result = projectile(wsl::Glyph(7,wsl::Color::Red),origin,destination);
     for(size_t i = 0; i < result.frames.size(); ++i)
     {
         if((i % 2) == 0)
@@ -257,7 +363,6 @@ Animation fireball(int radius, wsl::Vector2i origin, wsl::Vector2i destination)
     /*
      * A fireball animation starts off with the frames from a projectile, then adds the frames from explosion and returns the result
      */
-    const int ANIMATION_DURATION = 500;
     // Animation fireProj = projectile(wsl::Glyph('*', wsl::Color::Red), origin, destination);
     Animation fireProj = firebolt(origin, destination);
     Animation result = fireProj;
