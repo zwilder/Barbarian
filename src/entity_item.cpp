@@ -220,6 +220,7 @@ bool Entity::use_cast_lightning_()
             game_->addMessage("It arcs towards the " + target->name() + ".");
             // target->takeDamage(20); // This magic number needs to be changed
             dealDamage(target, 40);
+            game_->animations()->push(Animated::lightning(pos(), target->pos()));
         }
         else
         {

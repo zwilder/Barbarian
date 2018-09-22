@@ -262,54 +262,14 @@ Animation projectile(wsl::Glyph glyph, wsl::Vector2i origin, wsl::Vector2i desti
 
 Animation beam(wsl::Vector2i origin, wsl::Vector2i destination, wsl::Color color)
 {
-    const int ANIMATION_DURATION = 750;
-    Animation result;
-    if(origin == destination)
+    Animation result = projectile('/', origin, destination);
+    for(size_t i = 0; i < result.frames.size(); ++i)
     {
-        return result;
-    }
-    std::vector<wsl::Vector2i> path;
-    path::bhline(origin, destination, &path);
-    int frameDuration = ANIMATION_DURATION / 3; // Charge bg color change->add glyph '-'-> add glyph '='
-    for(int j = 0; j < 3; ++j)
-    {
-        AnimationFrame frame;
-        uint8_t sym = 0;
-        wsl::Color fg;
-        wsl::Color bg;
-        switch(j)
+        if((i % 2) == 0)
         {
-            case 0:
-            {
-                sym = '.';
-                fg = color;
-                bg = color;
-                break;
-            }
-            case 1:
-            {
-                sym = '-';
-                fg = wsl::Color::White;
-                bg = color;
-                break;
-            }
-            case 2:
-            {
-                sym = '=';
-                fg = wsl::Color::White;
-                bg = color;
-                break;
-            }
-            default: break;
+            continue;
         }
-
-        for(size_t i = 0; i < path.size(); ++i)
-        {
-            frame.tiles.push_back(AnimationTile(wsl::Glyph(sym,fg,bg), path[i]));
-        }
-        frame.duration = frameDuration;
-        frame.engage(AnimationFrame::Flags::APPLY_BG | AnimationFrame::Flags::APPLY_FG | AnimationFrame::Flags::APPLY_GLYPH);
-        result.frames.push_back(frame);
+        result.frames.at(i).tiles[0].glyph = wsl::Glyph(92,color);
     }
     return result;
 }
@@ -330,6 +290,24 @@ Animation screenflash(wsl::Vector2i screenDimensions, wsl::Color color)
     frame.engage(AnimationFrame::Flags::ALL_VIS | AnimationFrame::Flags::APPLY_FG | AnimationFrame::Flags::APPLY_BG | AnimationFrame::Flags::APPLY_GLYPH);
     result.frames.push_back(frame);
     // result.engage(Animation::Flags::APPLY_BG | Animation::Flags::APPLY_FG | Animation::Flags::APPLY_GLYPH);
+    return result;
+}
+
+Animation lightning(wsl::Vector2i origin, wsl::Vector2i destination)
+{
+    const int ANIMATION_DURATION = 150;
+    Animation result = screenflash(wsl::Vector2i(88,42), wsl::Color::DkYellow);
+    Animation bolt = beam(origin, destination, wsl::Color::Yellow);
+    wsl::Vector2i prev = origin;
+    int frameDuration = ANIMATION_DURATION / bolt.frames.size();
+    for(size_t i = 1; i < bolt.frames.size(); ++i)
+    {
+        //light up previous tile 
+        bolt.frames.at(i).tiles.push_back(AnimationTile(wsl::Glyph(219,wsl::Color::LtYellow),prev));
+        prev = bolt.frames.at(i).tiles[0].pos;
+        bolt.frames.at(i).duration = frameDuration;
+        result.frames.push_back(bolt.frames.at(i));
+    }
     return result;
 }
 
