@@ -336,27 +336,26 @@ bool Entity::use_cast_fireball_()
                         game_->addMessage(name() + " is caught in the explosion!");
                         takeDamage(damage);
                     }
-                    else
-                    {
-
-                        Tile & tile = game_->gameMap()->tileAt(x,y);
-                        if(tile.check(Tile::Flags::FLOOR))
-                        {
-                            // game_->addMessage("The ground is scorched!");
-                            tile.glyph().setColor(wsl::Color::DkGrey);
-                        }
-                        else if(tile.check(Tile::Flags::WALL))
-                        {
-                            // game_->addMessage("The dungeon wall is charred black!");
-                            tile.glyph().setColor(wsl::Color::Black);
-                        }
-                    }
+                    // else
+                    // {
+                    //
+                    //     Tile & tile = game_->gameMap()->tileAt(x,y);
+                    //     if(tile.check(Tile::Flags::FLOOR))
+                    //     {
+                    //         // game_->addMessage("The ground is scorched!");
+                    //         tile.glyph().setColor(wsl::Color::DkGrey);
+                    //     }
+                    //     else if(tile.check(Tile::Flags::WALL))
+                    //     {
+                    //         // game_->addMessage("The dungeon wall is charred black!");
+                    //         tile.glyph().setColor(wsl::Color::Black);
+                    //     }
+                    // }
                 }
             }
         }
     }
 
     game_->animations()->push(Animated::fireball(radius,animationOrigin, animationTarget));
-    game_->animations()->push(Animated::screenflash(wsl::Vector2i(game_->console()->width(), game_->console()->height()), wsl::Color::Yellow));
     return true;
 }

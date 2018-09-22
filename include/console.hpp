@@ -41,6 +41,7 @@ namespace wsl
             const Color & bgColor();
             void setColor(Color color);
             void setBgColor(Color color);
+            void setSym(uint8_t s);
 
             template<class Archive>
             void serialize(Archive & ar)

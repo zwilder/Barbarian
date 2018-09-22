@@ -104,9 +104,19 @@ class AnimationTile
         wsl::Vector2i pos;
 };
 
-class AnimationFrame
+class AnimationFrame : public wsl::BitFlag
 {
     public:
+
+        enum Flags : uint8_t
+        {
+            NONE,
+            APPLY_FG = 0x002,
+            APPLY_BG = 0x004,
+            APPLY_GLYPH = 0x008,
+            ALL_VIS = 0x010,
+            LEAVE_TILE = 0x020
+        };
         AnimationFrame() { duration = 0; }
         std::vector<AnimationTile> tiles;
         int duration;
@@ -119,11 +129,8 @@ class Animation : public wsl::BitFlag
         enum Flags : uint8_t
         {
             NONE = 0,
-            APPLY_BG = 0x002,
-            APPLY_FG = 0x004,
-            APPLY_GLYPH = 0x008,
-            DEAD = 0x010,
-            LOOP = 0x020
+            DEAD = 0x002,
+            LOOP = 0x004
         };
 
         void update(int dt);

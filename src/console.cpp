@@ -60,6 +60,11 @@ void Glyph::setBgColor(Color color)
     bgColor_ = color;
 }
 
+void Glyph::setSym(uint8_t s)
+{
+    symbol_ = s;
+}
+
 Console::Console(int width, int height) : width_(width), height_(height)
 {
     screen_.assign(width_ * height_, Glyph(' '));

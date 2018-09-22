@@ -89,6 +89,7 @@ Animation::Animation()
     lastUpdate = 0;
     nextUpdate = 0;
     currentFrame = 0;
+    frames.push_back(AnimationFrame());
 }
 
 void Animation::update(int dt)
@@ -97,13 +98,12 @@ void Animation::update(int dt)
     {
         return;
     }
+
     if(dt + lastUpdate >= nextUpdate)
     {
-    //     frames->popFront();
         currentFrame += 1;
         if(currentFrame >= (int(frames.size()) - 1))
         {
-            // check(Flags::LOOP) ? currentFrame = 0 : engage(Flags::DEAD);
             if(check(Flags::LOOP))
             {
                 currentFrame = 0;
@@ -115,14 +115,6 @@ void Animation::update(int dt)
         }
         lastUpdate += dt;
         nextUpdate = lastUpdate + frames.at(currentFrame).duration;
-    //     if(frames->isEmpty())
-    //     {
-    //         engage(Flags::DEAD);
-    //     }
-    //     else
-    //     {
-    //         nextUpdate = lastUpdate + frames->head()->data.duration;
-    //     }
     }
     else
     {
@@ -132,35 +124,28 @@ void Animation::update(int dt)
 
 void Animation::draw(Engine * engine)
 {
-    if(check(Flags::DEAD) || frames.size() == 0)
+    if(frames.size() == 0)
     {
         return;
     }
-    // Frame * currentFrame = &(frames->head()->data);
-    // for(wsl::DLNode<AnimationTile> * node = currentFrame->tiles->head(); node != NULL; node = node->next)
-    // {
-    //     wsl::Vector2i & pos = node->data.pos;
-    //     wsl::Glyph tile = node->data.tile;
-    //     wsl::Glyph consoleTile = console->get(pos.x,pos.y);
-    //     // Draw tile at pos on console, following flags (Apply fg, apply bg, apply glyph)
-    //     wsl::Color fg = check(Flags::APPLY_FG) ? tile.color() : consoleTile.color();
-    //     wsl::Color bg = check(Flags::APPLY_BG) ? tile.bgColor() : consoleTile.bgColor();
-    //     uint8_t symbol = check(Flags::APPLY_GLYPH) ? tile.symbol() : consoleTile.symbol();
-    //
-    //     console->put(pos.x, pos.y, wsl::Glyph(symbol, fg, bg));
-    // }
     AnimationFrame & frame = frames[currentFrame];
     for(size_t i = 0; i < frame.tiles.size(); ++i)
     {
         wsl::Vector2i & pos = frame.tiles[i].pos;
         wsl::Glyph & tile = frame.tiles[i].glyph;
         wsl::Glyph consoleTile = engine->console()->get(pos.x,pos.y);
-        wsl::Color fg = check(Flags::APPLY_FG) ? tile.color() : consoleTile.color();
-        wsl::Color bg = check(Flags::APPLY_BG) ? tile.bgColor() : consoleTile.bgColor();
-        uint8_t symbol = check(Flags::APPLY_GLYPH) ? tile.symbol() : consoleTile.symbol();
-        if(fov::contains(engine->visible(), wsl::Vector2i(pos.x,pos.y)))
+        wsl::Color fg = frame.check(AnimationFrame::Flags::APPLY_FG) ? tile.color() : consoleTile.color();
+        wsl::Color bg = frame.check(AnimationFrame::Flags::APPLY_BG) ? tile.bgColor() : consoleTile.bgColor();
+        uint8_t symbol = frame.check(AnimationFrame::Flags::APPLY_GLYPH) ? tile.symbol() : consoleTile.symbol();
+        if(fov::contains(engine->visible(), wsl::Vector2i(pos.x,pos.y)) || frame.check(AnimationFrame::Flags::ALL_VIS))
         {
             engine->console()->put(pos.x, pos.y, wsl::Glyph(symbol, fg, bg));
+        }
+        if(frame.check(AnimationFrame::Flags::LEAVE_TILE))
+        {
+            if(frame.check(AnimationFrame::Flags::APPLY_FG)) engine->gameMap()->tileAt(pos).glyph().setColor(tile.color());
+            if(frame.check(AnimationFrame::Flags::APPLY_BG)) engine->gameMap()->tileAt(pos).glyph().setBgColor(tile.bgColor());
+            // if(frame.check(AnimationFrame::Flags::APPLY_GLYPH)) engine->gameMap()->tileAt(pos).glyph().setSym(tile.symbol());
         }
     }
 }
@@ -174,6 +159,7 @@ Animation explosion(wsl::Vector2i origin, int radius)
     const int ANIMATION_DURATION = 250;
     Animation result;
     int frameDuration = ANIMATION_DURATION / (radius * 2); // Outward explosion/Inward Explosion
+    int frameMask = AnimationFrame::Flags::APPLY_FG | AnimationFrame::Flags::APPLY_BG | AnimationFrame::Flags::APPLY_GLYPH;
     //Outward explosion
     for(int i = 1; i <= radius; ++i)
     {
@@ -204,6 +190,7 @@ Animation explosion(wsl::Vector2i origin, int radius)
             }
         }
         frame.duration = frameDuration;
+        frame.engage(frameMask);
         result.frames.push_back(frame);
     }
     //Inward explosion
@@ -237,11 +224,12 @@ Animation explosion(wsl::Vector2i origin, int radius)
             }
         }
         frame.duration = frameDuration;
+        frame.engage(frameMask);
+        // frame.engage(AnimationFrame::Flags::APPLY_GLYPH);
+        // frame.engage(AnimationFrame::Flags::APPLY_FG);
+        // frame.engage(AnimationFrame::Flags::APPLY_BG);
         result.frames.push_back(frame);
     }
-    result.engage(Animation::Flags::APPLY_GLYPH);
-    result.engage(Animation::Flags::APPLY_FG);
-    result.engage(Animation::Flags::APPLY_BG);
     return result;
 }
 
@@ -266,9 +254,9 @@ Animation projectile(wsl::Glyph glyph, wsl::Vector2i origin, wsl::Vector2i desti
         AnimationFrame frame;
         frame.tiles.push_back(AnimationTile(glyph, path[i]));
         frame.duration = frameDuration;
+        frame.engage(AnimationFrame::Flags::APPLY_FG | AnimationFrame::Flags::APPLY_GLYPH);
         result.frames.push_back(frame);
     }
-    result.engage(Animation::Flags::APPLY_FG | Animation::Flags::APPLY_GLYPH);
     return result;
 }
 
@@ -320,27 +308,28 @@ Animation beam(wsl::Vector2i origin, wsl::Vector2i destination, wsl::Color color
             frame.tiles.push_back(AnimationTile(wsl::Glyph(sym,fg,bg), path[i]));
         }
         frame.duration = frameDuration;
+        frame.engage(AnimationFrame::Flags::APPLY_BG | AnimationFrame::Flags::APPLY_FG | AnimationFrame::Flags::APPLY_GLYPH);
         result.frames.push_back(frame);
     }
-    result.engage(Animation::Flags::APPLY_BG | Animation::Flags::APPLY_FG | Animation::Flags::APPLY_GLYPH);
     return result;
 }
 
 Animation screenflash(wsl::Vector2i screenDimensions, wsl::Color color)
 {
-    const int ANIMATION_DURATION = 250;
+    const int ANIMATION_DURATION = 25;
     Animation result;
     AnimationFrame frame;
     for(int x = 0; x < screenDimensions.x; ++x)
     {
         for(int y = 0; y < screenDimensions.y; ++y)
         {
-            frame.tiles.push_back(AnimationTile(wsl::Glyph(' ',color,color), wsl::Vector2i(x,y)));
+            frame.tiles.push_back(AnimationTile(wsl::Glyph(177,color,wsl::Color::LtGrey), wsl::Vector2i(x,y)));
         }
     }
     frame.duration = ANIMATION_DURATION;
+    frame.engage(AnimationFrame::Flags::ALL_VIS | AnimationFrame::Flags::APPLY_FG | AnimationFrame::Flags::APPLY_BG | AnimationFrame::Flags::APPLY_GLYPH);
     result.frames.push_back(frame);
-    result.engage(Animation::Flags::APPLY_BG | Animation::Flags::APPLY_FG | Animation::Flags::APPLY_GLYPH);
+    // result.engage(Animation::Flags::APPLY_BG | Animation::Flags::APPLY_FG | Animation::Flags::APPLY_GLYPH);
     return result;
 }
 
@@ -366,17 +355,38 @@ Animation fireball(int radius, wsl::Vector2i origin, wsl::Vector2i destination)
     // Animation fireProj = projectile(wsl::Glyph('*', wsl::Color::Red), origin, destination);
     Animation fireProj = firebolt(origin, destination);
     Animation result = fireProj;
+    // std::cout << result.frames.size() << std::endl;
+    Animation screenFlash = screenflash(wsl::Vector2i(88,42), wsl::Color::DkYellow);
+    for(size_t i = 0; i < screenFlash.frames.size(); ++i)
+    {
+        result.frames.push_back(screenFlash.frames.at(i));
+    }
+    // std::cout << result.frames.size() << std::endl;
     Animation fireExpl = explosion(destination, radius);
     for(size_t i = 0; i < fireExpl.frames.size(); ++i)
     {
         result.frames.push_back(fireExpl.frames.at(i));
     }
-    // int frameDuration = ANIMATION_DURATION / int(result.frames.size());
-    // for(size_t i = 0; i < result.frames.size(); ++i)
+
+    AnimationFrame burnFrame = result.frames[result.frames.size() - radius - 1];
+    for(size_t i = 0; i < burnFrame.tiles.size(); ++i)
+    {
+        burnFrame.tiles.at(i).glyph = wsl::Glyph('.',wsl::Color::Black,wsl::Color::DkGrey);
+    }
+    // AnimationFrame burnFrame;
+    // for(int x = destination.x - radius; x <= destination.x + radius; ++x)
     // {
-    //     result.frames.at(i).duration = frameDuration;
+    //     for(int y = destination.y - radius; y <= destination.y + radius; ++y)
+    //     {
+    //         if(sqrt(pow(x - destination.x, 2) + pow(y - destination.y, 2)) > radius) continue;
+    //         burnFrame.tiles.push_back(AnimationTile(wsl::Glyph('.',wsl::Color::Black,wsl::Color::DkGrey),wsl::Vector2i(x,y)));
+    //     }
     // }
-    result.engage(Animation::Flags::APPLY_BG | Animation::Flags::APPLY_FG | Animation::Flags::APPLY_GLYPH);
+    burnFrame.duration = 1;
+    burnFrame.set(AnimationFrame::Flags::NONE);
+    burnFrame.engage(AnimationFrame::Flags::APPLY_FG | AnimationFrame::Flags::LEAVE_TILE);
+    burnFrame.engage(AnimationFrame::Flags::APPLY_BG);
+    result.frames.push_back(burnFrame);
     return result;
 }
 } //namepace Animated
